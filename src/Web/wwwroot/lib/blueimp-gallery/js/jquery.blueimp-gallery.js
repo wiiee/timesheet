@@ -6,7 +6,7 @@
  * https://blueimp.net
  *
  * Licensed under the MIT license:
- * https://opensource.org/licenses/MIT
+ * http://www.opensource.org/licenses/MIT
  */
 
 /* global define, window, document */

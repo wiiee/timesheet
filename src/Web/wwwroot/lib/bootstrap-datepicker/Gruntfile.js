@@ -12,9 +12,11 @@ module.exports = function(grunt){
             '/*!',
             ' * Datepicker for Bootstrap v<%= pkg.version %> (<%= pkg.homepage %>)',
             ' *',
+            ' * Copyright 2012 Stefan Petre',
+            ' * Improvements by Andrew Rowls',
             ' * Licensed under the Apache License v2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
             ' */'
-        ].join('\n') + '\n',
+        ].join('\n'),
 
         // Task configuration.
         clean: {
@@ -52,14 +54,11 @@ module.exports = function(grunt){
             }
         },
         qunit: {
-            main: 'tests/tests.html',
-            timezone: 'tests/timezone.html',
-            options: {
-                console: false
-            }
+            all: 'tests/tests.html'
         },
         concat: {
             options: {
+                banner: '<%= banner %>',
                 stripBanners: true
             },
             main: {
@@ -88,51 +87,35 @@ module.exports = function(grunt){
             }
         },
         less: {
-            options: {
-                sourceMap: true,
-                outputSourceFiles: true
+            standalone: {
+                files: {
+                    'dist/css/<%= pkg.name %>.standalone.css': 'build/build_standalone.less',
+                    'dist/css/<%= pkg.name %>3.standalone.css': 'build/build_standalone3.less'
+                }
             },
-            standalone_bs2: {
-                options: {
-                    sourceMapURL: '<%= pkg.name %>.standalone.css.map'
-                },
-                src: 'build/build_standalone.less',
-                dest: 'dist/css/<%= pkg.name %>.standalone.css'
-            },
-            standalone_bs3: {
-                options: {
-                    sourceMapURL: '<%= pkg.name %>3.standalone.css.map'
-                },
-                src: 'build/build_standalone3.less',
-                dest: 'dist/css/<%= pkg.name %>3.standalone.css'
-            },
-            main_bs2: {
-                options: {
-                    sourceMapURL: '<%= pkg.name %>.css.map'
-                },
-                src: 'build/build.less',
-                dest: 'dist/css/<%= pkg.name %>.css'
-            },
-            main_bs3: {
-                options: {
-                    sourceMapURL: '<%= pkg.name %>3.css.map'
-                },
-                src: 'build/build3.less',
-                dest: 'dist/css/<%= pkg.name %>3.css'
+            css: {
+                files: {
+                    'dist/css/<%= pkg.name %>.css': 'build/build.less',
+                    'dist/css/<%= pkg.name %>3.css': 'build/build3.less'
+                }
             }
         },
         usebanner: {
             options: {
+                position: 'top',
                 banner: '<%= banner %>'
             },
-            css: 'dist/css/*.css',
-            js: 'dist/js/**/*.js'
+            css: {
+                files: {
+                    src: 'dist/css/*.css'
+                }
+            }
         },
         cssmin: {
             options: {
                 compatibility: 'ie8',
                 keepSpecialComments: '*',
-                advanced: false
+                noAdvanced: true
             },
             main: {
                 files: {
@@ -183,8 +166,8 @@ module.exports = function(grunt){
                 }],
                 options: {
                     replacements: [{
-                        pattern: /\$(\.fn\.datepicker\.version)\s=\s*("|\')[0-9\.a-z].*("|');/gi,
-                        replacement: "$.fn.datepicker.version = '" + grunt.option('newver') + "';"
+                        pattern: '$.fn.datepicker.version =  "1.4.0";',
+                        replacement: '$.fn.datepicker.version =  "' + grunt.option('newver') + '";'
                     }]
                 }
             },
@@ -195,7 +178,19 @@ module.exports = function(grunt){
                 }],
                 options: {
                     replacements: [{
-                        pattern: /\"version\":\s\"[0-9\.a-z].*",/gi,
+                        pattern: '"version": "1.4.0",',
+                        replacement: '"version": "' + grunt.option('newver') + '",'
+                    }]
+                }
+            },
+            bower: {
+                files: [{
+                    src: 'bower.json',
+                    dest: 'bower.json'
+                }],
+                options: {
+                    replacements: [{
+                        pattern: '"version": "1.4.0",',
                         replacement: '"version": "' + grunt.option('newver') + '",'
                     }]
                 }
@@ -208,11 +203,11 @@ module.exports = function(grunt){
     require('time-grunt')(grunt);
 
     // JS distribution task.
-    grunt.registerTask('dist-js', ['concat', 'uglify:main', 'uglify:locales', 'usebanner:js']);
+    grunt.registerTask('dist-js', ['concat', 'uglify:main', 'uglify:locales']);
 
     // CSS distribution task.
-    grunt.registerTask('less-compile', 'less');
-    grunt.registerTask('dist-css', ['less-compile', 'cssmin:main', 'cssmin:standalone', 'usebanner:css']);
+    grunt.registerTask('less-compile', ['less:standalone', 'less:css']);
+    grunt.registerTask('dist-css', ['less-compile', 'cssmin:main', 'cssmin:standalone', 'usebanner']);
 
     // Full distribution task.
     grunt.registerTask('dist', ['clean:dist', 'dist-js', 'dist-css']);
@@ -220,8 +215,7 @@ module.exports = function(grunt){
     // Code check tasks.
     grunt.registerTask('lint-js', 'Lint all js files with jshint and jscs', ['jshint', 'jscs']);
     grunt.registerTask('lint-css', 'Lint all css files', ['dist-css', 'csslint:dist']);
-    grunt.registerTask('qunit-all', 'Run qunit tests', ['qunit:main', 'qunit-timezone']);
-    grunt.registerTask('test', 'Lint files and run unit tests', ['lint-js', /*'lint-css',*/ 'qunit-all']);
+    grunt.registerTask('test', 'Lint files and run unit tests', ['lint-js', /*'lint-css',*/ 'qunit']);
 
     // Version numbering task.
     // grunt bump-version --newver=X.Y.Z
@@ -229,7 +223,7 @@ module.exports = function(grunt){
 
     // Docs task.
     grunt.registerTask('screenshots', 'Rebuilds automated docs screenshots', function(){
-        var phantomjs = require('phantomjs-prebuilt').path;
+        var phantomjs = require('phantomjs').path;
 
         grunt.file.recurse('docs/_static/screenshots/', function(abspath){
             grunt.file.delete(abspath);
@@ -240,22 +234,16 @@ module.exports = function(grunt){
                 return;
             subdir = subdir || '';
 
-            var outdir = 'docs/_static/screenshots/' + subdir,
+            var outdir = "docs/_static/screenshots/" + subdir,
                 outfile = outdir + filename.replace(/.html$/, '.png');
 
             if (!grunt.file.exists(outdir))
                 grunt.file.mkdir(outdir);
 
-            // NOTE: For 'zh-TW' and 'ja' locales install adobe-source-han-sans-jp-fonts (Arch Linux)
             grunt.util.spawn({
                 cmd: phantomjs,
                 args: ['docs/_screenshots/script/screenshot.js', abspath, outfile]
             });
         });
-    });
-
-    grunt.registerTask('qunit-timezone', 'Run timezone tests', function(){
-        process.env.TZ = 'Europe/Moscow';
-        grunt.task.run('qunit:timezone');
     });
 };

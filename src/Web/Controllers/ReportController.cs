@@ -226,9 +226,8 @@
             var users = userService.GetByIds(project.UserIds);
 
             var percentage = project.GetTotalPlanHour() == 0 ? 1 : project.GetTotalActualHour() / project.GetTotalPlanHour();
-            var serviceContext = this.CreateServiceContext("DepartmentService");
-            var devPercentage = project.GetPlanDevHour(serviceContext) == 0 ? 1 : project.GetActualDevHour(this.CreateServiceContext("DepartmentService")) / project.GetPlanDevHour(serviceContext);
-            var testPercentage = project.GetPlanTestHour(serviceContext) == 0 ? 1 : project.GetActualTestHour(this.ServiceContext) / project.GetPlanTestHour(serviceContext);
+            var devPercentage = project.GetPlanDevHour() == 0 ? 1 : project.GetActualDevHour() / project.GetPlanDevHour();
+            var testPercentage = project.GetPlanTestHour() == 0 ? 1 : project.GetActualTestHour() / project.GetPlanTestHour();
             var lastUpdatedBy = project.LastUpdatedBy == null ? string.Empty : userService.Get(project.LastUpdatedBy).Name;
             var createdBy = project.CreatedBy == null ? string.Empty : userService.Get(project.CreatedBy).Name;
 
@@ -238,7 +237,7 @@
             return new ProjectOverviewModel(project, percentage, devPercentage, testPercentage, string.Join(",", owners.Select(o => o.Name)),
                 string.Join(",", users.Select(o => o.Name)), createdBy, lastUpdatedBy,
                 project.PostponeReasons.IsEmpty() ? "None" : string.Join(",", project.PostponeReasons),
-                project.BuildHours(startDate, endDate, this.ServiceContext), project.BuildLineModel(this.ServiceContext), project.Status.ToString());
+                project.BuildHours(startDate, endDate), project.BuildLineModel(), project.Status.ToString());
         }
 
         [Authorize(Roles = "0,1,3")]
@@ -347,11 +346,10 @@
                         {
                             List<KeyValuePair<string, string>> projectNames = projectGrouping.Select(p => new KeyValuePair<string, string>(p.Id, p.Name)).ToList();
                             string comments = string.Join("<br/>", projectGrouping.Select(p => p.Comment));
-                            var serviceContext = this.CreateServiceContext("DepartmentService");
-                            double devPlanHours = projectGrouping.Sum(p => p.GetPlanDevHour(serviceContext));
-                            double devActualHours = projectGrouping.Sum(p => p.GetActualDevHour(serviceContext));
-                            double testPlanHours = projectGrouping.Sum(p => p.GetPlanTestHour(serviceContext));
-                            double testActualHours = projectGrouping.Sum(p => p.GetActualTestHour(serviceContext));
+                            double devPlanHours = projectGrouping.Sum(p => p.GetPlanDevHour());
+                            double devActualHours = projectGrouping.Sum(p => p.GetActualDevHour());
+                            double testPlanHours = projectGrouping.Sum(p => p.GetPlanTestHour());
+                            double testActualHours = projectGrouping.Sum(p => p.GetActualTestHour());
                             double devPercentage = devPlanHours == 0D ? 1 : devActualHours / devPlanHours;
                             //大于100%,设为100%.
                             devPercentage = devPercentage > 1D ? 1 : devPercentage;
@@ -420,7 +418,6 @@
             var projectService = GetService<ProjectService>();
             var timeSheetService = GetService<TimeSheetService>();
             var userService = GetService<UserService>();
-            var serviceContext = this.CreateServiceContext("DepartmentService");
             var userGroups = departmentService.GetUserGroupsByUserId(userId);
 
             var models = new List<FlightWeeklyReportModel>();

@@ -1,13 +1,12 @@
 .datepicker {
 	padding: 4px;
-	.border-radius(@baseBorderRadius);
+	.border-radius(4px);
 	&-inline {
 		width: 220px;
 	}
 	direction: ltr;
 	&&-rtl {
 		direction: rtl;
-		&.dropdown-menu { left: auto; }
 		table tr td span {
 			float: right;
 		}
@@ -20,7 +19,7 @@
 			display: inline-block;
 			border-left:   7px solid transparent;
 			border-right:  7px solid transparent;
-			border-bottom: 7px solid @grayLight;
+			border-bottom: 7px solid #ccc;
 			border-top:    0;
 			border-bottom-color: rgba(0,0,0,.2);
 			position: absolute;
@@ -38,18 +37,26 @@
 		&.datepicker-orient-left:after    { left: 7px; }
 		&.datepicker-orient-right:before  { right: 6px; }
 		&.datepicker-orient-right:after   { right: 7px; }
-		&.datepicker-orient-bottom:before { top: -7px; }
-		&.datepicker-orient-bottom:after  { top: -6px; }
-		&.datepicker-orient-top:before {
+		&.datepicker-orient-top:before    { top: -7px; }
+		&.datepicker-orient-top:after     { top: -6px; }
+		&.datepicker-orient-bottom:before {
 			bottom: -7px;
 			border-bottom: 0;
-			border-top:    7px solid @grayLight;
+			border-top:    7px solid #999;
 		}
-		&.datepicker-orient-top:after {
+		&.datepicker-orient-bottom:after {
 			bottom: -6px;
 			border-bottom: 0;
 			border-top:    6px solid @white;
 		}
+	}
+	> div {
+		display: none;
+	}
+	&.days .datepicker-days,
+	&.months .datepicker-months,
+	&.years .datepicker-years {
+		display: block;
 	}
 	table {
 		margin: 0;
@@ -72,12 +79,11 @@
 	// border and background colors.
 	.table-striped & table tr {
 		td, th {
-			background-color: transparent;
+			background-color:transparent;
 		}
 	}
 	table tr td {
-		&.day:hover,
-		&.day.focused {
+		&.day:hover, &.day.focused {
 			background: @grayLighter;
 			cursor: pointer;
 		}
@@ -90,10 +96,6 @@
 			background: none;
 			color: @grayLight;
 			cursor: default;
-		}
-		&.highlighted {
-			background: @infoBackground;
-			border-radius: 0;
 		}
 		&.today,
 		&.today:hover,
@@ -114,7 +116,7 @@
 		&.range:hover,
 		&.range.disabled,
 		&.range.disabled:hover {
-			background: @grayLighter;
+			background:@grayLighter;
 			.border-radius(0);
 		}
 		&.range.today,
@@ -150,13 +152,12 @@
 			margin: 1%;
 			cursor: pointer;
 			.border-radius(4px);
-			&:hover,
-			&.focused {
+			&:hover {
 				background: @grayLighter;
 			}
 			&.disabled,
 			&.disabled:hover {
-				background: none;
+				background:none;
 				color: @grayLight;
 				cursor: default;
 			}
@@ -179,19 +180,11 @@
 		width: 145px;
 	}
 
-	.datepicker-switch,
-	.prev,
-	.next,
+	thead tr:first-child th,
 	tfoot tr th {
 		cursor: pointer;
 		&:hover {
 			background: @grayLighter;
-		}
-	}
-
-	.prev, .next {
-		&.disabled {
-			visibility: hidden;
 		}
 	}
 
@@ -201,6 +194,10 @@
 		width: 12px;
 		padding: 0 2px 0 5px;
 		vertical-align: middle;
+	}
+	thead tr:first-child .cw {
+		cursor: default;
+		background-color: transparent;
 	}
 }
 .input-append,
@@ -236,7 +233,7 @@
 		vertical-align: middle;
 		background-color: @grayLighter;
 		border: 1px solid #ccc;
-		margin-left: -5px;
-		margin-right: -5px;
+		margin-left:-5px;
+		margin-right:-5px;
 	}
 }

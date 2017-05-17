@@ -87,7 +87,7 @@
                 return false;
             }
 
-            return cache.IsReady();
+            return  GetContext() != null && GetContext().IsUseCache && cache.IsReady();
         }
 
         private void RebuildCache()
@@ -115,7 +115,7 @@
             {
                 try
                 {
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         return cache.Get(id);
                     }
@@ -137,7 +137,7 @@
             {
                 try
                 {
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         return cache.GetWithList().Where(selector.Compile()).ToList();
                     }
@@ -163,7 +163,7 @@
                         return new List<T>();
                     }
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         return cache.GetByIdsWithList(ids);
                     }
@@ -205,7 +205,7 @@
             {
                 try
                 {
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         return cache.GetWithList();
                     }
@@ -226,7 +226,7 @@
             {
                 try
                 {
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         return cache.GetIds();
                     }
@@ -254,7 +254,7 @@
 
                     entity.Id = id;
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         cache.Set(entity);
                     }
@@ -293,7 +293,7 @@
                         }
                     }
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         cache.Set(entities);
                     }
@@ -319,7 +319,7 @@
                     entity.LastUpdate = DateTime.Now;
                     entity.LastUpdatedBy = this.GetContext().UserId;
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         cache.Set(entity);
                     }
@@ -353,7 +353,7 @@
 
                     task.Wait();
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         var entity = collection.GetEntityByIdAsync(id).Result;
                         cache.Set(entity);
@@ -384,7 +384,7 @@
                     var task = Task.Run(async () => { await collection.UpdateEntitiesAsync(entities); });
                     task.Wait();
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         cache.Set(entities);
                     }
@@ -409,7 +409,7 @@
                     var task = Task.Run(async () => { await collection.DeleteEntityAsync(id); });
                     task.Wait();
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         cache.Remove(id);
                     }
@@ -432,7 +432,7 @@
                     var task = Task.Run(async () => { await collection.DeleteEntitiesAsync(ids); });
                     task.Wait();
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         cache.Remove(ids);
                     }
@@ -455,7 +455,7 @@
                     var task = Task.Run(async () => { await collection.DeleteEntitiesAsync(selector); });
                     task.Wait();
 
-                    if (this.GetContext().IsUseCache && IsCacheReady())
+                    if (IsCacheReady())
                     {
                         var ids = cache.GetWithList().Where(selector.Compile()).Select(o => o.Id).ToList();
                         cache.Remove(ids);

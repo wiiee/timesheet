@@ -1,23 +1,25 @@
 {
   "name": "bootstrap-datepicker",
+  "version": "1.4.1",
   "main": [
+    "dist/css/bootstrap-datepicker.css",
     "dist/css/bootstrap-datepicker3.css",
-    "dist/js/bootstrap-datepicker.js"
+    "js/bootstrap-datepicker.js"
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "jquery": ">=1.7.1 <4.0.0"
+    "jquery": ">=1.7.1",
+    "bootstrap": ">=2.0.4 <4.0"
   },
   "ignore": [],
   "homepage": "https://github.com/eternicode/bootstrap-datepicker",
-  "version": "1.7.0-RC1",
-  "_release": "1.7.0-RC1",
+  "_release": "1.4.1",
   "_resolution": {
     "type": "version",
-    "tag": "v1.7.0-RC1",
-    "commit": "ef9501f7599cef310b69779cf1f30c459dc122b4"
+    "tag": "v1.4.1",
+    "commit": "7ea7cf35191c812c8614bf9c561e9cbcd31fe80c"
   },
   "_source": "https://github.com/eternicode/bootstrap-datepicker.git",
-  "_target": "v1.7.0-RC1",
+  "_target": "1.4.1",
   "_originalSource": "bootstrap-datepicker"
 }

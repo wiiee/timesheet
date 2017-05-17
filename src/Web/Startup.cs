@@ -9,7 +9,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Platform.Context;
-    using Platform.Extension;
     using Service;
     using Service.Media;
     using Service.Other;
@@ -18,7 +17,6 @@
     using Service.User;
     using Web.Context;
     using Web.Extension.Middleware;
-    using Web.Helper;
 
     public class Startup
     {
@@ -40,7 +38,11 @@
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                });
 
             services.AddDistributedMemoryCache();
             services.AddSession();

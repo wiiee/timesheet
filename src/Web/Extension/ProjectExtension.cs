@@ -17,7 +17,7 @@
 
     public static class ProjectExtension
     {
-        public static Dictionary<string, HourItem> BuildHours(this Project project, DateTime startDate, DateTime endDate, IContext context)
+        public static Dictionary<string, HourItem> BuildHours(this Project project, DateTime startDate, DateTime endDate)
         {
             Dictionary<string, HourItem> result = new Dictionary<string, HourItem>();
             var userService = ServiceFactory.Instance.GetService<UserService>();
@@ -65,7 +65,7 @@
             return result;
         }
 
-        public static Dictionary<string, DateRange> GetActualWorkingRanges(this Project project, IContext context, DateTime endDate)
+        public static Dictionary<string, DateRange> GetActualWorkingRanges(this Project project, DateTime endDate)
         {
             if (project.Tasks.IsEmpty())
             {
@@ -103,7 +103,7 @@
             }
         }
 
-        public static double GetPlanDevHour(this Project project, IContext context)
+        public static double GetPlanDevHour(this Project project)
         {
             var deparmentService = ServiceFactory.Instance.GetService<DepartmentService>();
 
@@ -122,7 +122,7 @@
             }
         }
 
-        public static double GetPlanTestHour(this Project project, IContext context)
+        public static double GetPlanTestHour(this Project project)
         {
             var deparmentService = ServiceFactory.Instance.GetService<DepartmentService>();
 
@@ -140,7 +140,7 @@
             }
         }
 
-        public static DateTime GetPlanCombinedTestDate(this Project project, IContext context)
+        public static DateTime GetPlanCombinedTestDate(this Project project)
         {
             var deparmentService = ServiceFactory.Instance.GetService<DepartmentService>();
 
@@ -159,7 +159,7 @@
             }
         }
 
-        public static DateTime GetActualCombinedTestDate(this Project project, IContext context)
+        public static DateTime GetActualCombinedTestDate(this Project project)
         {
             var deparmentService = ServiceFactory.Instance.GetService<DepartmentService>();
 
@@ -178,7 +178,7 @@
             }
         }
 
-        public static double GetActualDevHour(this Project project, IContext context)
+        public static double GetActualDevHour(this Project project)
         {
             var deparmentService = ServiceFactory.Instance.GetService<DepartmentService>();
 
@@ -197,7 +197,7 @@
             }
         }
 
-        public static double GetActualTestHour(this Project project, IContext context)
+        public static double GetActualTestHour(this Project project)
         {
             var deparmentService = ServiceFactory.Instance.GetService<DepartmentService>();
 
@@ -248,7 +248,7 @@
             return 1.0;
         }
 
-        public static LineModel BuildLineModel(this Project project, IContext context)
+        public static LineModel BuildLineModel(this Project project)
         {
             var timeSheetService = ServiceFactory.Instance.GetService<TimeSheetService>();
             var endDate = DateTime.Today < project.GetEndDate() ? DateTime.Today : project.GetEndDate();
@@ -263,7 +263,7 @@
             return new LineModel(names, items);
         }
 
-        public static ProjectModel BuildProjectModel(this Project project, string userId, IContext context)
+        public static ProjectModel BuildProjectModel(this Project project, string userId)
         {
             var userService = ServiceFactory.Instance.GetService<UserService>();
             var departmentService = ServiceFactory.Instance.GetService<DepartmentService>();

@@ -22,7 +22,7 @@
         {
             this.BuildHeaderMsg(successMsg, errorMsg);
             var random = new Random();
-            var rawUsers = this.GetService<UserService>().Get(o => o.AccountType == AccountType.Public);
+            var rawUsers = this.GetService<UserService>().Get().FindAll(o => o.AccountType == AccountType.Public);
             var users = rawUsers.Where(o => !o.Pics.IsEmpty()).OrderBy(o => random.Next()).ToList();
             users.AddRange(rawUsers.Where(o => o.Pics.IsEmpty()).OrderBy(o => random.Next()).ToList());
             ViewData["Users"] = BuildUserProfiles(users);

@@ -301,7 +301,7 @@
             try
             {
                 var project = this.GetService<ProjectService>().Get(projectId);
-                return project.BuildProjectModel(this.GetUserId(), ServiceContext).ToRow();
+                return project.BuildProjectModel(this.GetUserId()).ToRow();
             }
             catch (Exception ex)
             {
@@ -320,7 +320,7 @@
                 var projects = this.GetService<ProjectService>().Get().Where(o => o.IsPublic || o.OwnerIds.Intersect(leaderIds).Count() > 0);
                 projects = projects.OrderBy(o => o.IsPublic).ThenByDescending(o => o.GetEndDate()).ThenByDescending(o => o.UserIds.Contains(this.GetUserId())).ThenByDescending(o => o.Created).ToList();
 
-                return projects.Select(o => o.BuildProjectModel(this.GetUserId(), ServiceContext).ToRow()).ToList();
+                return projects.Select(o => o.BuildProjectModel(this.GetUserId()).ToRow()).ToList();
             }
             catch (Exception ex)
             {

@@ -231,8 +231,6 @@ var options = {
     titleProperty: 'title',
     // The list object property (or data attribute) with the object URL:
     urlProperty: 'href',
-    // The list object property (or data attribute) with the object srcset URL(s):
-    srcsetProperty: 'urlset',
     // The gallery listens for transitionend events before triggering the
     // opened and closed events, unless the following option is set to false:
     displayTransition: true,
@@ -247,8 +245,6 @@ var options = {
     stretchImages: false,
     // Toggle the controls on pressing the Return key:
     toggleControlsOnReturn: true,
-    // Toggle the controls on slide click:
-    toggleControlsOnSlideClick: true,
     // Toggle the automatic slideshow interval on pressing the Space key:
     toggleSlideshowOnSpace: true,
     // Navigate the gallery by pressing left and right on the keyboard:
@@ -1088,7 +1084,7 @@ blueimp Gallery has been tested with and supports the following browsers:
 * Opera Mobile 12.0+
 
 ## License
-Released under the [MIT license](https://opensource.org/licenses/MIT).
+Released under the [MIT license](http://www.opensource.org/licenses/MIT).
 
 ## Credits
 The swipe implementation is based on code from the

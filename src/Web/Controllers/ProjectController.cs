@@ -108,7 +108,7 @@
 
             foreach (var item in projects)
             {
-                models.Add(item.BuildProjectModel(this.GetUserId(), ServiceContext));
+                models.Add(item.BuildProjectModel(this.GetUserId()));
             }
 
             return models;

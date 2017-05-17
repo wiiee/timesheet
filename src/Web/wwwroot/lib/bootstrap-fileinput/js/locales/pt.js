@@ -25,7 +25,6 @@
         msgNoFilesSelected: '',
         msgCancelled: 'Cancelado',
         msgZoomModalHeading: 'Pré-visualização detalhada',
-        msgFileRequired: 'You must select a file to upload.',
         msgSizeTooSmall: 'File "{name}" (<b>{size} KB</b>) is too small and must be larger than <b>{minSize} KB</b>.',
         msgSizeTooLarge: 'Ficheiro "{name}" (<b>{size} KB</b>) excede o tamanho máximo permido de <b>{maxSize} KB</b>.',
         msgFilesTooLess: 'Deve seleccionar pelo menos <b>{n}</b> {files} para fazer upload.',

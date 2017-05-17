@@ -33,7 +33,6 @@
     "commit": "76737895a92efb625b773d6a4ba46981fdf6ba6a"
   },
   "_source": "https://github.com/javierjulio/textarea-autosize.git",
-  "_target": "v0.4.2",
-  "_originalSource": "textarea-autosize",
-  "_direct": true
+  "_target": "~0.4.2",
+  "_originalSource": "textarea-autosize"
 }

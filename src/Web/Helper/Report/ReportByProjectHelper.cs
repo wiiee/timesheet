@@ -181,8 +181,8 @@
 
             var calProjects = projects.Where(o => o.Id != "G10432_TimeSheet").ToList();
 
-            controller.ViewData["TestHour"] = calProjects.Sum(o => o.GetActualTestHour(controller.ServiceContext));
-            controller.ViewData["DevHour"] = calProjects.Sum(o => o.GetActualDevHour(controller.ServiceContext));
+            controller.ViewData["TestHour"] = calProjects.Sum(o => o.GetActualTestHour());
+            controller.ViewData["DevHour"] = calProjects.Sum(o => o.GetActualDevHour());
             controller.ViewData["Projects"] = calProjects;
 
             controller.ViewData["Name"] = group.Name;
@@ -336,8 +336,8 @@
                 projectException = ProjectException.Overtime.ToString();
             }
 
-            var model = new ReportByProjectModel(projectId, project.Name, project.GetTotalPlanHour(), project.GetPlanDevHour(controller.ServiceContext),
-                project.GetPlanTestHour(controller.ServiceContext), project.GetTotalActualHour(), project.GetActualDevHour(controller.ServiceContext), project.GetActualTestHour(controller.ServiceContext),
+            var model = new ReportByProjectModel(projectId, project.Name, project.GetTotalPlanHour(), project.GetPlanDevHour(),
+                project.GetPlanTestHour(), project.GetTotalActualHour(), project.GetActualDevHour(), project.GetActualTestHour(),
                 project.PlanDateRange, project.ActualDateRange, project.Status.ToString(), projectException);
 
             return model;

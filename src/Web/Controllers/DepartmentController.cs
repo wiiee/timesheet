@@ -34,7 +34,7 @@
 
             foreach (var item in departments)
             {
-                result.Add(item.Convert(user, this.ServiceContext));
+                result.Add(item.Convert(user));
             }
 
             ViewData["Departments"] = result;

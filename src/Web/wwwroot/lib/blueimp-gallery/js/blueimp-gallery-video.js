@@ -6,7 +6,7 @@
  * https://blueimp.net
  *
  * Licensed under the MIT license:
- * https://opensource.org/licenses/MIT
+ * http://www.opensource.org/licenses/MIT
  */
 
 /* global define, window, document */
@@ -82,8 +82,8 @@
       if (video.canPlayType) {
         if (url && type && video.canPlayType(type)) {
           video.src = url
-        } else if (sources) {
-          while (sources.length) {
+        } else {
+          while (sources && sources.length) {
             source = sources.shift()
             url = this.getItemProperty(source, options.urlProperty)
             type = this.getItemProperty(source, options.typeProperty)
@@ -115,7 +115,6 @@
             that.setTimeout(callback, errorArgs)
           })
           .on('pause', function () {
-            if (video.seeking) return
             isLoading = false
             videoContainer
               .removeClass(that.options.videoLoadingClass)

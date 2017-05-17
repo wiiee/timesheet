@@ -12,7 +12,7 @@
 
     public static class DepartmentExtension
     {
-        public static DepartmentModel Convert(this Department department, User user, IContext context)
+        public static DepartmentModel Convert(this Department department, User user)
         {
             var isAdd = false;
             var isEditOrDelete = false;
@@ -36,7 +36,7 @@
 
             foreach(var item in department.UserGroups)
             {
-                userGroupModels.Add(Convert(item.Value, user, context));
+                userGroupModels.Add(Convert(item.Value, user));
             }
 
             var userIds = department.UserGroups.Values.SelectMany(o => o.UserIds).ToList();
@@ -48,7 +48,7 @@
             return new DepartmentModel(department.Id, department.Id, userIds.Count, owners, userGroupModels, isAdd, isEditOrDelete, isAddUserGroup);
         }
 
-        private static UserGroupModel Convert(UserGroup userGroup, User user, IContext context)
+        private static UserGroupModel Convert(UserGroup userGroup, User user)
         {
             bool isEdit = false;
             bool isDelete = false;

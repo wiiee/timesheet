@@ -9,7 +9,7 @@
  * https://github.com/bradbirdsall/Swipe
  *
  * Licensed under the MIT license:
- * https://opensource.org/licenses/MIT
+ * http://www.opensource.org/licenses/MIT
  */
 
 /* global define, window, document, DocumentTouch */
@@ -96,8 +96,6 @@
       titleProperty: 'title',
       // The list object property (or data attribute) with the object URL:
       urlProperty: 'href',
-      // The list object property (or data attribute) with the object srcset URL(s):
-      srcsetProperty: 'urlset',
       // The gallery listens for transitionend events before triggering the
       // opened and closed events, unless the following option is set to false:
       displayTransition: true,
@@ -112,8 +110,6 @@
       stretchImages: false,
       // Toggle the controls on pressing the Return key:
       toggleControlsOnReturn: true,
-      // Toggle the controls on slide click:
-      toggleControlsOnSlideClick: true,
       // Toggle the automatic slideshow interval on pressing the Space key:
       toggleSlideshowOnSpace: true,
       // Navigate the gallery by pressing left and right on the keyboard:
@@ -673,7 +669,7 @@
           index = indices.pop()
           this.translateX(index, touchDeltaX + this.positions[index], 0)
         }
-      } else {
+      } else if (this.options.closeOnSwipeUpOrDown) {
         this.translateY(index, this.touchDelta.y + this.positions[index], 0)
       }
     },
@@ -875,20 +871,17 @@
         this.toggleSlideshow()
       } else if (parent === this.slidesContainer[0]) {
         // Click on slide background
+        this.preventDefault(event)
         if (options.closeOnSlideClick) {
-          this.preventDefault(event)
           this.close()
-        } else if (options.toggleControlsOnSlideClick) {
-          this.preventDefault(event)
+        } else {
           this.toggleControls()
         }
       } else if (parent.parentNode &&
         parent.parentNode === this.slidesContainer[0]) {
         // Click on displayed element
-        if (options.toggleControlsOnSlideClick) {
-          this.preventDefault(event)
-          this.toggleControls()
-        }
+        this.preventDefault(event)
+        this.toggleControls()
       }
     },
 
@@ -1008,18 +1001,14 @@
     createElement: function (obj, callback) {
       var type = obj && this.getItemProperty(obj, this.options.typeProperty)
       var factory = (type && this[type.split('/')[0] + 'Factory']) ||
-        this.imageFactory
+      this.imageFactory
       var element = obj && factory.call(this, obj, callback)
-      var srcset = this.getItemProperty(obj, this.options.srcsetProperty)
       if (!element) {
         element = this.elementPrototype.cloneNode(false)
         this.setTimeout(callback, [{
           type: 'error',
           target: element
         }])
-      }
-      if (srcset) {
-        element.setAttribute('srcset', srcset)
       }
       $(element).addClass(this.options.slideContentClass)
       return element
@@ -1176,7 +1165,6 @@
       property.replace(
         // Matches native JavaScript notation in a String,
         // e.g. '["doubleQuoteProp"].dotProp[2]'
-        // eslint-disable-next-line no-useless-escape
         /\[(?:'([^']+)'|"([^"]+)"|(\d+))\]|(?:(?:^|\.)([^\.\[]+))/g,
         function (str, singleQuoteProp, doubleQuoteProp, arrayIndex, dotProp) {
           var prop = dotProp || singleQuoteProp || doubleQuoteProp ||
@@ -1194,7 +1182,6 @@
         var prop = obj.getAttribute('data-' +
           property.replace(/([A-Z])/g, '-$1').toLowerCase())
         if (typeof prop === 'string') {
-          // eslint-disable-next-line no-useless-escape
           if (/^(true|false|null|-?\d+(\.\d+)?|\{[\s\S]*\}|\[[\s\S]*\])$/
               .test(prop)) {
             try {

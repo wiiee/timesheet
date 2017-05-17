@@ -8,11 +8,7 @@
     using Platform.Setting;
     using Platform.Util;
     using Service;
-    using Setting;
-    using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
-    using Service.Context;
 
     public abstract class BaseController : Controller
     {
@@ -29,36 +25,10 @@
             this.setting = Setting.Instance;
         }
 
-        public IContext ServiceContext
-        {
-            get
-            {
-                if (context == null)
-                {
-                    if (User != null && User.FindFirst(ClaimTypes.NameIdentifier) != null)
-                    {
-                        context = new ServiceContext(User.FindFirst(ClaimTypes.NameIdentifier).Value, GetRemoteIp());
-                    }
-                    else
-                    {
-                        context = new ServiceContext(null, GetRemoteIp());
-                    }
-                }
-
-                return context;
-            }
-        }
-
         public T GetService<T>()
             where T : IService
         {
             return ServiceFactory.Instance.GetService<T>();
-        }
-
-        public IContext CreateServiceContext(string serviceName)
-        {
-            return new ServiceContext(this.ServiceContext.UserId, this.ServiceContext.RemoteIp,
-                    CacheSetting.IsUseCache(serviceName, setting));
         }
 
         private string GetRemoteIp()

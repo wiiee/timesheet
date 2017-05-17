@@ -33,7 +33,6 @@
     "commit": "a63502153e89227b33cc540e82b8b6b035ab7bf3"
   },
   "_source": "https://github.com/lorenzofox3/Smart-Table.git",
-  "_target": "v2.1.8",
-  "_originalSource": "angular-smart-table",
-  "_direct": true
+  "_target": "~2.1.7",
+  "_originalSource": "angular-smart-table"
 }

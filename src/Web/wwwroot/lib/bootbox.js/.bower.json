@@ -22,7 +22,6 @@
     "commit": "cb756203e250ed0ff2539359ff0ad1c3ffb8e8d3"
   },
   "_source": "https://github.com/makeusabrew/bootbox.git",
-  "_target": "v4.4.0",
-  "_originalSource": "bootbox.js",
-  "_direct": true
+  "_target": "4.4.0",
+  "_originalSource": "bootbox.js"
 }

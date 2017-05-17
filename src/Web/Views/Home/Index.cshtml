@@ -59,7 +59,7 @@
         {
             <div class="col-md-2">
                 <div class="thumbnail">
-                    <a href="@user.Logo"><img src="@Html.Raw(user.Thumbnail)" alt="@user.Name"></a>
+                    <a href="@Url.Content(user.Logo)"><img src="@Url.Content(user.Thumbnail)" alt="@user.Name"></a>
                     <div class="caption">
                         <div class="row text-center">
                             <div class="col-md-12">
