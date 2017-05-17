@@ -1,0 +1,45 @@
+﻿@using Entity.User
+@using Web.Model
+
+@{
+    ViewBag.Title = "Profile";
+    var user = ViewData["User"] as UserProfileModel;
+}
+
+<div class="row">
+    <div class="col-md-2">
+        <ul class="list-group">
+            <li class="list-group-item">谁赞过我</li>
+            @foreach (var item in user.ThumbsUpNames)
+            {
+                <li class="list-group-item">@Html.Raw(item)</li>
+            }
+        </ul>
+    </div>
+
+    <div class="col-md-2">
+        <ul class="list-group">
+            <li class="list-group-item">谁竖过我拇指</li>
+            @foreach (var item in user.ThumbsDownNames)
+            {
+                <li class="list-group-item">@Html.Raw(item)</li>
+            }
+        </ul>
+    </div>
+
+    <div class="col-md-8">
+        <ul class="list-group">
+            <li class="list-group-item">谁评论过我</li>
+            @foreach (var item in user.Comments)
+            {
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-7">@Html.Raw(item.Comment)</div>
+                        <div class="col-md-2">@Html.Raw(item.Name)</div>
+                        <div class="col-md-3">@Html.Raw(item.Time)</div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

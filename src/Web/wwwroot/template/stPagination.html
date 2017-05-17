@@ -1,0 +1,28 @@
+﻿<div class="row">
+    <div class="col-md-4"><h4 ng-if="totalItemCount > 0">showing {{(currentPage - 1) * stItemsByPage + 1}} to {{currentPage * stItemsByPage < totalItemCount ? currentPage * stItemsByPage : totalItemCount}} of {{totalItemCount}} entries</h4></div>
+    <div class="col-md-8">
+        <div class="text-right form-inline">
+            <nav ng-if="pages.length >= 2">
+                <ul class="pagination">
+                    <li ng-class="{disabled : currentPage === 1}">
+                        <a ng-click="selectPage(1)">First</a>
+                    </li>
+                    <li ng-class="{disabled : currentPage === 1}">
+                        <a href="#" aria-label="Previous" ng-click="selectPage(currentPage - 1)">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="numOfPage"><page-select></page-select> of {{numPages}}</a>
+                    </li>
+                    <li ng-class="{disabled : currentPage === numPages}">
+                        <a aria-label="Next" ng-click="selectPage(currentPage + 1)">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li ng-class="{disabled : currentPage === numPages}"><a ng-click="selectPage(numPages)">Last</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

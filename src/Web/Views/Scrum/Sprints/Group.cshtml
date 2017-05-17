@@ -1,0 +1,120 @@
+﻿@using Web.Extension
+@using Web.Constant
+@using Platform.Enum
+
+@{
+    ViewBag.Title = "Sprints";
+    ViewData["ng-app"] = "sprints";
+
+    var pageSize = this.GetSessionValue(SessionKey.PAGE_SIZE);
+
+    if (string.IsNullOrEmpty(pageSize))
+    {
+        pageSize = DefaultPreference.PAGE_SIZE.ToString();
+    }
+
+    var groupId = ViewData["GroupId"] as string;
+    var sprintId = ViewData["SprintId"] as string;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" />
+    <link rel="stylesheet" href="~/css/timesheet/css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/angular-smart-table/dist/smart-table.js"></script>
+    <script type="text/javascript">
+        var _pageSize = @pageSize;
+        var _groupId = "@Html.Raw(groupId)";
+    </script>
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="~/js/scrum/index.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Scrum</a></li>
+            <li class="active">Sprints</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Sprints</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row" id="messageContainer">
+</div>
+
+<div ng-controller="sprintsCtrl" ng-cloak>
+    <div class="row">
+        <div class="col-md-1 col-md-offset-11">
+            <label for="items">Page size</label>
+            <input class="form-control" name="items" id="items" type="number" step="5" ng-model="itemsByPage" ng-blur="changeSize()">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table st-table="rowCollection" class="table" st-set-filter="customFilter">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>StartDate</th>
+                        <th>EndDate</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8"><a ng-bind="searchText" ng-click="switchSearch()">Show Condition</a></td>
+                    </tr>
+                    <tr collapse="isCollapsed">
+                        <td colspan="4">
+                            <div class="row">
+                                <st-date-range-alone predicate="Sunday" before="query.before" after="query.after"></st-date-range-alone>
+                                <div class="col-md-1 col-md-offset-3"><span class="searchLabel">Status</span></div>
+                                <div class="col-md-2">
+                                    <select class="form-control" multiple="multiple" id="status" ng-change="changeStatus()" ng-model="statuses">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Ongoing">Ongoing</option>
+                                        <option value="Done">Done</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="row in rowCollection" ng-show="row.IsShow">
+                        <td>
+                            <a href="~/Scrum/Overview?sprintId={{row.Id | escape}}">{{row.Name}}</a>
+                        </td>
+                        <td>{{row.DateRange.StartDate | date:'yyyy/MM/dd'}}</td>
+                        <td>{{row.DateRange.EndDate | date:'yyyy/MM/dd'}}</td>
+                        <td>{{row.Status}}</td>
+                        <td>
+                            <a href="~/Scrum/Sprint?id={{row.Id | escape}}"><span title="Edit Sprint" class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                            <span title="Delete Sprint" class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="deleteSprint(row.Id)"></span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="8" class="text-right">
+                            <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="10"></div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/MultiHeaderMessage.cshtml")

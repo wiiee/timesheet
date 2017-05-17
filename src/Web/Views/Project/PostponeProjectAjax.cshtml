@@ -1,0 +1,30 @@
+﻿<form>
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label for="postponeReason">Postpone Reason<span title="依赖应用延期导致延期,开发延期,测试延期,环境block延期,需求变更延期" class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></label>
+            <select class="form-control" id="postponeReason" name="postponeReason" data-validation="required" ng-model="postponeReason"
+                        ng-options="postponeReasons.indexOf(selectedItem) as selectedItem for selectedItem in postponeReasons"></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label for="comment">Comment</label>
+            <textarea type="text" class="form-control" id="comment" name="comment" spellcheck="false" ng-model="comment"></textarea>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label for="endDate">New End Date</label>
+            <div class="input-group">
+                <input type="text" class="form-control" data-validation="required" datepicker-popup="yyyy/MM/dd" min-date="startDate" ng-model="endDate" name="endDate" id="endDate" is-open="isEndDateOpen" close-text="Close" />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+</form>

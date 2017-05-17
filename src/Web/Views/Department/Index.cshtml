@@ -1,0 +1,197 @@
+﻿@using Web.Model.Department
+@using Platform.Extension
+@using Web.Extension
+
+@{
+    ViewBag.Title = "Manage Department";
+    var departments = ViewData["Departments"] as List<DepartmentModel>;
+    var isAdmin = this.IsAdmin();
+    var isManager = this.IsManager();
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/css/department/department.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="~/js/department/managedepartment.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Personal</a></li>
+            <li class="active">Manage department</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Manage department</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+@if (isAdmin)
+{
+    <div class="row">
+        <div class="pull-right bottom-margin">
+            <a class="btn btn-default" role="button" asp-controller="Department" asp-action="AddGroup">Add a new user group</a>
+            <a class="btn btn-default" role="button" asp-controller="Department" asp-action="AddDepartment">Add a new department</a>
+        </div>
+    </div>
+}
+else if (isManager)
+{
+    <div class="row">
+        <div class="pull-right bottom-margin">
+            <a class="btn btn-default" role="button" asp-controller="Department" asp-action="AddGroup">Add a new user group</a>
+        </div>
+    </div>
+}
+
+
+<div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Owners</th>
+                <th>User Group</th>
+                <th>Owners</th>
+                <th>Test</th>
+                <th>Users</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in departments)
+            {
+                @if (item.UserGroupModels.IsEmpty())
+                {
+                    <tr>
+                        <td>
+                            @if (item.IsEditOrDelete)
+                            {
+                                <a href="~/Department/EditDepartment?id=@Html.UrlEncoder.Encode(item.Id)">@Html.Raw(string.Format("{0}({1})", item.Name, item.Number))</a>
+                                <abbr title="删除部门"><a class="delete" data-id="@Html.UrlEncoder.Encode(item.Id)" href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></abbr>
+                            }
+                            else
+                            {
+                                <text>@item.Name</text>
+                            }
+                        </td>
+                        <td>@Html.Raw(string.Join(",", item.Owners.Select(o => o.Name)))</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                else if (item.UserGroupModels.Count == 1)
+                {
+                    var userGroup = item.UserGroupModels[0];
+                    <tr>
+                        <td>
+                            @if (item.IsEditOrDelete)
+                            {
+                                <a href="~/Department/EditDepartment?id=@Html.UrlEncoder.Encode(item.Id)">@Html.Raw(string.Format("{0}({1})", item.Name, item.Number))</a>
+                            }
+                            else
+                            {
+                                <text>@Html.Raw(string.Format("{0}({1})", item.Name, item.Number))</text>
+}
+                        </td>
+                        <td>@Html.Raw(string.Join(",", item.Owners.Select(o => o.Name)))</td>
+                        <td>
+                            @if (userGroup.IsEdit)
+                            {
+                                <a href="~/Department/EditGroup?id=@Html.UrlEncoder.Encode(userGroup.Id)">@userGroup.Name</a>
+                            }
+                            else
+                            {
+                                <text>@userGroup.Name</text>
+                            }
+
+                            @if (userGroup.IsDelete)
+                            {
+                                <abbr title="删除小组"><a class="deleteGroup" data-id="@Html.Raw(userGroup.Id)" href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></abbr>
+                            }
+                        </td>
+                        <td>@Html.Raw(string.Join(",", userGroup.Owners.Select(o => o.Name)))</td>
+                        <td>@userGroup.IsTest</td>
+                        <td>@Html.Raw(string.Join(",", userGroup.Users.Select(o => o.Name)))</td>
+                    </tr>
+                }
+                else
+                {
+                    var rowCount = item.UserGroupModels.Count;
+                    @for (int i = 0; i < rowCount; i++)
+                    {
+                        var userGroup = item.UserGroupModels[i];
+                        @if (i == 0)
+                        {
+                            <tr>
+                                <td rowspan="@rowCount">
+                                    @if (item.IsEditOrDelete)
+                                    {
+                                        <a href="~/Department/EditDepartment?id=@Html.UrlEncoder.Encode(item.Id)">@Html.Raw(string.Format("{0}({1})", item.Name, item.Number))</a>
+                                    }
+                                    else
+                                    {
+                                        <text>@Html.Raw(string.Format("{0}({1})", item.Name, item.Number))</text>
+}
+                                </td>
+                                <td rowspan="@rowCount">@Html.Raw(string.Join(",", item.Owners.Select(o => o.Name)))</td>
+                                <td>
+                                    @if (userGroup.IsEdit)
+                                    {
+                                        <a href="~/Department/EditGroup?id=@Html.UrlEncoder.Encode(userGroup.Id)">@userGroup.Name</a>
+                                    }
+                                    else
+                                    {
+                                        <text>@userGroup.Name</text>
+                                    }
+
+                                    @if (userGroup.IsDelete)
+                                    {
+                                        <abbr title="删除小组"><a class="deleteGroup" data-id="@Html.Raw(userGroup.Id)" href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></abbr>
+                                    }
+                                </td>
+                                <td>@Html.Raw(string.Join(",", userGroup.Owners.Select(o => o.Name)))</td>
+                                <td>@userGroup.IsTest</td>
+                                <td>@Html.Raw(string.Join(",", userGroup.Users.Select(o => o.Name)))</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    @if (userGroup.IsEdit)
+                                    {
+                                        <a href="~/Department/EditGroup?id=@Html.UrlEncoder.Encode(userGroup.Id)">@userGroup.Name</a>
+                                    }
+                                    else
+                                    {
+                                        <text>@userGroup.Name</text>
+                                    }
+
+                                    @if (userGroup.IsDelete)
+                                    {
+                                        <abbr title="删除小组"><a class="deleteGroup" data-id="@Html.Raw(userGroup.Id)" href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></abbr>
+                                    }
+                                </td>
+                                <td>@Html.Raw(string.Join(",", userGroup.Owners.Select(o => o.Name)))</td>
+                                <td>@userGroup.IsTest</td>
+                                <td>@Html.Raw(string.Join(",", userGroup.Users.Select(o => o.Name)))</td>
+                            </tr>
+                        }
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

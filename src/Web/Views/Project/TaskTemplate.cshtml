@@ -1,0 +1,108 @@
+﻿@using Web.Extension
+@using Platform.Enum
+@using Platform.Setting
+@using Entity.Project
+
+@{
+    ViewBag.Title = "Task Template";
+    ViewData["ng-app"] = "taskTemplate";
+    var taskTemplate = ViewData["TaskTemplate"] as TaskTemplate;
+    Array phases = Enum.GetValues(typeof(Phase));
+
+    var groupId = taskTemplate == null ? string.Empty : taskTemplate.Id;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" />
+    <link rel="stylesheet" href="~/css/project/tasktemplate.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript">
+        var _tasks = @Html.Raw(Json.Serialize(taskTemplate == null ? null : taskTemplate.Tasks));
+        var _phases = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Phase))));
+    </script>
+    <script type="text/javascript" src="~/js/project/tasktemplate.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Project</a></li>
+            <li class="active">Task Template</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Task Template</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row" ng-controller="taskTemplateCtrl" ng-cloak>
+    <form method="post" action="~/Project/TaskTemplate">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Tasks <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" ng-click="addTask()"></span></h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-2">Name</div>
+                                    <div class="col-md-2">Phase</div>
+                                    <div class="col-md-2">Hour</div>
+                                    <div class="col-md-5">Descritpion</div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="task in tasks">
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <input class="form-control" ng-model="task.Name" name="{{'Tasks[' + $index + '].Name'}}" data-validation="required" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="hidden" name="{{'Tasks[' + $index + '].Phase'}}" value="{{task.Phase}}">
+                                        <select class="form-control" ng-model="task.Phase"  data-validation="custom" data-validation-regexp="^(number:[0-9])$" 
+                                                ng-options="phases.indexOf(selectedItem) as selectedItem for selectedItem in phases">
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select class="form-control hours" ng-model="task.Hours" multiple="multiple" name="{{'Tasks[' + $index + '].Hours'}}" data-validation="required" 
+                                                ng-options="hour for hour in hours track by hour">
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input class="form-control" ng-model="task.Description" name="{{'Tasks[' + $index + '].Description'}}" data-validation="required" />
+                                    </div>
+                                    <div class="col-md-1">
+                                        <span class="glyphicon glyphicon-remove" ng-if="tasks.length > 0" ng-click="removeTask(task.Id)"></span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <input type="hidden" name="id" value="@Html.Raw(groupId)" />
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default left-margin" ng-click="reset($event)">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

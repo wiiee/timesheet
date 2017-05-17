@@ -1,0 +1,278 @@
+﻿@using Entity.User
+@using Web.Model.Report
+@using Web.Model.Chart.Timeline
+@using Entity.ValueType
+@using Web.Extension
+@using Web.Constant
+@using Platform.Extension
+
+@{
+    ViewBag.Title = "User Overview";
+    ViewData["ng-app"] = "userOverview";
+    var user = ViewData["User"] as UserOverviewModel;
+    var timelineModel = ViewData["TimelineModel"] as TimelineModel;
+    var pairs = ViewData["Pairs"] as List<KeyValuePair<string, string>>;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+    var isUser = this.IsUser();
+    var PRECISION = "0.00";
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/report/useroverview.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
+
+    <script type="text/javascript">
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+        var _timelineModel = @Html.Raw(Json.Serialize(timelineModel));
+        var _model = @Html.Raw(Json.Serialize(user));
+        var _pairs = @Html.Raw(Json.Serialize(pairs));
+    </script>
+
+    <script type="text/javascript" src="~/js/shared/googlechart.js"></script>
+    <script type="text/javascript" src="~/js/report/useroverview.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Report</a></li>
+            <li class="active">User Overview</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>User Overview(@Html.Raw(user.Name))</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="userCtrl" ng-cloak>
+    <form method="post" action="~/Report/UserOverview?userId=@Html.UrlEncoder.Encode(user.Id)">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="button" id="previousWeek" class="btn btn-default" ng-click="previousWeek()">Previous Week</button>
+                    <button type="button" id="nextWeek" class="btn btn-default" ng-click="nextWeek()">Next Week</button>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @if (!user.PlanActualLine.Names.IsEmpty())
+    {
+        <div class="row">
+            <h2>Plan and Actual</h2>
+            <div id="lineChart"></div>
+        </div>
+    }
+
+    @if (!timelineModel.Timelines.IsEmpty())
+    {
+        <div class="row">
+            <h2>Timeline</h2>
+            <div id="timeline"></div>
+        </div>
+    }
+
+    <div class="row">
+        <h2>Overall hours</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="4">Hours</th>
+                    <th class="pieChart">Pie Chart</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Category</th>
+                    <th>Count</th>
+                    <th>Plan</th>
+                    <th>Actual</th>
+                    <td rowspan="4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="planPieChart"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="actualPieChart"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Public Project</th>
+                    <td>@user.PublicProjects.Count</td>
+                    <td>@user.PublicProjects.Sum(o => o.Value.Key).ToString(PRECISION)</td>
+                    <td>@user.PublicProjects.Sum(o => o.Value.Value).ToString(PRECISION)</td>
+                </tr>
+                <tr @if (user.Projects.Sum(o => o.Value.Key) < user.Projects.Sum(o => o.Value.Value)) { <text> class="alert alert-danger" </text> }>
+                    <th>Project</th>
+                    <td>@user.Projects.Count</td>
+                    <td>@user.Projects.Sum(o => o.Value.Key).ToString(PRECISION)</td>
+                    <td>@user.Projects.Sum(o => o.Value.Value).ToString(PRECISION)</td>
+                </tr>
+                <tr @if (user.Crs.Sum(o => o.Value.Key) < user.Crs.Sum(o => o.Value.Value)) { <text> class="alert alert-danger" </text> }>
+                    <th>Cr</th>
+                    <td>@user.Crs.Count</td>
+                    <td>@user.Crs.Sum(o => o.Value.Key).ToString(PRECISION)</td>
+                    <td>@user.Crs.Sum(o => o.Value.Value).ToString(PRECISION)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    @if (!user.Projects.IsEmpty())
+    {
+        <div class="row">
+            <h2>Project hours</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Plan</th>
+                        <th>Actual</th>
+                        <th class="pieChart">Pie Chart</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (int i = 0; i < user.Projects.Count; i++)
+                {
+                    var item = user.Projects.ElementAt(i);
+                    <tr>
+                        <td @if (item.Value.Key < item.Value.Value) { <text> class="alert alert-danger" </text> }><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Key)">@Html.Raw(pairs.Find(o => o.Key == item.Key).Value)</a></td>
+                        <td @if (item.Value.Key < item.Value.Value) { <text> class="alert alert-danger" </text> }>@item.Value.Key.ToString(PRECISION)</td>
+                        <td @if (item.Value.Key < item.Value.Value) { <text> class="alert alert-danger" </text> }>@item.Value.Value.ToString(PRECISION)</td>
+                        @if (i == 0)
+                        {
+                            <td rowspan="@user.Projects.Count">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div id="planProjectPieChart"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="actualProjectPieChart"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (!user.Crs.IsEmpty())
+    {
+        <div class="row">
+            <h2>Cr hours</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Plan</th>
+                        <th>Actual</th>
+                        <th class="pieChart">Pie Chart</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (int i = 0; i < user.Crs.Count; i++)
+                {
+                    var item = user.Crs.ElementAt(i);
+                    <tr>
+                        <td @if (item.Value.Key < item.Value.Value) { <text> class="alert alert-danger" </text> }><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Key)">@Html.Raw(pairs.Find(o => o.Key == item.Key).Value)</a></td>
+                        <td @if (item.Value.Key < item.Value.Value) { <text> class="alert alert-danger" </text> }>@item.Value.Key.ToString(PRECISION)</td>
+                        <td @if (item.Value.Key < item.Value.Value) { <text> class="alert alert-danger" </text> }>@item.Value.Value.ToString(PRECISION)</td>
+                        @if (i == 0)
+                        {
+                            <td rowspan="@user.Crs.Count">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div id="planCrPieChart"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="actualCrPieChart"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (!user.PublicProjects.IsEmpty())
+    {
+        <div class="row">
+            <h2>Public project hours</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Plan</th>
+                        <th>Actual</th>
+                        <th class="pieChart">Pie Chart</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (int i = 0; i < user.PublicProjects.Count; i++)
+                {
+                    var item = user.PublicProjects.ElementAt(i);
+                    <tr>
+                        <td><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Key)">@Html.Raw(pairs.Find(o => o.Key == item.Key).Value)</a></td>
+                        <td>@item.Value.Key.ToString(PRECISION)</td>
+                        <td>@item.Value.Value.ToString(PRECISION)</td>
+                        @if (i == 0)
+                        {
+                            <td rowspan="@user.PublicProjects.Count">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div id="planPublicPieChart"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="actualPublicPieChart"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

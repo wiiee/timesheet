@@ -1,0 +1,173 @@
+﻿@using Web.Model.Report
+@using Web.Extension
+@using Web.Constant
+@using Entity.ValueType
+@using Platform.Enum
+
+@{
+    ViewBag.Title = "Report By Project";
+    ViewData["ng-app"] = "reportByProject";
+    var projects = ViewData["Projects"] as List<ReportByProjectModel>;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+
+    var pageSize = this.GetSessionValue(SessionKey.PAGE_SIZE);
+
+    if (string.IsNullOrEmpty(pageSize))
+    {
+        pageSize = DefaultPreference.PAGE_SIZE.ToString();
+    }
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/css/report/reportbyproject.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="~/lib/angular-smart-table/dist/smart-table.js"></script>
+    <script type="text/javascript">
+        var _rowCollection = @Html.Raw(Json.Serialize(projects));
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+        var _pageSize = @pageSize;
+        var _color = {
+            @ProjectException.Normal.ToString() : "",
+            @ProjectException.Expired.ToString() : "alert alert-danger",
+            @ProjectException.Overtime.ToString() : "alert alert-warning"
+        };
+    </script>
+    <script type="text/javascript" src="~/js/report/reportbyproject.js"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Report By Project</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="projectCtrl" ng-cloak>
+    <form method="post" action="~/Report/ReportByProject">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="button" id="previousWeek" class="btn btn-default" ng-click="previousWeek()">Previous Week</button>
+                    <button type="button" id="nextWeek" class="btn btn-default" ng-click="nextWeek()">Next Week</button>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-md-1 col-md-offset-11">
+            <label for="items">page size</label>
+            <input class="form-control" name="items" id="items" type="number" step="5" ng-model="itemsByPage" ng-change="changeSize()">
+        </div>
+    </div>
+
+    <div class="row">
+        <table st-safe-src="rowCollection" st-table="displayCollection" st-set-filter="customFilter" class="table" id="projects">
+            <thead>
+                <tr>
+                    <th st-sort="Name">Name</th>
+                    <th st-sort="Percentage">Percentage</th>
+                    <th><abbr title="计划日期/实际日期">Date</abbr></th>
+                    <th><abbr title="计划总时间(开发时间,测试时间)/实际总时间(开发时间,测试时间)">Hour</abbr></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4"><a ng-bind="searchText" ng-click="switchSearch()">Show Condition</a></td>
+                </tr>
+                <tr collapse="isCollapsed">
+                    <td colspan="4">
+                        <div class="row">
+                            <div class="col-md-1"><span class="searchLabel">Global search</span></div>
+                            <div class="col-md-8">
+                                <input st-search class="form-control" type="search" />
+                            </div>
+                            <div class="col-md-1"><span class="searchLabel">Exception</span></div>
+                            <div class="col-md-2">
+                                <select class="form-control" st-search="ProjectException">
+                                    <option value="">All</option>
+                                    <option ng-repeat="row in rowCollection | unique:'ProjectException'" value="{{row.ProjectException}}">{{row.ProjectException}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr collapse="isCollapsed">
+                    <td colspan="4">
+                        <div class="row">
+                            <st-date-range afterpredicate="PlanDateRange.StartDate" beforepredicate="PlanDateRange.EndDate" labeltext="Date"></st-date-range>
+                            <div class="col-md-1"><span class="searchLabel">Name</span></div>
+                            <div class="col-md-2">
+                                <input st-search="Name" class="form-control" type="search" />
+                            </div>
+                            <div class="col-md-1"><span class="searchLabel">Status</span></div>
+                            <div class="col-md-2">
+                                <select class="form-control" st-search="Status">
+                                    <option value="">All</option>
+                                    <option ng-repeat="row in rowCollection | unique:'Status'" value="{{row.Status}}">{{row.Status}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr collapse="isCollapsed">
+                    <td colspan="4">
+                        <div class="row">
+                            <st-number-range predicate="TotalActualHour" lower="query.lower" higher="query.higher" labeltext="ActualHour"></st-number-range>
+                            <st-number-range predicate="TotalPlanHour" lower="query.lower" higher="query.higher" labeltext="PlanHour"></st-number-range>
+                        </div>
+                    </td>
+                </tr>
+                <tr ng-repeat="row in displayCollection" class="projectTr" ng-class="color[row.ProjectException]">
+                    <td title="{{row.Name}}"><a href="~/Report/ProjectOverview?projectId={{row.Id | escape}}&startDate={{searchDateRange.StartDate}}&endDate={{searchDateRange.EndDate}}">{{row.Name}}</a></td>
+                    <td>{{row.Percentage | percentage:2}}</td>
+                    <td>
+                        <div>{{row.PlanDateRange.StartDate | date:'yyyy/MM/dd'}} - {{row.PlanDateRange.EndDate | date:'yyyy/MM/dd'}}</div>
+                        <div>{{row.ActualDateRange.StartDate | date:'yyyy/MM/dd'}} - {{row.ActualDateRange.EndDate | date:'yyyy/MM/dd'}}</div>
+                    </td>
+                    <td>
+                        <div>{{row.TotalPlanHour}}({{row.PlanDevHour}},{{row.PlanTestHour}})</div>
+                        <div>{{row.TotalActualHour}}({{row.ActualDevHour}},{{row.ActualTestHour}})</div>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-right">
+                        <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="15"></div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

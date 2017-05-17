@@ -1,0 +1,184 @@
+﻿@using Web.Model.Report
+@using Web.Model.Chart.Timeline
+@using Web.Model.Chart.Bubble
+@using Entity.ValueType
+@using Web.Constant
+@using Web.Extension
+@using Entity.Project
+@using Platform.Extension
+
+@{
+    ViewBag.Title = "Report By Project";
+    ViewData["ng-app"] = "reportByProject";
+    var model = ViewData["Model"] as TimelineModel;
+    var bubbleModel = ViewData["BubbleModel"] as BubbleModel;
+    var pairs = ViewData["Pairs"] as List<KeyValuePair<string, string>>;
+    var expiredProjects = ViewData["ExpiredProjects"] as List<Project>;
+    var overtimeProjects = ViewData["OvertimeProjects"] as List<Project>;
+    var testHour = ViewData["TestHour"] as double?;
+    var devHour = ViewData["DevHour"] as double?;
+    var projects = ViewData["Projects"] as List<Project>;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+
+    var pageSize = this.GetSessionValue(SessionKey.PAGE_SIZE);
+
+    if (string.IsNullOrEmpty(pageSize))
+    {
+        pageSize = DefaultPreference.PAGE_SIZE.ToString();
+    }
+
+    //导出数据
+    var modelsArray = new List<List<string>>();
+    var reportTitles = new List<string>();
+    reportTitles.Add("ProjectID");
+    reportTitles.Add("ProjectrName");
+    reportTitles.Add("PlanStartDate");
+    reportTitles.Add("PlanEndDate");
+    reportTitles.Add("ActualEndDate");
+    reportTitles.Add("Participants");
+    reportTitles.Add("PlanHours");
+    reportTitles.Add("ActualHours");
+    reportTitles.Add("RiskLevel");
+    modelsArray.Add(reportTitles);
+    for (var i = 0; i < model.Timelines.Count(); i++)
+    {
+        var item = new List<string>();
+        item.Add(model.Timelines[i].SerialNumber ?? "");
+        item.Add(model.Timelines[i].Name);
+        item.Add(model.Timelines[i].Parts[0].StartDate.ToShortDateString());
+        item.Add(model.Timelines[i].Parts[0].EndDate.ToShortDateString());
+        item.Add(model.Timelines[i].Parts.Count > 1 ? model.Timelines[i].Parts[1].EndDate.ToShortDateString() : "");
+        var names = model.Timelines[i].Parts[0].Name.Split('|'); //"devName,testName|480/36"
+        item.Add(names[0]);//Participants
+        var planHours = ""; var actualHours = "";
+        if (names.Length > 1)
+        {
+            var hours = names[1].Split('/');
+            if (hours.Length > 1)
+            {
+                planHours = hours[0];
+                actualHours = hours[1];
+            }
+        }
+        item.Add(planHours);
+        item.Add(actualHours);
+        item.Add(bubbleModel.Bubbles.Find(o => o.Id == model.Timelines[i].Id).Category);
+
+        modelsArray.Add(item);
+    }
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/report/reportbyproject.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
+    <script type="text/javascript" src="~/js/shared/googlechart.js"></script>
+    <script type="text/javascript">
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+        var _pairs = @Html.Raw(Json.Serialize(pairs));
+        var _model = @Html.Raw(Json.Serialize(model));
+        var _bubbleModel = @Html.Raw(Json.Serialize(bubbleModel));
+        var _exportEntities = @Html.Raw(Json.Serialize(modelsArray));
+    </script>
+    <script type="text/javascript" src="~/js/report/reportbyproject/department.js"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Report By Project</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="projectCtrl" ng-cloak>
+    @Html.Partial("~/Views/Report/ReportByProject/SearchDate.cshtml")
+    <div class="row top-margin">
+        <h2>统计数据</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>计划时长</th>
+                    <th>实际时长</th>
+                    <th>开发时长</th>
+                    <th>测试时长</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@(projects.IsEmpty() ? 0 : projects.Sum(o => o.GetTotalPlanHour()))</td>
+                    <td>@(projects.IsEmpty() ? 0 : projects.Sum(o => o.GetTotalActualHour()))</td>
+                    <td>@devHour</td>
+                    <td>@testHour</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row top-margin">
+        <div class="panel-group" id="report" role="tablist" aria-multiselectable="true">
+            @if (!expiredProjects.IsEmpty())
+            {
+                <div class="panel panel-danger">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#report" href="#expired" aria-expanded="false" aria-controls="expired">
+                                延期项目
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="collapse" id="expired">
+                        <ul class="list-group">
+                            @foreach (var item in expiredProjects)
+                            {
+                                <li class="list-group-item list-group-item-danger">
+                                    <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Id)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToShortDateString())&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToShortDateString())">@Html.Raw(item.Name)</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+            @if (!overtimeProjects.IsEmpty())
+            {
+                <div class="panel panel-warning">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#report" href="#overtime" aria-expanded="false" aria-controls="overtime">
+                                超时项目
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="collapse" id="overtime">
+                        <ul class="list-group">
+                            @foreach (var item in overtimeProjects)
+                            {
+                                <li class="list-group-item list-group-item-warning">
+                                    <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Id)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToShortDateString())&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToShortDateString())">@Html.Raw(item.Name)</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+            @Html.Partial("~/Views/Report/ReportByProject/Risk.cshtml")
+            <div class="panel panel-info">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#report" href="#projects" aria-expanded="true" aria-controls="projects">
+                            @Html.Raw(ViewData["Name"] as string)
+                        </a>
+                    </h4>
+                </div>
+                <div class="collapse in" id="projects">
+                    <div id="timeline"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

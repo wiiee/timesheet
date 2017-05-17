@@ -1,0 +1,69 @@
+﻿@using Entity.User
+@using Web.Extension
+@using Platform.Enum
+@using Platform.Setting
+@using Entity.Project
+@using Service.User
+
+@{
+    ViewData["ng-app"] = "project";
+    var projectId = ViewData["ProjectId"] as string;
+
+    var title = string.IsNullOrEmpty(projectId) ? "Add A Project" : "Edit Project";
+    ViewBag.Title = title;
+
+    var department = this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault();
+
+    bool isAdmin = this.IsAdmin();
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" />
+    <link rel="stylesheet" href="~/css/project/project.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/textarea-autosize/dist/jquery.textarea_autosize.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript">
+        var _phases = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Phase))));
+        var _statuses = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Status))));
+        var _levels = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(ProjectLevel))));
+        var _projectId = "@Html.Raw(projectId)";
+        var _userId = "@Html.Raw(this.GetUserId())";
+        var _userType = "@Html.Raw(this.GetUserType())";
+    </script>
+    <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="~/js/project/project.js" asp-append-version="true"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Project</a></li>
+            <li class="active">@Html.Raw(title)</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>@Html.Raw(title)</h1>
+    </div>
+</div>
+
+<div class="row" ng-controller="projectCtrl" ng-cloak>
+    <form method="post" ng-submit="submit()">
+        @Html.Partial("~/Views/Project/ProjectInfo.cshtml")
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default left-margin" ng-click="reset($event)">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

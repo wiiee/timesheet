@@ -1,0 +1,83 @@
+﻿@using Web.Model
+
+@{
+    ViewBag.Title = "Read TimeSheet";
+    var timeSheetModels = ViewData["TimeSheetModels"] as List<TimeSheetModel>;
+    var projectIds = timeSheetModels.Select(o => o.ProjectId).OrderBy(p => p).ToList();
+    var monday = (DateTime)ViewData["Monday"];
+
+    var total = timeSheetModels.Where(o => o.IsSelected).Select(o => o.Week.Sum()).Sum();
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">TimeSheet</a></li>
+            <li class="active">Read TimeSheet</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Read TimeSheet</h1>
+    </div>
+</div>
+
+<div class="row">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Project</th>
+                @for (int i = 0; i < 7; i++)
+                {
+                    <th>@Html.Raw(monday.AddDays(i).ToString("ddd(MM.dd)"))</th>
+                }
+                <th>Done</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < timeSheetModels.Count; i++)
+            {
+                var item = timeSheetModels[i];
+                @if (item.IsSelected)
+                {
+                    <tr>
+                        <td>
+                            @if (item.IsPublic)
+                            {
+                                @Html.Raw(item.ProjectName)
+                            }
+                            else
+                            {
+                                @Html.Raw(item.ProjectName + ":" + item.TaskName)
+                            }
+                        </td>
+                        @for (int j = 0; j < 7; j++)
+                        {
+                            <td>@item.Week[j]</td>
+                        }
+                        <td>
+                            @if (!item.IsPublic)
+                            {
+                                <input type="checkbox" value="true" checked="@item.IsDone" disabled="disabled">
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            <tr>
+                <td>Summary</td>
+                @for (int i = 0; i < 7; i++)
+                {
+                    <td><span class="total">@(timeSheetModels.Where(o => o.IsSelected).Select(o => o.Week[i]).Sum())</span></td>
+                }
+                <td></td>
+            </tr>
+            <tr ng-show="isShowTable()">
+                <td>Total</td>
+                <td colspan="8"><span class="total">@total</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

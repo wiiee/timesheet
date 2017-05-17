@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Log In";
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/js/crypto/core-min.js"></script>
+    <script type="text/javascript" src="~/js/crypto/md5-min.js"></script>
+    <script type="text/javascript" src="~/js/account/login.js"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Log In</h1>
+    </div>
+</div>
+
+@if (ViewBag.ErrorMsg != null)
+{
+    <div class="row">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-danger" role="alert">@ViewBag.ErrorMsg</div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <form method="post" action="~/Account/LogIn">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="id">Id</label>
+                <input type="text" class="form-control" id="id" name="id" data-validation="length" data-validation-length="5-6" placeholder="id" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="rawPassword">Password</label>
+                <input type="password" class="form-control" id="rawPassword" data-validation="length" data-validation-length="min3" placeholder="password" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default">Reset</button>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="password" id="password" />
+        <input type="hidden" id="returnUrl" value="@ViewBag.ReturnUrl" />
+    </form>
+</div>

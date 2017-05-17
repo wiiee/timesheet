@@ -1,0 +1,112 @@
+﻿@using Entity.Project
+@using Platform.Extension
+@using Web.Model
+@using Web.Extension
+@using Web.Constant
+@using Platform.Enum
+@using Platform.Setting
+@using Service.User
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+
+@{
+    ViewBag.Title = "Projects";
+    ViewData["ng-app"] = "project";
+    //var models = ViewData["Projects"] as List<ProjectModel>;
+    //var projects = models.Select(o => o.ToRow()).ToList();
+
+    var pageSize = this.GetSessionValue(SessionKey.PAGE_SIZE);
+    var isUser = this.IsUser();
+
+    if (string.IsNullOrEmpty(pageSize))
+    {
+        pageSize = DefaultPreference.PAGE_SIZE.ToString();
+    }
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" />
+    <link rel="stylesheet" href="~/css/project/project.css" />
+}
+
+@section scripts {
+    <script type="text/ng-template" id="editProject.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Project</h3>
+        </div>
+        <div class="modal-body">
+            @Html.Partial("~/Views/Project/EditProjectAjax.cshtml")
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Submit</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="postponeProject.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Project</h3>
+        </div>
+        <div class="modal-body">
+            @Html.Partial("~/Views/Project/PostponeProjectAjax.cshtml")
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Submit</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
+    <script type="text/javascript" src="~/lib/textarea-autosize/dist/jquery.textarea_autosize.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+
+    <script type="text/javascript">
+        var _rowCollection = [];
+        var _pageSize = @pageSize;
+        var _statuses = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Status))));
+        var _levels = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(ProjectLevel))));
+        var _phases = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Phase))));
+        var _postponeReasons = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(PostponeReason))));
+        var _effortMax = @TimeSheetSetting.Instance.Get("EffortMax");
+        var _isPost = false;
+        var _userId = "@Html.Raw(this.GetUserId())";
+        var _userType = "@Html.Raw(this.GetUserType())";
+    </script>
+
+    <script type="text/javascript" src="~/lib/angular-smart-table/dist/smart-table.js"></script>
+    <script type="text/javascript" src="~/js/project/index.js" asp-append-version="true"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-11"><h1>Projects</h1></div>
+            <div class="col-md-1"><h1><a class="btn btn-default" role="button" asp-controller="Project" asp-action="Project"><span title="Add a new project" class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h1></div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row" id="messageContainer">
+</div>
+
+<div>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#ongoing" aria-controls="ongoing" role="tab" data-toggle="tab">Ongoing</a></li>
+        <li role="presentation"><a href="#pending" aria-controls="pending" role="tab" data-toggle="tab">Pending</a></li>
+        <li role="presentation"><a href="#done" aria-controls="done" role="tab" data-toggle="tab">Done</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="ongoing">@Html.Partial("ProjectTab", "Ongoing")</div>
+        <div role="tabpanel" class="tab-pane" id="pending">@Html.Partial("ProjectTab", "Pending")</div>
+        <div role="tabpanel" class="tab-pane" id="done">@Html.Partial("ProjectTab", "Done")</div>
+    </div>
+
+</div>
+
+@Html.Partial("~/Views/Shared/MultiHeaderMessage.cshtml")
+

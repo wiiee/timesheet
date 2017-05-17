@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["ng-app"] = "sprint";
+    ViewBag.Title = "Sprint";
+    var sprintId = ViewData["SprintId"] as string;
+    var groupId = ViewData["GroupId"] as string;
+}
+
+@section scripts {
+    <script type="text/javascript">
+        var _groupId = "@Html.Raw(groupId)";
+        var _sprintId = "@Html.Raw(sprintId)";
+    </script>
+    <script type="text/javascript" src="~/js/scrum/sprint.js" asp-append-version="true"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Scrum</a></li>
+            <li class="active">Sprint</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Sprint</h1>
+    </div>
+</div>
+
+<div class="row" ng-controller="sprintCtrl" ng-cloak>
+    <form method="post" action="~/Scrum/Sprint">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="name">Sprint Name</label>
+                <input type="text" class="form-control" id="name" name="name" ng-model="sprint.Name" spellcheck="false" data-validation="required" placeholder="项目名称">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="description">Sprint Description</label>
+                <textarea type="text" class="form-control" id="description" name="description" ng-model="sprint.Description" spellcheck="false" data-validation="required" placeholder="项目描述"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="planDateRange.startDate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" data-validation="required" datepicker-popup="yyyy/MM/dd" ng-change="getTasks()" ng-model="sprint.DateRange.StartDate" name="dateRange.startDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="planDateRange.endDate">End Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" data-validation="required" datepicker-popup="yyyy/MM/dd" ng-change="getTasks()" ng-model="sprint.DateRange.EndDate" name="dateRange.endDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2>Tasks</h2>
+            <div ng-repeat="row in rowCollection">
+                <span class="glyphicon glyphicon-menu-down" ng-if="isCollapsed[row.ProjectId]" ng-click="collapse(row.ProjectId)"></span>
+                <span class="glyphicon glyphicon-menu-up" ng-if="!isCollapsed[row.ProjectId]" ng-click="collapse(row.ProjectId)"></span>
+                <span title="{{row.ProjectDescription}}">{{row.ProjectName}}</span>
+                <a target="_blank" href="~/Report/ProjectOverview?projectId={{row.ProjectId | escape}}"><span title="Project overview" class="glyphicon glyphicon-open"></span></a>
+                <div class="left-margin" collapse="isCollapsed[row.ProjectId]">
+                    <div ng-repeat="task in row.Tasks">
+                        <input type="checkbox" ng-model="task.IsSelected" ng-click="refreshSelectedTasks()"> {{task.Name}} ({{task.PlanDateRange.StartDate | date:'yyyy/MM/dd'}} - {{task.PlanDateRange.EndDate | date:'yyyy/MM/dd'}})
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div ng-repeat="row in selectedTasks">
+                <input type="hidden" name="{{'TaskIds[' + $index + '].key'}}" value="{{row.ProjectId}}" />
+                <input type="hidden" name="{{'TaskIds[' + $index + '].value'}}" value="{{row.TaskName}}" />
+            </div>
+        </div>
+
+        <!--ToDo:编辑的时候有些Task可能过滤掉，不能显示出来-->
+        <div class="row">
+        </div>
+
+        @if(sprintId != null)
+        {
+            <input type="hidden" name="id" value="@Html.Raw(sprintId)" />
+        }
+
+        <input type="hidden" name="groupId" value="@Html.Raw(groupId)" />
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default left-margin">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

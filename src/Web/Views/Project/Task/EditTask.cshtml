@@ -1,0 +1,55 @@
+﻿@using Web.Extension
+
+@{
+    var isAdmin = this.IsAdmin();
+    var isUser = this.IsUser();
+}
+
+<div class="row">
+    <div class="col-md-2">
+        <input class="form-control taskName" title="{{task.Name}}" ng-if="!task.isTemplate" ng-model="task.Name" data-validation="required" />
+        <select class="form-control taskName" title="{{task.Name}}" ng-if="task.isTemplate" ng-change="changeTaskName(task)" ng-model="task.Name" data-validation="custom" data-validation-regexp="^([^\?].+)$"
+                ng-options="template.Name as template.Name for template in templates"></select>
+        <span class="glyphicon glyphicon-remove" ng-if="project.Tasks.length > 1 && task.isDelete" ng-click="removeTask(task.Id)"></span>
+    </div>
+    <div class="col-md-2">
+        <select class="form-control" ng-model="task.Phase" data-validation="custom" data-validation-regexp="^(number:[0-9])$"
+                ng-options="phases.indexOf(selectedItem) as selectedItem for selectedItem in phases"></select>
+    </div>
+    <div class="col-md-3">
+        <div class="col-md-6">
+            <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" title="{{task.PlanDateRange.StartDate | date:'yyyy/MM/dd'}}" ng-model="task.PlanDateRange.StartDate" is-open="isOpen[task.Id].isStartDateOpen" close-text="Close" data-validation="required" ng-click="openCalendar(task.Id, 'isStartDateOpen')" />
+        </div>
+        <div class="col-md-6">
+            <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" title="{{task.PlanDateRange.EndDate | date:'yyyy/MM/dd'}}" ng-model="task.PlanDateRange.EndDate" is-open="isOpen[task.Id].isEndDateOpen" close-text="Close" data-validation="required" ng-click="openCalendar(task.Id, 'isEndDateOpen')" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="col-md-5">
+            <select class="form-control" ng-model="task.Status" data-validation="custom" data-validation-regexp="^(number:[0-9])$"
+                    ng-options="statuses.indexOf(selectedItem) as selectedItem for selectedItem in statuses"></select>
+        </div>
+        <div class="col-md-4">
+            <input class="form-control" ng-if="!task.isTemplate" data-validation="required" ng-model="task.PlanHour" ng-change="changePlanValue(task)" />
+            <select class="form-control" ng-if="task.isTemplate" ng-model="task.PlanHour" ng-change="changePlanValue(task)" data-validation="custom" data-validation-regexp="^(number:\d+)$"
+                    ng-options="hour for hour in hours[task.Name]"></select>
+        </div>
+        <div class="col-md-3">
+            <input class="form-control" data-validation="number" ng-model="task.Value" @if (isUser) { <text> disabled</text> } />
+        </div>
+    </div>
+    <div class="col-md-2">
+        <!--select class="form-control taskUserId" ng-model="task.UserId" data-validation="custom" data-validation-regexp="^(string:[GS][0-9]{5})$"
+                ng-options="user in {group.Users group by group.Name for group in users}"></!--select-->
+        
+        <select id="example-multiple-optgroups" class="form-control taskUserId" ng-model="task.UserId" name="{{'Tasks[' + $index + '].UserId'}}" data-validation="custom" data-validation-regexp="^([GS][0-9]{5})$">
+            <optgroup ng-repeat="group in groups" label={{group.Name}}>
+                <option ng-repeat="user in group.Users" value={{user.Id}}>{{user.Name}}</option>
+            </optgroup>
+        </select>
+
+        <label class="taskReview" ng-if="projectId">
+            <input class="taskReview" type="checkbox" ng-model="task.IsReviewed" @if (isUser) { <text> disabled</text> } />
+        </label>
+    </div>
+</div>

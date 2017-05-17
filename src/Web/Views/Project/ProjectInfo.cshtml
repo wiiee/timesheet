@@ -1,0 +1,134 @@
+﻿@using Entity.User
+@using Web.Extension
+@using Service.User
+@using Platform.Enum
+
+@{
+    var department = this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault();
+
+    bool isAdmin = this.IsAdmin();
+}
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label for="name">Project Name</label>
+        <input type="text" class="form-control" id="name" name="name" ng-if="!projectId" ng-model="project.Name" spellcheck="false" data-validation="server" data-validation-url="/api/Project/IsNameExist?name" placeholder="项目名称" />
+        <input type="text" class="form-control" id="name" ng-if="projectId" ng-model="project.Name" spellcheck="false" data-validation="required" placeholder="项目名称" />
+    </div>
+</div>
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label for="description">Project Description</label>
+        <textarea type="text" class="form-control" id="description" ng-model="project.Description" spellcheck="false" data-validation="required" placeholder="项目描述"></textarea>
+    </div>
+</div>
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label>
+            <input type="checkbox" ng-model="project.IsCr" id="isCr" /> Is CR
+        </label>
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label>
+                <input value="true" type="checkbox" ng-model="project.IsPublic" ng-click="isPublic()"> Is public
+            </label>
+        </div>
+    </div>
+}
+
+<div class="row" ng-if="!_isPublic">
+    <div class="form-group col-md-2">
+        <label for="serialNumber"><span title="Project Serial Number (Optional for Hotel Team)">SN</span></label>
+        @if (department != null && department.Id == DepartmentName.SHENZHEN_FLIGHT)
+        {
+            <input type="text" class="form-control" id="serialNumber" name="serialNumber" ng-if="!projectId" ng-model="project.SerialNumber" spellcheck="false" data-validation="server" data-validation-url="/api/Project/IsCp4Valid?serialNumber" placeholder="CP4项目编号" />
+            <input type="text" class="form-control" id="serialNumber" ng-if="projectId" ng-model="project.SerialNumber" spellcheck="false" data-validation="required" placeholder="CP4项目编号" />
+        }
+        else
+        {
+            <input type="text" class="form-control" id="serialNumber" ng-model="project.SerialNumber" spellcheck="false" placeholder="CP4项目编号" />
+        }
+    </div>
+    <div class="form-group col-md-2">
+        <label for="projectManagerName"><span title="Project Manager Name (Optional for Hotel Team)">PM</span></label>
+        <input type="text" class="form-control" id="projectManagerName" ng-model="project.ProjectManagerName" spellcheck="false" placeholder="项目经理" />
+    </div>
+    <div class="form-group col-md-2">
+        <label for="ownerIds">Owners</label>
+        <select class="form-control" id="ownerIds" multiple="multiple" data-validation="required" ng-model="project.OwnerIds"
+                ng-options="selectedItem.Key as selectedItem.Value for selectedItem in owners"></select>
+    </div>
+    <div class="form-group col-md-2">
+        <label for="level">Level</label>
+        <select class="form-control" id="level" ng-model="project.Level" data-validation="custom" data-validation-regexp="^([^\?].+)$"
+                ng-options="levels.indexOf(selectedItem) as selectedItem for selectedItem in levels"></select>
+    </div>
+    <div class="form-group col-md-4">
+        <label for="publishDate">Publish Date</label>
+        <div class="input-group">
+            <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" ng-model="project.PublishDate" id="publishDate" is-open="isOpen['publishDate']" close-text="Close" data-validation="required" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="openCalendar('publishDate')">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                </button>
+            </span>
+        </div>
+        <label ng-style="{color:'red'}">Add comments when update Publish Date.</label>
+    </div>
+</div>
+
+<div class="row" ng-if="!_isPublic">
+    <div class="col-md-12">
+        <h2>Tasks <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" ng-click="addTask()"></span></h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <div class="col-md-2">Name</div>
+                            <div class="col-md-2">Phase</div>
+                            <div class="col-md-3">
+                                <div class="col-md-6">StartDate</div>
+                                <div class="col-md-6">EndDate</div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="col-md-5">Status</div>
+                                <div class="col-md-4">PlanHour</div>
+                                <div class="col-md-3">Value</div>
+                            </div>
+                            <div class="col-md-1">User</div>
+                            <div class="col-md-1" ng-if="projectId">Review</div>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="task in project.Tasks">
+                    <td ng-if="task.isEdit">@Html.Partial("Task/EditTask")</td>
+                    <td ng-if="!task.isEdit">@Html.Partial("Task/ReadTask")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row" ng-if="projectId">
+    <div class="form-group col-md-12">
+        <label for="comment">Code Review</label>
+        <textarea type="text" class="form-control" id="comment" ng-model="project.CodeReview" spellcheck="false" placeholder="Comment"></textarea>
+    </div>
+</div>
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label for="comment">Comment</label>
+        <textarea type="text" class="form-control" id="comment" ng-model="project.Comment" spellcheck="false" placeholder="Comment"></textarea>
+    </div>
+</div>

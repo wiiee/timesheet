@@ -1,0 +1,86 @@
+﻿@using Web.Model.Other
+@using Platform.Extension
+
+@{
+    ViewBag.Title = "Feedback";
+    var feedbacks = ViewData["Feedbacks"] as List<FeedbackModel>;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/css/feedback/index.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="~/js/feedback/index.js"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Feedback</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row">
+    <div class="pull-right bottom-margin"><a class="btn btn-default" role="button" asp-controller="Feedback" asp-action="AddFeedback">Add a new feedback</a></div>
+</div>
+
+<div class="row">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Imgs</th>
+                <th>Comment</th>
+                <th>Suggester</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in feedbacks)
+            {
+                <tr>
+                    <td>@Html.Raw(item.Feedback.Description)</td>
+                    <td class="imgs">
+                        @if (item.Feedback.ImgIds.IsEmpty())
+                        {
+                            <text>None</text>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                @foreach (var imgId in item.Feedback.ImgIds)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="thumbnail">
+                                            <a href="~/api/img/@Html.UrlEncoder.Encode(imgId)"><img src="~/api/img/@Html.UrlEncoder.Encode(imgId)?height=200&width=200" alt="Img"></a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </td>
+                    <td>@Html.Raw(item.Feedback.Comment)</td>
+                    <td>@Html.Raw(item.SuggesterName)</td>
+                    <td>@Html.Raw(item.Feedback.Status)</td>
+                    <td>
+                        @if (item.IsEdit)
+                        {
+                            <a href="~/Feedback/EditFeedback?id=@Html.UrlEncoder.Encode(item.Feedback.Id)" title="Edit Feedback"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                        }
+                        @if (item.IsDelete)
+                        {
+                            <a class="delete" data-id="@item.Feedback.Id" href="javascript:void(0)" title="Delete Feedback"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>

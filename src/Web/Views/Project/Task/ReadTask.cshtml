@@ -1,0 +1,31 @@
+﻿<div class="row">
+    <div class="col-md-2">
+        <input type="text" class="form-control taskName" title="{{task.Name}}" ng-model="task.Name" disabled />
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control" value="{{phases[task.Phase]}}" disabled />
+    </div>
+    <div class="col-md-3">
+        <div class="col-md-6">
+            <input type="text" class="form-control" title="{{task.PlanDateRange.StartDate | date:'yyyy/MM/dd'}}" ng-model="task.PlanDateRange.StartDate" disabled />
+        </div>
+        <div class="col-md-6">
+            <input type="text" class="form-control" title="{{task.PlanDateRange.EndDate | date:'yyyy/MM/dd'}}" ng-model="task.PlanDateRange.EndDate" disabled />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="col-md-5">
+            <input type="text" class="form-control" value="{{statuses[task.Status]}}" disabled />
+        </div>
+        <div class="col-md-4">
+            <input class="form-control" ng-model="task.PlanHour" disabled />
+        </div>
+        <div class="col-md-3"><input class="form-control" data-validation="number" ng-model="task.Value" disabled /></div>
+    </div>
+    <div class="col-md-2">
+        <input class="form-control taskUserId" value="{{getUserName(task.UserId)}}" disabled />
+        <label class="taskReview">
+            <input type="checkbox" ng-model="task.IsReviewed" disabled />
+        </label>
+    </div>
+    </div>

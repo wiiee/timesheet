@@ -1,0 +1,10 @@
+﻿@using Web.Extension
+
+@{
+    var isAdmin = this.IsAdmin();
+    var isUser = this.IsUser();
+}
+
+<form>
+    @Html.Partial("~/Views/Project/ProjectInfo.cshtml")
+</form>

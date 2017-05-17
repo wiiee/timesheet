@@ -1,0 +1,80 @@
+﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Web</title>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-theme.min.css" />
+        <link rel="stylesheet" href="~/css/shared/common.css" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+    @RenderSection("css", required: false)
+    @Html.Raw(JavaScriptSnippet.FullScript)
+</head>
+<body @if (ViewData["ng-app"] != null) { <text> ng-app="@ViewData["ng-app"]" </text>  }>
+    <div class="navbar navbar-default" id="header">
+        @Html.Partial("~/Views/Shared/Header.cshtml")
+    </div>
+    <div class="container body-content">
+        @RenderSection("breadcrumb", required: false)
+        @RenderBody()
+
+        @Html.Partial("~/Views/Shared/Footer.cshtml")
+    </div>
+
+    <environment names="Development">
+        <script type="text/javascript">
+            var _basePath = "@Context.Request.PathBase";
+            var _host = "@Context.Request.Host";
+        </script>
+
+        @if (ViewData["IsOverwriteJs"] == null)
+        {
+            <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+            <script type="text/javascript" src="~/js/shared/jqueryextension.js"></script>
+            <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+            <script type="text/javascript" src="~/js/shared/underscore-min.js"></script>
+            <script type="text/javascript" src="~/js/jquery.form-validator.js"></script>
+            <script type="text/javascript" src="~/lib/jquery-form-validator/form-validator/security.js"></script>
+            <script lang="text/javascript" src="~/js/shared/Blob.js"></script>
+            <script type="text/javascript" src="~/js/shared/FileSaver.js"></script>
+            <script type="text/javascript" src="~/js/shared/xlsx.core.min.js"></script>
+            <script type="text/javascript" src="~/js/shared/utility.js"></script>
+        }
+
+        @if (ViewData["ng-app"] != null)
+        {
+            <script type="text/javascript" src="~/lib/angular/angular.min.js"></script>
+            <script type="text/javascript" src="~/js/shared/filters.js"></script>
+            <script type="text/javascript" src="~/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+        }
+    </environment>
+    <environment names="Staging,Production">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("Scripts", required: false)
+</body>
+
+</html>

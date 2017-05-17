@@ -1,0 +1,91 @@
+﻿@using Entity.User
+@using Entity.Project
+@using Web.Model
+@using Platform.Extension
+@using Platform.Enum
+@using Web.Extension
+@using Service.User
+
+@{
+    ViewBag.Title = "Manage TimeSheet";
+    var userWeeks = ViewData["UserWeeks"] as Dictionary<string, List<TimeSheetOverviewModel>>;
+    var userService = this.GetService<UserService>();
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/timesheet/css" />
+}
+
+@section scripts{
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+    <script type="text/javascript" src="~/js/timesheet/managejs"  asp-append-version="true"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">TimeSheet</a></li>
+            <li class="active">Manage Timesheet</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Manage timesheet</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row">
+    <div class="panel-group" id="userWeeks" role="tablist" aria-multiselectable="true">
+        @foreach (var entry in userWeeks)
+        {
+            var user = userService.Get(entry.Key);
+            <div class="panel panel-info">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#userWeeks" href="@Html.Raw("#" + entry.Key)" aria-expanded="true" aria-controls="@Html.Raw(entry.Key)">
+                            @Html.Raw(user.Id + "_" + user.Name)
+                        </a>
+                    </h4>
+                </div>
+                <div class="collapse in" id="@Html.Raw(entry.Key)">
+                    <!-- Table -->
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Hours</th>
+                                <th>Status</th>
+                                <th>Return</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in entry.Value)
+                            {
+                                <tr>
+                                    <td>
+                                        @if(item.Status == Status.Done.ToString())
+                                        {
+                                            <a href="~/TimeSheet/ReadTimeSheet?monday=@Html.UrlEncoder.Encode(item.Monday.GetTimeSheetId())&userId=@Html.UrlEncoder.Encode(entry.Key)">@item.Text</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="~/TimeSheet/EditTimeSheet?monday=@Html.UrlEncoder.Encode(item.Monday.GetTimeSheetId())&userId=@Html.UrlEncoder.Encode(entry.Key)">@item.Text</a>
+                                        }
+                                    </td>
+                                    <td>@item.WeekHours</td>
+                                    <td>@item.Status</td>
+                                    <td>@if (item.IsReturn) { <a class="return" href="javascript:void(0)" data-monday="@Html.UrlEncoder.Encode(item.Monday.GetTimeSheetId())" data-userId="@Html.UrlEncoder.Encode(entry.Key)">Return</a> }</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,79 @@
+﻿@if (ViewData["DepartmentId"] != null)
+{
+    <form method="post" action="~/Report/ReportByUser?departmentId=@Html.UrlEncoder.Encode(ViewData["DepartmentId"] as string)">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="button" id="exportData" class="btn btn-primary" ng-click="exportData()">Export Data</button>
+                    <button type="button" id="previousWeek" class="btn btn-default" ng-click="previousWeek()">Previous Week</button>
+                    <button type="button" id="nextWeek" class="btn btn-default" ng-click="nextWeek()">Next Week</button>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+else
+{
+    <form method="post" action="~/Report/ReportByUser?groupId=@Html.UrlEncoder.Encode(ViewData["GroupId"] as string)">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="button" id="exportData" class="btn btn-primary" ng-click="exportData()">Export Data</button>
+                    <button type="button" id="previousWeek" class="btn btn-default" ng-click="previousWeek()">Previous Week</button>
+                    <button type="button" id="nextWeek" class="btn btn-default" ng-click="nextWeek()">Next Week</button>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+

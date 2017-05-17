@@ -1,0 +1,42 @@
+﻿@using Web.Model.Chart.Bubble
+@using Platform.Util
+@using Platform.Enum
+
+@{ 
+    var bubbleModel = ViewData["BubbleModel"] as BubbleModel;
+    var pairs = ViewData["Pairs"] as List<KeyValuePair<string, string>>;
+    string[] levels = { "alert alert-success", "alert alert-info", "alert alert-warning", "alert alert-danger"};
+}
+
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#report" href="#risk" aria-expanded="true" aria-controls="risk">
+                Risk
+            </a>
+        </h4>
+    </div>
+    <div class="collapse" id="risk">
+        <div id="bubble"></div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Name</th>
+                    <th>Risk</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in bubbleModel.Bubbles.OrderByDescending(o => EnumUtil.ParseEnum<RiskLevel>(o.Category)).ToList())
+                {
+                    <tr class="@levels[(int)EnumUtil.ParseEnum<RiskLevel>(item.Category)]">
+                        <td>@pairs.FindIndex(o => o.Key == item.Id)</td>
+                        <td><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Id)">@Html.Raw(item.Name)</a></td>
+                        <td>@Html.Raw(item.Category)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

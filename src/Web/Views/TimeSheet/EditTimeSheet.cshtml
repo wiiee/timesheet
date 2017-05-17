@@ -1,0 +1,202 @@
+﻿@using Entity.User
+@using Entity.Project
+@using Web.Model
+@using Web.Extension
+@using Platform.Extension
+@using Platform.Util
+@using System.Linq
+@using Service.User
+
+@{
+    ViewBag.Title = "Edit TimeSheet";
+    ViewData["ng-app"] = "timeSheet";
+    var timeSheetModels = ViewData["TimeSheetModels"] as List<TimeSheetModel>;
+    var projectIds = timeSheetModels.Select(o => o.ProjectId).OrderBy(p => p).ToList();
+    var monday = (DateTime)ViewData["Monday"];
+    var userId = ViewData["UserId"] as string;
+    var userService = this.GetService<UserService>();
+    var buttonText = "Add";
+    var isUser = this.IsUser();
+
+    var userName = this.GetUserName();
+    if (string.IsNullOrEmpty(userName))
+    {
+        userName = userService.Get(this.GetUserId()).Name;
+    }
+
+    var murmursList = timeSheetModels.Select(o => new
+    {
+        Id = o.ProjectId,
+        Murmurs = o.Murmurs.IsEmpty() ? null : o.Murmurs.Select(m => new
+        {
+            Id = m.Key.ToString(),
+            ProjectId = o.ProjectId,
+            Time = new DateTime(m.Key),
+            UserId = m.Value.Key,
+            UserName = userService.Get(m.Value.Key).Name,
+            Content = m.Value.Value
+        }).ToList()
+    }).ToList();
+}
+
+@section css{
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/css/timesheet/css" />
+}
+
+@section scripts {
+    <script type="text/ng-template" id="murmurs.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Murmur</h3>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-11"><input type="text" ng-model="content" class="form-control" placeholder="Add a new murmur"></div>
+                <div class="col-md-1"><div class="pull-right"><button class="btn btn-primary" type="button" ng-click="ok()">{{buttonText}}</button></div></div>
+            </div>
+            <div class="row top-margin">
+                <div class="col-md-12">
+                    <ul class="list-group" ng-show="currentMurmurs">
+                        <li class="list-group-item" ng-repeat="row in currentMurmurs">
+                            <div class="row">
+                                <div class="col-md-6">{{row.Content}}</div>
+                                <div class="col-md-2">{{row.UserName}}</div>
+                                <div class="col-md-3">{{row.Time | date:'yyyy/MM/dd hh:mm:ss'}}</div>
+                                <div class="col-md-1">
+                                    <input type="hidden" name="{{'model[' + $index + '].UserId'}}" value="{{row.UserId}}" />
+                                    <input type="hidden" name="{{'model[' + $index + '].ProjectId'}}" value="{{row.ProjectId}}" />
+                                    <span ng-if="row.UserId === '@userId'" ng-click="editMurmur(row.ProjectId, row.Id, row.Content)" title="Edit Murmur" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                    <span ng-if="row.UserId === '@userId'" ng-click="deleteMurmur(row.ProjectId, row.Id)" title="Delete Murmur" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" type="button" ng-click="close()">Close</button>
+        </div>
+    </script>
+    <script type="text/javascript" src="~/lib/textarea-autosize/dist/jquery.textarea_autosize.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+    
+    <script type="text/javascript">
+        var _rowCollection = @Html.Raw(Json.Serialize(timeSheetModels));
+        var _userName = "@Html.Raw(userName)";
+        var _murmurs = @Html.Raw(Json.Serialize(murmursList));
+        var _buttonText = "@Html.Raw(buttonText)";
+    </script>
+    <script type="text/javascript" src="~/lib/angular-filter/dist/angular-filter.min.js"></script>
+    <script type="text/javascript" src="~/js/timesheet/editjs"  asp-append-version="true"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">TimeSheet</a></li>
+            <li class="active">Edit TimeSheet</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Edit TimeSheet</h1>
+    </div>
+</div>
+
+<div ng-controller="TimeSheetController" ng-cloak>
+
+    <div class="row">
+        <div class="form-group col-md-12">
+            <label for="projects">Please Select Project Below</label>
+            <div><input type="checkbox" ng-click="selectAll()">Select All</div>
+            <div ng-repeat="(key, value) in rowCollection | groupBy: 'ProjectId'">
+                <div ng-if="!value[0].IsPublic">
+                    <span class="glyphicon glyphicon-menu-down" ng-if="isCollapsed[key]" ng-click="collapse(key)"></span>
+                    <span class="glyphicon glyphicon-menu-up" ng-if="!isCollapsed[key]" ng-click="collapse(key)"></span>
+                    <span title="{{value[0].ProjectDescription}}">{{value[0].ProjectName}}</span>
+                    <a target="_blank" href="~/Report/ProjectOverview?projectId={{key | escape}}"><span title="Project overview" class="glyphicon glyphicon-open"></span></a>
+                    <div style="margin-left: 16px" collapse="isCollapsed[key]">
+                        <div ng-repeat="task in value">
+                            <input type="checkbox" ng-model="task.IsSelected" ng-disabled="{{task.IsDone}}"> {{task.TaskName}}
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="value[0].IsPublic">
+                    <input type="checkbox" ng-model="value[0].IsSelected" /><span title="{{value[0].ProjectDescription}}">{{value[0].ProjectName}}</span>
+                    <a target="_blank" href="~/Report/ProjectOverview?projectId={{key | escape}}"><span title="Project overview" class="glyphicon glyphicon-open"></span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row top-margin" ng-class="{hide: !isShowTable()}">
+        <form method="Post" action="~/TimeSheet/EditTimeSheet?monday=@Html.UrlEncoder.Encode(monday.GetTimeSheetId())">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            @for (int i = 0; i < 7; i++)
+                            {
+                                <th>@Html.Raw(monday.AddDays(i).ToString("ddd(MM.dd)"))</th>
+                            }
+                            <th>Done</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in rowCollection" ng-show="row.IsSelected">
+                            <td ng-init="pIndex=$index">
+                                <span ng-if="row.IsPublic">{{row.ProjectName}}</span><span ng-if="!row.IsPublic">{{row.ProjectName + ":" + row.TaskName}}</span> <span ng-if="!row.IsPublic" title="Manage Murmurs" class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="open('lg', '@userId', row.ProjectId)"></span>
+                                <input type="hidden" name="{{'model[' + $index + '].ProjectId'}}" value="{{row.ProjectId}}" />
+                                <input type="hidden" name="{{'model[' + $index + '].TaskName'}}" value="{{row.TaskName}}" />
+                                <input type="hidden" name="{{'model[' + $index + '].IsSelected'}}" value="{{row.IsSelected}}" />
+                                <input type="hidden" name="{{'model[' + $index + '].TaskId'}}" value="{{row.TaskId}}" />
+                            </td>
+                            <td ng-repeat="day in weekDays">
+                                <input type="text" ng-model="row.Week[day]" ng-readonly="{{row.IsDone}}" class="form-control" name="{{'model[' + pIndex + '].Week[' + $index + ']'}}"
+                                           data-validation="number" data-validation-allowing="range[0;10],float" data-validation-error-msg="Please input a number no greater than 10." />
+                            </td>
+                            
+                            <td>
+                                @if (isUser)
+                                {
+                                    <input type="hidden" value="{{row.IsDone}}" name="{{'model[' + $index + '].IsDone'}}">
+                                    <input type="checkbox" value="true" ng-if="!row.IsPublic" ng-model="row.IsDone" ng-disabled="{{row.IsDone}}">
+                                }
+                                else
+                                {
+                                    <input type="checkbox" value="true" ng-if="!row.IsPublic" ng-model="row.IsDone" name="{{'model[' + $index + '].IsDone'}}">
+                                }
+                            </td>
+                        </tr>
+                        <tr ng-show="isShowTable()">
+                            <td>Summary</td>
+                            <td ng-repeat="day in weekDays"><span class="total">{{getColumn($index)}}</span></td>
+                            <td></td>
+                        </tr>
+                        <tr ng-show="isShowTable()">
+                            <td>Total</td>
+                            <td colspan="8"><span class="total">{{getTotal()}}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="submit" name="isSave" value="true" class="btn btn-info left-margin">Save</button>
+                        <button type="reset" class="btn btn-default left-margin" ng-click="reset($event)">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" name="userId" value="@userId">
+        </form>
+    </div>
+</div>

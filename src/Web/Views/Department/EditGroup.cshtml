@@ -1,0 +1,101 @@
+﻿@using Entity.User
+@using Entity.ValueType
+
+@{
+    ViewBag.Title = "Edit Group";
+    var owners = ViewData["Owners"] as List<User>;
+    var users = ViewData["Users"] as List<User>;
+    var userGroup = ViewData["UserGroup"] as UserGroup;
+}
+
+@section css{ 
+    <link rel="stylesheet" href="~/css/usergroup/group.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="~/js/usergroup/group.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">User Group</a></li>
+            <li class="active">Edit Group</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Edit group</h1>
+    </div>
+</div>
+
+<div class="row">
+    <form method="post" action="~/Department/EditGroup?id=@Html.UrlEncoder.Encode(userGroup.Id)">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="name">Group name</label>
+                <input type="text" class="form-control" id="name" name="name" value="@Html.Raw(userGroup.Name)">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="ownerIds">Owners</label>
+                <select class="form-control" id="ownerIds" name="ownerIds" multiple="multiple" data-validation="required">
+                    @foreach (var item in owners)
+                    {
+                        if (userGroup.OwnerIds.Contains(item.Id))
+                        {
+                            <option value="@Html.Raw(item.Id)" selected>@Html.Raw(item.Name)</option>
+                        }
+                        else
+                        {
+                            <option value="@Html.Raw(item.Id)">@Html.Raw(item.Name)</option>
+                        }
+
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="userIds">Users</label>
+                <select class="form-control" id="userIds" name="userIds" multiple="multiple" data-validation="required">
+                    @foreach (var item in users)
+                    {
+                        if (userGroup.UserIds.Contains(item.Id))
+                        {
+                            <option value="@Html.Raw(item.Id)" selected>@Html.Raw(item.Name)</option>
+                        }
+                        else
+                        {
+                            <option value="@Html.Raw(item.Id)">@Html.Raw(item.Name)</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label>
+                    <input value="true" type="checkbox" name="isTest" id="isTest" @if (userGroup.IsTest) { <text>checked</text>}> Is Test Team
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default left-margin">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

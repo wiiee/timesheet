@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "Report By Project";
+    var departmentPairs = ViewData["DepartmentPairs"] as List<KeyValuePair<string, string>>;
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Report By Project</h1>
+    </div>
+</div>
+
+<div class="row">
+    <h2>Department Overview</h2>
+    @foreach (var item in departmentPairs)
+    {
+        <div class="col-md-3">
+            <a href="~/Report/ReportByProject?departmentId=@Html.UrlEncoder.Encode(item.Key)">@item.Value</a>
+        </div>
+    }
+</div>

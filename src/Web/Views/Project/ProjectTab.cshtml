@@ -1,0 +1,51 @@
+﻿@using Web.Extension
+
+@model string
+
+@{ 
+    var col = 8;
+}
+
+<div ng-controller="projectCtrl" ng-cloak ng-init="status = '@Model'">
+    <div class="row top-margin">
+        <table st-safe-src="rowCollection" st-table="displayedCollection" st-set-filter="customFilter" class="table" id="projects">
+            <thead>
+                <tr>
+                    <th st-sort="Name" class="name">Name</th>
+                    <th st-sort="OwnerNames" class="OwnerNames">Owners</th>
+                    <th st-sort="UserNames" class="users">Users</th>
+                    <th st-sort="StartDate">Start</th>
+                    <th st-sort="EndDate">End</th>
+                    <th st-sort="TotalPlanHour"><abbr title="计划时间/实际时间">Ratio</abbr></th>
+                    <th st-sort="Status">Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @Html.Partial("~/Views/Project/Filter.cshtml")
+                <tr ng-repeat="row in displayedCollection" class="projectTr" ng-show="row.IsShow">
+                    <td title="{{row.Description}}"><a target="_blank" href="~/Report/ProjectOverview?projectId={{row.Id | escape}}">{{row.Name}}</a></td>
+                    <td title="{{row.OwnerNames}}">{{row.OwnerNames}}</td>
+                    <td title="{{row.UserNames}}">{{row.UserNames}}</td>
+                    <td title="{{row.StartDate | date:'yyyy/MM/dd'}}">{{row.StartDate | date:'yyyy/MM/dd'}}</td>
+                    <td title="{{row.EndDate | date:'yyyy/MM/dd'}}">{{row.EndDate | date:'yyyy/MM/dd'}}</td>
+                    <td title="{{row.TotalPlanHour}}/{{row.TotalActualHour}}">{{row.TotalPlanHour}}/{{row.TotalActualHour}}</td>
+                    <td>{{row.Status}}</td>
+                    <td>
+                        <span ng-if="row.IsEdit && row.Tasks" ng-click="editProject('lg', row.Id)" title="Edit Project" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                        <span ng-if="row.IsDelete" ng-click="deleteProject(row.Id)" title="Delete Project" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        @*<span ng-if="row.IsClose" ng-click="closeProject(row.Id)" title="Close Project" class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                        <span ng-if="row.IsPostpone" ng-click="postponeProject('', row.Id)" title="Postpone Project" class="glyphicon glyphicon-open" aria-hidden="true"></span>*@
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="@col">
+                        <div st-pagination="" st-items-by-page="itemsByPage" st-template="../template/stPagination.html"></div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

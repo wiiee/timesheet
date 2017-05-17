@@ -1,0 +1,25 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "jquery": "3.2.1",
+    "jquery-validation": "1.16.0",
+    "jquery-validation-unobtrusive": "3.2.6",
+    "angular": "v1.6.5-build.5353+sha.136a42a",
+    "bootstrap-multiselect": "v0.9.13",
+    "bootbox.js": "v4.4.0",
+    "bootstrap-datepicker": "v1.7.0-RC1",
+    "underscore": "1.8.3",
+    "angular-smart-table": "v2.1.8",
+    "angular-bootstrap": "2.3.2",
+    "blueimp-gallery": "v2.25.0",
+    "jquery-form-validator": "2.3.64",
+    "bootstrap-fileinput": "v4.4.0",
+    "textarea-autosize": "v0.4.2"
+  },
+  "resolutions": {
+    "jquery": "3.2.1",
+    "jquery-validation": "1.16.0"
+  }
+}

@@ -1,0 +1,81 @@
+﻿#projects {
+    white-space: nowrap;
+    table-layout: fixed;
+}
+
+tr.projectTr td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.st-sort-ascent:before {
+    content: '\25B2';
+}
+
+.st-sort-descent:before {
+    content: '\25BC';
+}
+
+.searchLabel {
+    height: 34px;
+    line-height: 34px !important;
+}
+
+#numOfPage{
+    padding: 4px 16px;
+}
+
+page-select input{
+    max-width: 60px;
+    max-height: 24px;
+}
+
+.pagination{
+    margin: 5px;
+}
+
+.name{
+    width: 35%;
+}
+
+.users{
+    width: 15%;
+}
+
+textarea {
+  box-sizing: border-box;
+  min-height: 31px;
+  overflow-x: hidden; /* for Firefox (issue #5) */
+}
+
+span.glyphicon {
+    color: #337ab7;
+}
+
+.has-success li.active .checkbox {
+    color: #fff;
+}
+
+.taskName, .taskUserId {
+    width: 85%;
+    display: inline-block;
+}
+
+.taskUserId {
+    width: 68%;
+    display: inline-block;
+}
+
+table .col-md-1, table .col-md-2 {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+table .col-md-3, table .col-md-4, table .col-md-5, table .col-md-6 {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.taskReview {
+    margin-left: 10px;
+}

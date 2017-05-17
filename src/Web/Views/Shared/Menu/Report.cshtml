@@ -1,0 +1,24 @@
+﻿@using Web.Extension
+
+@{
+    bool isGeLeader = this.IsGeLeader();
+}
+
+@if (isGeLeader)
+{
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            Report <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a asp-controller="Report" asp-action="ReportByUser">By User</a></li>
+            <li><a asp-controller="Report" asp-action="ReportByProject">By Project</a></li>
+            <li><a href="~/Report/WeeklyReport?isShowImportant=true">Weekly Report</a></li>
+            <li><a href="~/Report/MonthlyReport?isShowImportant=true">Monthly Report</a></li>
+        </ul>
+    </li>
+}
+else
+{
+    <li><a asp-controller="Report" asp-action="UserOverview">Report</a></li>
+}

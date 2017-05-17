@@ -1,0 +1,55 @@
+﻿.breadcrumb {
+    background-color: #fff !important;
+    margin-bottom: 10px !important;
+}
+
+.page-header {
+    margin-top:10px !important;
+}
+
+.left-margin {
+    margin-left: 10px;
+}
+
+.right-margin {
+    margin-right: 15px;
+}
+
+.top-margin {
+    margin-top: 15px;
+}
+
+.bottom-margin {
+    margin-bottom: 15px;
+}
+
+#userSection {
+    margin-top: 8px;
+}
+
+input.valid {
+    background: url(../../images/icon-ok.png) no-repeat right center #e3ffe5;
+    color: #002f00;
+    border-color: #96b796 !important;
+}
+
+input.error {
+    background: url(../../images/icon-fail.png) no-repeat right center #ffebef;
+    color: #480000;
+}
+
+.width-15 {
+    width: 15%;
+}
+
+.width-20 {
+    width: 20%;
+}
+
+.width-30 {
+    width: 30%;
+}
+
+[ng-cloak] {
+  display: none !important;
+}

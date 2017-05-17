@@ -1,0 +1,97 @@
+﻿@{
+    var col = 8;
+}
+
+<tr>
+    <td colspan="@col">
+        <a ng-bind="searchText" ng-click="switchSearch()">Show Condition</a>
+    </td>
+</tr>
+<tr collapse="isCollapsed">
+    <td colspan="@col">
+        <div class="row">
+            <div class="col-md-1"><span class="searchLabel">Global Search</span></div>
+            <div class="col-md-5">
+                <input st-search class="form-control" type="search" />
+            </div>
+            <div class="col-md-1"><span class="searchLabel">IsReviewed</span></div>
+            <div class="col-md-2">
+                <select class="form-control" st-search="IsReviewed">
+                    <option value="">All</option>
+                    <option ng-repeat="row in rowCollection | unique:'IsReviewed'" value="{{row.IsReviewed}}">{{row.IsReviewed}}</option>
+                </select>
+            </div>
+            <div class="col-md-1"><span class="searchLabel">Department</span></div>
+            <div class="col-md-2">
+                <select class="form-control" st-search="DepartmentNames">
+                    <option value="">All</option>
+                    <option ng-repeat="row in rowCollection | uniquesingle:'DepartmentNames'" value="{{row}}">{{row}}</option>
+                </select>
+            </div>
+        </div>
+    </td>
+</tr>
+<tr collapse="isCollapsed">
+    <td colspan="@col">
+        <div class="row">
+            <st-date-range afterpredicate="StartDate" beforepredicate="EndDate" labeltext="Date"></st-date-range>
+            <div class="col-md-1"><span class="searchLabel">Level</span></div>
+            <div class="col-md-2">
+                <select class="form-control" st-search="Level">
+                    <option value="">All</option>
+                    <option ng-repeat="row in rowCollection | unique:'Level'" value="{{row.Level}}">{{row.Level}}</option>
+                </select>
+            </div>
+            <div class="col-md-1"><span class="searchLabel">IsCr</span></div>
+            <div class="col-md-2">
+                <select class="form-control" st-search="IsCr">
+                    <option value="">All</option>
+                    <option ng-repeat="row in rowCollection | unique:'IsCr'" value="{{row.IsCr}}">{{row.IsCr}}</option>
+                </select>
+            </div>
+        </div>
+    </td>
+</tr>
+<tr collapse="isCollapsed">
+    <td colspan="@col">
+        <div class="row">
+            <div class="col-md-1"><span class="searchLabel">Name</span></div>
+            <div class="col-md-2">
+                <input st-search="Name" class="form-control" type="search" />
+            </div>
+            <div class="col-md-1"><span class="searchLabel">OwnerNames</span></div>
+            <div class="col-md-2">
+                <select class="form-control ownerNames" st-search="OwnerNames" ng-change="changeOwnerNames()" ng-model="ownerNames" multiple="multiple">
+                    <option value="">All</option>
+                    <option ng-repeat="row in rowCollection | uniquesingle:'OwnerNames'" value="{{row}}">{{row}}</option>
+                </select>
+            </div>
+            <div class="col-md-1"><span class="searchLabel">UserNames</span></div>
+            <div class="col-md-2">
+                <select class="form-control userNames" st-search="UserNames" ng-change="changeUserNames()" ng-model="userNames" multiple="multiple">
+                    <option value="">All</option>
+                    <option ng-repeat="row in rowCollection | uniquesingle:'UserNames'" value="{{row}}">{{row}}</option>
+                </select>
+            </div>
+            <div class="col-md-1"><span class="searchLabel">Page size</span></div>
+            <div class="col-md-2">
+                <input class="form-control" name="items" id="items" type="number" step="5" ng-model="itemsByPage" ng-blur="changeSize()">
+            </div>
+        </div>
+    </td>
+</tr>
+<tr collapse="isCollapsed">
+    <td colspan="@col">
+        <div class="row">
+            <st-number-range predicate="TotalActualHour" lower="query.lower" higher="query.higher" labeltext="ActualHour"></st-number-range>
+            <st-number-range predicate="TotalPlanHour" lower="query.lower" higher="query.higher" labeltext="PlanHour"></st-number-range>
+        </div>
+    </td>
+</tr>
+<tr collapse="isCollapsed">
+    <td colspan="@col">
+        <div class="row">
+            <div class="col-md-12"><span class="pull-right"><button type="button" class="btn btn-default" st-reset-search>Reset</button></span></div>
+        </div>
+    </td>
+</tr>

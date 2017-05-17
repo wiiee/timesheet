@@ -1,0 +1,91 @@
+﻿@using Entity.User
+@using Platform.Extension
+@using Platform.Enum
+@using Web.Extension
+@using Web.Model
+
+@{
+    ViewData["Title"] = "Home Page";
+    ViewData["ng-app"] = "home";
+    var users = ViewData["Users"] as List<UserHomeModel>;
+    var row = (int)Math.Ceiling((double)users.Count / 6);
+    var userId = this.GetUserId();
+}
+
+@section css{
+    <link rel="stylesheet" href="~/css/home/home.css" />
+}
+
+@section scripts {
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title">please enter comment</h3>
+        </div>
+        <div class="modal-body">
+            <textarea class="form-control" ng-model="comment"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+    <script type="text/javascript">
+        var _model = @Html.Raw(Json.Serialize(users.Select(o => new {
+                    Id = o.Id,
+                    ThumbsUp = o.ThumbsUp,
+                    ThumbsDown = o.ThumbsDown,
+                    Comment = o.Comment,
+                    IsThumbsDownActive = o.IsThumbsDownActive,
+                    IsThumbsUpActive = o.IsThumbsUpActive,
+                    IsCommentActive = o.IsCommentActive
+            })));
+    </script>
+    <script type="text/javascript" src="~/js/home/home.js"></script>
+}
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row">
+    <blockquote class="blockquote-reverse">
+        <p>@Html.Raw(string.Format("欢迎大家的加入，我们的大家庭现在已经有{0}位小伙伴了！", @users.Count))</p>
+        <footer>深圳研发团队<cite title="Source Title">Ctrip</cite></footer>
+    </blockquote>
+</div>
+
+<div ng-controller="homeCtrl" ng-cloak>
+
+    <div class="row">
+        @foreach (var user in users)
+        {
+            <div class="col-md-2">
+                <div class="thumbnail">
+                    <a href="@user.Logo"><img src="@Html.Raw(user.Thumbnail)" alt="@user.Name"></a>
+                    <div class="caption">
+                        <div class="row text-center">
+                            <div class="col-md-12">
+                                <a href="~/User/Profile?id=@Html.UrlEncoder.Encode(user.Id)">@Html.Raw(string.Format("{0}({1})", user.Name, user.NickName))</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="glyphicon glyphicon-thumbs-up" ng-class="{active:isThumbsUpActive('@user.Id')}" aria-hidden="true" ng-click="thumbsUp('@user.Id', '@userId')"></div>
+                                <div>{{getThumbsUp('@user.Id')}}</div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="glyphicon glyphicon-comment" ng-class="{active:isCommentActive('@user.Id')}" aria-hidden="true" ng-click="open('sm', '@user.Id', '@userId')"></div>
+                                <div>{{getComment('@user.Id')}}</div>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <div class="glyphicon glyphicon-thumbs-down" ng-class="{active:isThumbsDownActive('@user.Id')}" aria-hidden="true" ng-click="thumbsDown('@user.Id', '@userId')"></div>
+                                <div>{{getThumbsDown('@user.Id')}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+

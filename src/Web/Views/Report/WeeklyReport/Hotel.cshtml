@@ -1,0 +1,124 @@
+﻿@using Entity.User
+@using Web.Model.Report
+@using Entity.ValueType
+
+@{
+    ViewBag.Title = "Hotel Weekly Report";
+    ViewData["ng-app"] = "hotelWeeklyReport";
+    var models = ViewData["HotelWeeklyReportModels"] as List<HotelWeeklyReportModel>;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/css/report/weeklyreport.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
+    <script type="text/javascript" src="~/lib/angular-smart-table/dist/smart-table.js"></script>
+
+    <script type="text/javascript">
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+    </script>
+
+    <script type="text/javascript" src="~/js/report/hotelweeklyreport.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Report</a></li>
+            <li class="active">Hotel weekly report</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Hotel weekly report</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="projectCtrl" ng-cloak>
+    <form method="post" action="~/Report/WeeklyReport">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="button" id="clearLink" class="btn btn-default" ng-click="clearLink(this)">Clear Link</button>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>组别</th>
+                    <th>项目</th>
+                    <th>完成百分比</th>
+                    <th>预计完成（或上线）时间</th>
+                    <th>本周完成情况</th>
+                    <th>下周计划</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in models)
+                {
+                    <tr>
+                        <td>@Html.Raw(item.UserGroupName)</td>
+                        <td>
+                            @if (item.Projects.Count > 1)
+                            {
+                                <ol class="ol-left-padding-20">
+                                    @foreach (var pair in item.Projects)
+                                    {
+                                        <li><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(pair.Key)">@Html.Raw(pair.Value)</a></li>
+                                    }
+                                </ol>
+                            }
+                            else if (item.Projects.Count == 1)
+                            {
+                                <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Projects[0].Key)">@Html.Raw(item.Projects[0].Value)</a>
+                            }
+                        </td>
+                        <td>@Html.Raw(string.Format("开发:{0}%<br/> 测试:{1}%", (item.DevPercentage * 100).ToString("0"), (item.TestPercentage * 100).ToString("0")))</td>
+                        <td>@Html.Raw(item.EndDate.ToString("yyyy-MM-dd"))</td>
+                        <td>@Html.Raw(item.ProgressText)</td>
+                        <td>@Html.Raw(item.NextWeekPlan)</td>
+                        <td>@Html.Raw(item.Comment)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

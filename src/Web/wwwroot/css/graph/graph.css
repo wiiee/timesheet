@@ -1,0 +1,16 @@
+﻿.line-legend, .pie-legend{
+  min-height: 1em;
+  list-style: none;
+  margin: 1em 0;
+  padding: 2em 2em 2em 1em;
+  border: 1px solid #efefef;
+  display: inline-block;
+  background: rgba(85, 169, 203, 0.1);
+}
+
+.line-legend li span, .pie-legend li span{
+  display: inline-block;
+  width: 2em;
+  height: 1em;
+  margin: 0 .5em 0 0
+}

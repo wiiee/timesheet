@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Add Feedback";
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/bootstrap-fileinput/css/fileinput.min.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="~/js/feedback/addfeedback.js"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Add Feedback</h1>
+    </div>
+</div>
+
+<div class="row">
+    <form method="post" action="~/Feedback/AddFeedback">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" rows="3" class="form-control" data-validation="required"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="control-label">Select File</label>
+                <input id="imgs" type="file" multiple accept="image/*" class="file-loading">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

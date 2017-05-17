@@ -1,0 +1,126 @@
+﻿@using Entity.User
+@using Platform.Enum
+@using Web.Extension
+
+@{
+    ViewBag.Title = "Add A User";
+    Array userTypes = Enum.GetValues(typeof(UserType));
+    Array genders = Enum.GetValues(typeof(Gender));
+    var isAdmin = this.IsAdmin();
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/user/user.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/js/crypto/core-min.js"></script>
+    <script type="text/javascript" src="~/js/crypto/md5-min.js"></script>
+    <script type="text/javascript" src="~/js/user/adduser.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">User</a></li>
+            <li class="active">Add A User</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Add A User</h1>
+    </div>
+</div>
+
+<div class="row">
+    <form method="post" action="~/User/AddUser">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="id">Id</label>
+                <input type="text" class="form-control" id="id" name="id" data-validation="length" data-validation-length="6" placeholder="id" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="rawPassword">Password</label>
+                <input type="password" class="form-control" id="rawPassword" name="rawPassword" data-validation="length" data-validation-length="min3" placeholder="password" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" data-validation="confirmation" data-validation-confirm="rawPassword" placeholder="password" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" data-validation="length" data-validation-length="min2" placeholder="name" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="nickName">Nick Name</label>
+                <input type="text" class="form-control" id="nickName" name="nickName" data-validation="length" data-validation-length="min2" placeholder="nick name" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="mobileNo">Mobile Number</label>
+                <input type="text" class="form-control" id="mobileNo" name="mobileNo" data-validation="length" data-validation-length="min2" placeholder="mobile number" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="gender">Gender</label>
+                <select class="form-control" id="gender" name="gender" data-validation="required">
+                    <option value=""></option>
+                    @foreach (var item in genders)
+                    {
+                        <option value="@item">@Enum.GetName(typeof(Gender), item)</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        @if (isAdmin)
+        {
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label for="userType">User Type</label>
+                    <select class="form-control" id="userType" name="userType" data-validation="required">
+                        <option value=""></option>
+                        @foreach (var item in userTypes)
+                        {
+                            <option value="@item">@Enum.GetName(typeof(UserType), item)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" name="userType" id="userType" value="@UserType.User" />
+        }
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default left-margin">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="password" id="password" />
+    </form>
+</div>

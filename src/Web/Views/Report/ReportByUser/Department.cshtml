@@ -1,0 +1,99 @@
+﻿@using Web.Model.Report
+@using Web.Model.Chart.Combo
+@using Entity.ValueType
+@using Web.Constant
+@using Web.Extension
+@using Entity.Project
+
+@{
+    ViewBag.Title = "Report By User";
+    ViewData["ng-app"] = "reportByUser";
+    var model = ViewData["Model"] as ComboModel;
+    var groupPairs = ViewData["GroupPairs"] as List<KeyValuePair<string, string>>;
+    var pairs = ViewData["Pairs"] as List<KeyValuePair<string, string>>;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+
+    var pageSize = this.GetSessionValue(SessionKey.PAGE_SIZE);
+
+    if (string.IsNullOrEmpty(pageSize))
+    {
+        pageSize = DefaultPreference.PAGE_SIZE.ToString();
+    }
+
+    var modelsArray = new List<List<string>>();
+    var reportTitles = new List<string>();
+    reportTitles.Add("UserID");
+    reportTitles.Add("UserName");
+    reportTitles.Add("UserType");
+    reportTitles.Add("PlanHours");
+    reportTitles.Add("ActualHours");
+    reportTitles.Add("Contribution");
+    reportTitles.Add("Deviation");
+    modelsArray.Add(reportTitles);
+    for (var i = 0; i < model.Combos.Count(); i++)
+    {
+        var item = new List<string>();
+        item.Add(model.Combos[i].Id);
+        item.Add(model.Combos[i].Name);
+        item.Add(model.Combos[i].UserType);
+        item.Add(model.Combos[i].Items[0].Value.ToString());
+        item.Add(model.Combos[i].Items[1].Value.ToString());
+        item.Add(model.Combos[i].Items[2].Value.ToString());
+        var percentage = model.Combos[i].Items[1].Value == 0 ? 200 : model.Combos[i].Items[0].Value / model.Combos[i].Items[1].Value * 100;
+        item.Add(percentage.ToString("f2"));
+        modelsArray.Add(item);
+    }
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/report/reportbyproject.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
+    <script type="text/javascript" src="~/js/shared/googlechart.js"></script>
+    <script type="text/javascript">
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+        var _pairs = @Html.Raw(Json.Serialize(pairs));
+        var _model = @Html.Raw(Json.Serialize(model));
+        var _exportEntities = @Html.Raw(Json.Serialize(modelsArray));
+    </script>
+    <script type="text/javascript" src="~/js/report/reportbyuser/manager.js"  asp-append-version="true"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Report By User</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="userCtrl" ng-cloak>
+    @Html.Partial("~/Views/Report/ReportByUser/SearchDate.cshtml")
+
+    <div class="row">
+        <h2>Group Overview</h2>
+        @foreach (var item in groupPairs)
+        {
+            <div class="col-md-3">
+                <a href="~/Report/ReportByUser?groupId=@Html.UrlEncoder.Encode(item.Key)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToShortDateString())&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToShortDateString())">@item.Value</a>
+            </div> 
+        }
+    </div>
+
+    <div class="row">
+        <h2>Plan and Actual</h2>
+        <div id="combo"></div>
+    </div>
+
+    <div class="row">
+        <h2>Contribution</h2>
+        <div id="contributionCombo"></div>
+    </div>
+
+    <div class="row">
+        <h2>Deviation(偏差)</h2>
+        <div id="deviationCombo"></div>
+    </div>
+</div>

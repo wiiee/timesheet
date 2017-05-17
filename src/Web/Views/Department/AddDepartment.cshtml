@@ -1,0 +1,63 @@
+﻿@using Entity.User
+
+@{ 
+    ViewBag.Title = "Add A Department";
+    var owners = ViewData["Owners"] as List<User>;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/department/department.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="~/js/department/department.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Department</a></li>
+            <li class="active">Add a department</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Add a department</h1>
+    </div>
+</div>
+
+<div class="row">
+    <form method="post" action="~/Department/AddDepartment">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="id">Department name</label>
+                <input type="text" class="form-control" id="id" name="id" data-validation="required" placeholder="Name">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="ownerIds">Owners</label>
+                <select class="form-control" id="ownerIds" name="ownerIds" multiple="multiple" data-validation="required">
+                    @foreach (var item in owners)
+                    {
+                        <option value="@Html.Raw(item.Id)">@Html.Raw(item.Name)</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default left-margin">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

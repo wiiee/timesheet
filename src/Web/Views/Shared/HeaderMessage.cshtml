@@ -1,0 +1,22 @@
+﻿@{
+    var successMsg = ViewData["SuccessHeaderMsg"] as string;
+    var errorMsg = ViewData["ErrorHeaderMsg"] as string;
+}
+
+<div class="row">   
+    @if (ViewData["SuccessHeaderMsg"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            @Html.Raw(successMsg)
+        </div>
+    }
+
+    @if (ViewData["ErrorHeaderMsg"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            @Html.Raw(errorMsg)
+        </div>
+    }
+</div>

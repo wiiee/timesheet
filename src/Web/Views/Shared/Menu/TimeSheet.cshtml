@@ -1,0 +1,14 @@
+﻿@using Web.Extension
+
+@{
+    bool isAdmin = this.IsAdmin();
+}
+
+@if (isAdmin)
+{
+    <li><a asp-controller="TimeSheet" asp-action="ManageTimeSheet">TimeSheet</a></li>
+}
+else
+{
+    <li><a asp-controller="TimeSheet" asp-action="Index">TimeSheet</a></li>
+}

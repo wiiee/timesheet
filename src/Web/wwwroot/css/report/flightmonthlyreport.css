@@ -1,0 +1,13 @@
+﻿.ol-left-padding-60
+{
+    padding-left:60px;
+}
+
+.td-large_font-gray-bg
+{
+    font-weight:bold; 
+    font-size:large;
+    height:80px; 
+    vertical-align:middle !important; 
+    background-color:lightgrey;
+}

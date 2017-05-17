@@ -1,0 +1,20 @@
+﻿label[for="projects"]{
+    display: block;
+}
+
+button[type="reset"]{
+    margin-right: 12px;
+}
+
+.total{
+    padding: 6px 12px;
+}
+
+.searchLabel{
+    height: 34px;
+    line-height: 34px !important;
+}
+
+span.glyphicon {
+    color: #337ab7;
+}

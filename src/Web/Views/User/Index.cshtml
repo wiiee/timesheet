@@ -1,0 +1,90 @@
+﻿@using Web.Model
+@using Web.Extension
+@using Platform.Enum
+
+@{
+    ViewBag.Title = "User";
+    var users = ViewData["Users"] as List<UserModel>;
+    var userType = this.GetUserType();
+    var isDeleteShow = users.Where(o => o.IsDelete).Count() > 0;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/user/user.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+    <script type="text/javascript" src="~/js/user/user.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Personal</a></li>
+            <li class="active">User</li>
+        </ol>
+    </div>
+}
+
+
+@if (userType == UserType.Admin || userType == UserType.Manager)
+{
+    <div class="row">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-11"><h1>Users</h1></div>
+                <div class="col-md-1"><h1><a class="btn btn-default" role="button" asp-controller="User" asp-action="AddUser"><span title="Add a new user" class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></h1></div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="page-header">
+            <h1>User</h1>
+        </div>
+    </div>
+}
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Nick Name</th>
+                <th>Mobile Number</th>
+                <th>Gender</th>
+                <th>UserType</th>
+                <th>AccountType</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in users)
+            {
+                <tr>
+                    <td>@Html.Raw(item.Id)</td>
+                    <td>@Html.Raw(item.Name)</td>
+                    <td>@Html.Raw(item.NickName)</td>
+                    <td>@Html.Raw(item.MobileNo)</td>
+                    <td>@Html.Raw(item.Gender)</td>
+                    <td>@Html.Raw(item.UserType)</td>
+                    <td>@Html.Raw(item.AccountType)</td>
+                    <td>
+                        @if (item.IsEdit)
+                        { <a href="~/User/EditUser?id=@Html.UrlEncoder.Encode(item.Id)"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> }
+                        @if (item.IsResetPassword)
+                        { <a href="~/User/ResetPassword?id=@Html.UrlEncoder.Encode(item.Id)">Reset Password</a> }
+                        @if (item.IsDelete)
+                        { <a class="delete" data-id="@Html.Raw(item.Id)" href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a> }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

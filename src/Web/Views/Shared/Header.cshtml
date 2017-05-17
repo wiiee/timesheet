@@ -1,0 +1,46 @@
+﻿@using Web.Extension
+
+@{
+    string id = this.GetUserId();
+    bool isLogIn = this.IsLogIn();
+}
+
+<div class="container">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a asp-controller="Home" asp-action="Index" class="navbar-brand">TeamBalance</a>
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            @Html.Partial("~/Views/Shared/Menu/Personal.cshtml")
+            @Html.Partial("~/Views/Shared/Menu/Project.cshtml")
+            @Html.Partial("~/Views/Shared/Menu/TimeSheet.cshtml")
+            @Html.Partial("~/Views/Shared/Menu/Scrum.cshtml")
+            @Html.Partial("~/Views/Shared/Menu/Report.cshtml")
+            @Html.Partial("~/Views/Shared/Menu/Feedback.cshtml")
+        </ul>
+
+        <div class="pull-right" id="userSection">
+            @if (!isLogIn)
+            {
+                @Html.ActionLink("SignUp", "SignUp", "Account",
+                      new { returnUrl = Context.Request.Path },
+                      new { @class = "btn btn-success" })
+                @Html.ActionLink("Login", "LogIn", "Account",
+                      new { returnUrl = Context.Request.Path },
+                      new { @class = "btn btn-default left-margin" })
+            }
+            else
+            {
+                @:welcome, @id
+                @Html.ActionLink("LogOff", "LogOff", "Account",
+                      new { returnUrl = Context.Request.PathBase + Context.Request.Path },
+                      new { @class = "btn btn-default left-margin" })
+            }
+        </div>
+    </div>
+</div>

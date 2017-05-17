@@ -1,0 +1,131 @@
+﻿@using Entity.User
+@using Platform.Enum
+@using Web.Extension
+
+@{
+    ViewBag.Title = "Edit User";
+    var user = ViewData["User"] as User;
+    Array userTypes = Enum.GetValues(typeof(UserType));
+    Array genders = Enum.GetValues(typeof(Gender));
+    Array accountTypes = Enum.GetValues(typeof(AccountType));
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/user/user.css" />
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">User</a></li>
+            <li class="active">Edit User</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Edit User</h1>
+    </div>
+</div>
+
+<div class="row">
+    <form method="post" action="~/User/EditUser?id=@user.Id">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="id">Id</label>
+                <input type="text" class="form-control" id="id" value="@user.Id" data-validation="length" data-validation-length="6" placeholder="id" readonly/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="@user.Name" data-validation="length" data-validation-length="min2" placeholder="name" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="nickName">Nick Name</label>
+                <input type="text" class="form-control" id="nickName" name="nickName" value="@user.NickName" data-validation="length" data-validation-length="min2" placeholder="nick name" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="mobileNo">Mobile Number</label>
+                <input type="text" class="form-control" id="mobileNo" name="mobileNo" value="@user.MobileNo" data-validation="length" data-validation-length="min2" placeholder="mobile number" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="gender">Gender</label>
+                <select class="form-control" id="gender" name="gender" data-validation="required">
+                    @foreach (var item in genders)
+                    {
+                        if (user.Gender == (Gender)item)
+                        {
+                            <option value="@item" selected>@Enum.GetName(typeof(Gender), item)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@Enum.GetName(typeof(Gender), item)</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        @if (this.GetUserType() == UserType.Admin)
+        {
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label for="accountType">Account Type</label>
+                    <select class="form-control" id="accountType" name="accountType" data-validation="required">
+                        @foreach (var item in accountTypes)
+                        {
+                            if (user.AccountType == (AccountType)item)
+                            {
+                                <option value="@item" selected>@Enum.GetName(typeof(AccountType), item)</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@Enum.GetName(typeof(AccountType), item)</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label for="userType">User Type</label>
+                    <select class="form-control" id="userType" name="userType" data-validation="required">
+                        @foreach (var item in userTypes)
+                        {
+                            if (user.UserType == (UserType)item)
+                            {
+                                <option value="@item" selected>@Enum.GetName(typeof(UserType), item)</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@Enum.GetName(typeof(UserType), item)</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default left-margin">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,93 @@
+﻿@using Entity.Other
+@using Platform.Enum
+@using Platform.Model.BootstrapFileInput
+@using Platform.Extension
+
+@{
+    ViewBag.Title = "Edit Feedback";
+    var feedback = ViewData["Feedback"] as Feedback;
+    var sendingData = ViewData["SendingData"] as SendingData;
+    Array statuses = Enum.GetValues(typeof(Status));
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/bootstrap-fileinput/css/fileinput.min.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script type="text/javascript">
+        var _feedbackId = "@Html.Raw(feedback.Id)";
+        var _initialPreview = @Html.Raw(Json.Serialize(sendingData.initialPreviews.Select(o => o.GetPreview()).ToList()));
+        var _initialPreviewConfig = @Html.Raw(Json.Serialize(sendingData.initialPreviewConfigs));
+    </script>
+    <script type="text/javascript" src="~/js/feedback/editfeedback.js"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Edit Feedback</h1>
+    </div>
+</div>
+
+<div class="row">
+    <form method="post" action="~/Feedback/EditFeedback?id=@Html.UrlEncoder.Encode(feedback.Id)">
+        @if (!feedback.ImgIds.IsEmpty())
+        {
+            foreach(var item in feedback.ImgIds)
+            {
+                <input type="hidden" name="imgIds" value="@Html.Raw(item)" />
+            }
+        }
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="description">Description</label>
+                <textarea class="form-control" name="description" id="description" data-validation="required">@Html.Raw(feedback.Description)</textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="status">Status</label>
+                <select class="form-control" id="status" name="status" data-validation="required">
+                    @foreach (var item in statuses)
+                    {
+                        if (feedback.Status == (Status)item)
+                        {
+                            <option value="@item" selected>@Enum.GetName(typeof(Status), item)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@Enum.GetName(typeof(Status), item)</option>
+                        }
+                    }
+                </select>               
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label for="comment">Comment</label>
+                <textarea class="form-control" name="comment" id="comment">@feedback.Comment</textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="control-label">Select File</label>
+                <input id="imgs" type="file" multiple class="file-loading" accept="image/*">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="reset" class="btn btn-default">Reset</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
