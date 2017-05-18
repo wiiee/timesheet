@@ -1,0 +1,24 @@
+{
+  "name": "angular-lazyload",
+  "version": "1.0.0",
+  "homepage": "https://github.com/angular-directive/angular-lazyload",
+  "authors": [
+    "febobo"
+  ],
+  "description": "基于angular 扩展的可复用的图片懒加载指令",
+  "main": "dist/angular-lazyload.js",
+  "keywords": [
+    "angular",
+    "lazyload"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "devDependencies": {
+    "angular": "~1.4.3",
+    "bootstrap": "~3.3.5"
+  }
+}

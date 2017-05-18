@@ -40,6 +40,7 @@
                     IsCommentActive = o.IsCommentActive
             })));
     </script>
+    <script type="text/javascript" src="~/lib/angular-lazyload/dist/lazyload.js"></script>
     <script type="text/javascript" src="~/js/home/home.js"></script>
 }
 
@@ -59,7 +60,7 @@
         {
             <div class="col-md-2">
                 <div class="thumbnail">
-                    <a href="@Url.Content(user.Logo)"><img src="@Url.Content(user.Thumbnail)" alt="@user.Name"></a>
+                    <a href="@Url.Content(user.Logo)"><img srcset="" data-ui-lazyload="@Url.Content(user.Thumbnail)" alt="@user.Name"></a>
                     <div class="caption">
                         <div class="row text-center">
                             <div class="col-md-12">

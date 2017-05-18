@@ -12,10 +12,10 @@
             var output = new MemoryStream();
             var imgSource = new Image(srcStream);
 
-            var height = Math.Min(imgSource.Height, destHeight);
-            var width = Math.Min(imgSource.Width, destWidth);
+            //var height = Math.Min(imgSource.Height, destHeight);
+            //var width = Math.Min(imgSource.Width, destWidth);
 
-            imgSource.Resize(width, height)
+            imgSource.Resize(destWidth, destHeight)
                 .Save(output);
 
             return output.ToArray();

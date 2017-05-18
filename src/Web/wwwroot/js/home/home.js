@@ -1,5 +1,5 @@
 ﻿(function () {
-    angular.module("home", ['ui.bootstrap'])
+    angular.module("home", ['ui.bootstrap', 'lazyload'])
     .controller("homeCtrl", function ($scope, $http, $modal, $log) {
         $scope.model = _model;
 

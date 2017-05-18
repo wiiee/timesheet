@@ -12,8 +12,6 @@
 
     public abstract class BaseController : Controller
     {
-        private IContext context;
-
         private Dictionary<string, IService> services = new Dictionary<string, IService>();
 
         private ISetting setting;

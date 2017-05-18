@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Platform.Enum;
     using ValueType;
 
     public class Department : BaseEntity
@@ -21,6 +22,11 @@
         }
 
         public Department() { }
+
+        public bool IsFlight()
+        {
+            return Id == DepartmentName.SHENZHEN_FLIGHT;
+        }
 
         public List<string> GetLeaderIds()
         {
