@@ -188,6 +188,7 @@
     <Content Include="wwwroot\images\icon\male_97.jpg" />
     <Content Include="wwwroot\images\icon\male_98.jpg" />
     <Content Include="wwwroot\images\icon\male_99.jpg" />
+    <Content Include="wwwroot\images\loading.gif" />
     <Content Include="wwwroot\js\account\account.js" />
     <Content Include="wwwroot\js\account\login.js" />
     <Content Include="wwwroot\js\account\signup.js" />
