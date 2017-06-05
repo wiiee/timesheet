@@ -73,7 +73,7 @@
 
             foreach (var type in types)
             {
-                if (type.GetTypeInfo().IsClass)
+                if (type.GetTypeInfo().IsClass && type.FullName.Contains("Entity."))
                 {
                     //BsonClassMap.LookupClassMap(type);
                     try
