@@ -61,9 +61,9 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="4"><a ng-bind="showText" ng-click="switchShowAll()">Show All</a></td>
+                                <td colspan="4"><a ng-bind="showText[userId]" ng-click="switchShowAll(userId)">Show All</a></td>
                             </tr>
-                            <tr ng-repeat="row in rows" ng-show="row.Status !== 'Done' || currentTextIndex === 1">
+                            <tr ng-repeat="row in rows" ng-show="row.Status !== 'Done' || currentTextIndex[userId] === 1">
                                 <td>
                                     <a ng-href="{{'TimeSheet/' + row.Status === 'Done' ? 'Read' : 'Edit' + 'TimeSheet?monday=' + utility.getTimeSheetId(row.Monday) + '&userId=' + userId}}">{{row.Text}}</a>
                                 </td>

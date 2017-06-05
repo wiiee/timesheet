@@ -67,7 +67,7 @@
         var _phases = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Phase))));
         var _postponeReasons = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(PostponeReason))));
         var _effortMax = @Setting.Instance.Get("EffortMax");
-        var _isPost = false;
+        //var _isPost = false;
         var _userId = "@Html.Raw(this.GetUserId())";
         var _userType = "@Html.Raw(this.GetUserType())";
     </script>

@@ -24,7 +24,8 @@
 
         public IActionResult Index(string successMsg, string errorMsg)
         {
-            BuildProject(successMsg, errorMsg);
+            this.BuildHeaderMsg(successMsg, errorMsg);
+            //BuildProject(successMsg, errorMsg);
             return View();
         }
 

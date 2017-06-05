@@ -17,14 +17,14 @@
             $scope.userNames = [];
             $scope.ownerNames = [];
 
-            var url = _basePath + "/api/Project/GetProjectModels";
+            $scope.init = function (status) {
+                $scope.status = status;
 
-            if (!_isPost) {
-                _isPost = true;
+                var url = _basePath + "/api/Project/GetProjectModels?statusText=" + $scope.status;
 
                 $http.post(url).then(function (response) {
-                    _rowCollection = response.data;
-                    $rootScope.$broadcast("dataIsReady");
+                    $scope.rowCollection = response.data;
+                    //$rootScope.$broadcast("dataIsReady");
 
                     $timeout(function () {
                         $(".userNames, .ownerNames").multiselect({
@@ -34,11 +34,11 @@
                 });
             }
 
-            $scope.$on('dataIsReady', function (event, data) {
-                $scope.rowCollection = _.filter(_rowCollection, function (row) {
-                    return row.Status === $scope.status;
-                });
-            });
+            //$scope.$on('dataIsReady', function (event, data) {
+            //    $scope.rowCollection = _.filter(_rowCollection, function (row) {
+            //        return row.Status === $scope.status;
+            //    });
+            //});
 
             $scope.switchSearch = function () {
                 $scope.isCollapsed = !$scope.isCollapsed;

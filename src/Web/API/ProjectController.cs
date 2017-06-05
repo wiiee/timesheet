@@ -312,13 +312,26 @@
 
         [Route("GetProjectModels")]
         [HttpPost]
-        public List<object> GetProjectModels()
+        public List<object> GetProjectModels(string statusText)
         {
             try
             {
                 var leaderIds = this.GetService<DepartmentService>().GetLeaderIdsByUserId(this.GetUserId());
                 var projects = this.GetService<ProjectService>().Get().Where(o => o.IsPublic || o.OwnerIds.Intersect(leaderIds).Count() > 0);
                 projects = projects.OrderBy(o => o.IsPublic).ThenByDescending(o => o.GetEndDate()).ThenByDescending(o => o.UserIds.Contains(this.GetUserId())).ThenByDescending(o => o.Created).ToList();
+
+                if(!string.IsNullOrEmpty(statusText))
+                {
+                    try
+                    {
+                        Status status = EnumUtil.ParseEnum<Status>(statusText);
+                        projects = projects.Where(o => o.Status == status).ToList();
+                    }
+                    catch(Exception)
+                    {
+
+                    }
+                }
 
                 return projects.Select(o => o.BuildProjectModel(this.GetUserId()).ToRow()).ToList();
             }

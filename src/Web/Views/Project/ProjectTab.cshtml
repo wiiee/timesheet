@@ -6,7 +6,7 @@
     var col = 8;
 }
 
-<div ng-controller="projectCtrl" ng-cloak ng-init="status = '@Model'">
+<div ng-controller="projectCtrl" ng-cloak ng-init="init('@Model')">
     <div class="row top-margin">
         <table st-safe-src="rowCollection" st-table="displayedCollection" st-set-filter="customFilter" class="table" id="projects">
             <thead>
