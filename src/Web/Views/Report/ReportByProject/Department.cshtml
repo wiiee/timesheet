@@ -18,6 +18,8 @@
     var overtimeProjects = ViewData["OvertimeProjects"] as List<Project>;
     var searchDateRange = ViewData["SearchDateRange"] as DateRange;
 
+    var FORMAT = "yyyy/MM/dd";
+
     var pageSize = this.GetSessionValue(SessionKey.PAGE_SIZE);
 
     if (string.IsNullOrEmpty(pageSize))
@@ -45,9 +47,9 @@
         item.Add(model.Timelines[i].Id ?? "");
         item.Add(model.Timelines[i].SerialNumber??"");
         item.Add(model.Timelines[i].Name);
-        item.Add(model.Timelines[i].Parts[0].StartDate.ToShortDateString());
-        item.Add(model.Timelines[i].Parts[0].EndDate.ToShortDateString());
-        item.Add(model.Timelines[i].Parts.Count > 1?model.Timelines[i].Parts[1].EndDate.ToShortDateString():"");
+        item.Add(model.Timelines[i].Parts[0].StartDate.ToString(FORMAT));
+        item.Add(model.Timelines[i].Parts[0].EndDate.ToString(FORMAT));
+        item.Add(model.Timelines[i].Parts.Count > 1 ? model.Timelines[i].Parts[1].EndDate.ToString(FORMAT) : "");
         var names = model.Timelines[i].Parts[0].Name.Split('|'); //"devName,testName|480/36"
         item.Add(names[0]);//Participants
         var planHours = ""; var actualHours = "";
@@ -101,7 +103,7 @@
         @foreach (var item in groupPairs)
         {
             <div class="col-md-3">
-                <a href="~/Report/ReportByProject?groupId=@Html.UrlEncoder.Encode(item.Key)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToShortDateString())&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToShortDateString())">@item.Value</a>
+                <a href="~/Report/ReportByProject?groupId=@Html.UrlEncoder.Encode(item.Key)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToString(FORMAT))&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToString(FORMAT))">@item.Value</a>
             </div> 
         }
     </div>
@@ -124,7 +126,7 @@
                             @foreach (var item in expiredProjects)
                             {
                                 <li class="list-group-item list-group-item-danger">
-                                    <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Id)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToShortDateString())&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToShortDateString())">@Html.Raw(item.Name)</a>
+                                    <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Id)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToString(FORMAT))&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToString(FORMAT))">@Html.Raw(item.Name)</a>
                                 </li>
                             }
                         </ul>
@@ -147,7 +149,7 @@
                             @foreach (var item in overtimeProjects)
                             {
                                 <li class="list-group-item list-group-item-warning">
-                                    <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Id)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToShortDateString())&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToShortDateString())">@Html.Raw(item.Name)</a>
+                                    <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.Id)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToString(FORMAT))&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToString(FORMAT))">@Html.Raw(item.Name)</a>
                                 </li>
                             }
                         </ul>

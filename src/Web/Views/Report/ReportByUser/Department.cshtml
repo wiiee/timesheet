@@ -15,6 +15,8 @@
 
     var pageSize = this.GetSessionValue(SessionKey.PAGE_SIZE);
 
+    var FORMAT = "yyyy/MM/dd";
+
     if (string.IsNullOrEmpty(pageSize))
     {
         pageSize = DefaultPreference.PAGE_SIZE.ToString();
@@ -77,7 +79,7 @@
         @foreach (var item in groupPairs)
         {
             <div class="col-md-3">
-                <a href="~/Report/ReportByUser?groupId=@Html.UrlEncoder.Encode(item.Key)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToShortDateString())&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToShortDateString())">@item.Value</a>
+                <a href="~/Report/ReportByUser?groupId=@Html.UrlEncoder.Encode(item.Key)&startDate=@Html.UrlEncoder.Encode(searchDateRange.StartDate.ToString(FORMAT))&endDate=@Html.UrlEncoder.Encode(searchDateRange.EndDate.ToString(FORMAT))">@item.Value</a>
             </div> 
         }
     </div>
