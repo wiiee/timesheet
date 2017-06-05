@@ -24,26 +24,22 @@
         private static ILogger _logger = LoggerUtil.CreateLogger<UserController>();
 
         // GET: api/user
-        public JsonResult Get()
+        [Route("GetUserNames")]
+        [HttpPost]
+        public Dictionary<string, string> GetUserNames()
         {
             var users = this.GetService<UserService>().Get();
             var entities = users.Select(
                 c => new
                 {
                     id = c.Id,
-                    password = c.Password,
+                    //password = c.Password,
                     name = c.Name,
-                    adminTypes = c.UserType.GetEnumsWithName()
+                    //adminTypes = c.UserType.GetEnumsWithName()
                 }
-            );
+            ).ToDictionary(key => key.id, value => value.name);
 
-            object json = new
-            {
-                status = Result.Success,
-                data = entities
-            };
-
-            return Json(json);
+            return entities;
         }
 
         // POST api/values

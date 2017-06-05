@@ -8,8 +8,7 @@
 
 @{
     ViewBag.Title = "Manage TimeSheet";
-    var userWeeks = ViewData["UserWeeks"] as Dictionary<string, List<TimeSheetOverviewModel>>;
-    var userService = this.GetService<UserService>();
+    ViewData["ng-app"] = "manageTimeSheet";
 }
 
 @section css {
@@ -38,21 +37,18 @@
 
 @Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
 
-<div class="row">
+<div class="row" ng-controller="manageTimeSheetCtrl" ng-cloak>
     <div class="panel-group" id="userWeeks" role="tablist" aria-multiselectable="true">
-        @foreach (var entry in userWeeks)
-        {
-            var user = userService.Get(entry.Key);
-            <div class="panel panel-info">
+            <div class="panel panel-info" ng-repeat="(userId, rows) in users">
                 <!-- Default panel contents -->
                 <div class="panel-heading">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#userWeeks" href="@Html.Raw("#" + entry.Key)" aria-expanded="true" aria-controls="@Html.Raw(entry.Key)">
-                            @Html.Raw(user.Id + "_" + user.Name)
+                        <a role="button" data-toggle="collapse" data-parent="#userWeeks" ng-href="{{'#' + userId}}" aria-expanded="true" aria-controls="{{userId}}">
+                            {{userId + "_" + names[userId]}}
                         </a>
                     </h4>
                 </div>
-                <div class="collapse in" id="@Html.Raw(entry.Key)">
+                <div class="collapse in" id="{{userId}}">
                     <!-- Table -->
                     <table class="table table-striped">
                         <thead>
@@ -64,28 +60,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in entry.Value)
-                            {
-                                <tr>
-                                    <td>
-                                        @if(item.Status == Status.Done.ToString())
-                                        {
-                                            <a href="~/TimeSheet/ReadTimeSheet?monday=@Html.UrlEncoder.Encode(item.Monday.GetTimeSheetId())&userId=@Html.UrlEncoder.Encode(entry.Key)">@item.Text</a>
-                                        }
-                                        else
-                                        {
-                                            <a href="~/TimeSheet/EditTimeSheet?monday=@Html.UrlEncoder.Encode(item.Monday.GetTimeSheetId())&userId=@Html.UrlEncoder.Encode(entry.Key)">@item.Text</a>
-                                        }
-                                    </td>
-                                    <td>@item.WeekHours</td>
-                                    <td>@item.Status</td>
-                                    <td>@if (item.IsReturn) { <a class="return" href="javascript:void(0)" data-monday="@Html.UrlEncoder.Encode(item.Monday.GetTimeSheetId())" data-userId="@Html.UrlEncoder.Encode(entry.Key)">Return</a> }</td>
-                                </tr>
-                            }
+                            <tr>
+                                <td colspan="4"><a ng-bind="showText" ng-click="switchShowAll()">Show All</a></td>
+                            </tr>
+                            <tr ng-repeat="row in rows" ng-show="row.Status !== 'Done' || currentTextIndex === 1">
+                                <td>
+                                    <a ng-href="{{'TimeSheet/' + row.Status === 'Done' ? 'Read' : 'Edit' + 'TimeSheet?monday=' + utility.getTimeSheetId(row.Monday) + '&userId=' + userId}}">{{row.Text}}</a>
+                                </td>
+                                <td>{{row.WeekHours}}</td>
+                                <td>{{row.Status}}</td>
+                                <td>
+                                    <a class="return" href="javascript:void(0)" data-monday="{{utility.getTimeSheetId(row.Monday)}}" data-userId="{{userId}}" ng-if="row.IsReturn">Return</a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        }
     </div>
 </div>

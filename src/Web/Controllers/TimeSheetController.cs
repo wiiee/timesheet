@@ -36,15 +36,6 @@
 
             this.BuildHeaderMsg(successMsg, errorMsg);
 
-            var userIds = departmentService.GetSubordinatesByUserId(this.GetUserId());
-
-            //去掉Admin
-            var adminIds = this.GetService<UserService>().Get().Where(o => o.UserType == UserType.Admin).Select(o => o.Id).ToList();
-            userIds = userIds.Except(adminIds).ToList();
-            var helper = new TimeSheetHelper(this);
-
-            ViewData["UserWeeks"] = helper.BuildUserTimeSheetOverViewModels(userIds);
-
             return View();
         }
 

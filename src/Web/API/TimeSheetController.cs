@@ -6,10 +6,12 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Model;
+    using Platform.Enum;
     using Platform.Util;
     using Service.User;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     [Route("api/[controller]")]
     public class TimeSheetController : BaseController
@@ -24,6 +26,28 @@
             {
                 var helper = new TimeSheetHelper(this);
                 return helper.BuildTimeSheetOverViewModel(this.GetUserId());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        [Route("GetManageTimeSheetModel")]
+        [HttpPost]
+        public Dictionary<string, List<TimeSheetOverviewModel>> GetManageTimeSheetModel()
+        {
+            try
+            {
+                //var helper = new TimeSheetHelper(this);
+                //return helper.BuildTimeSheetOverViewModel(this.GetUserId());
+                var userIds = this.GetService<DepartmentService>().GetSubordinatesByUserId(this.GetUserId());
+                var adminIds = this.GetService<UserService>().Get().Where(o => o.UserType == UserType.Admin).Select(o => o.Id).ToList();
+                userIds = userIds.Except(adminIds).ToList();
+                var helper = new TimeSheetHelper(this);
+
+                return helper.BuildUserTimeSheetOverViewModels(userIds);
             }
             catch (Exception ex)
             {
