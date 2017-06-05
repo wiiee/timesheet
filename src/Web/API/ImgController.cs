@@ -14,16 +14,29 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Collections.Concurrent;
 
     [Route("api/[controller]")]
     public class ImgController : BaseController
     {
         private static ILogger _logger = LoggerUtil.CreateLogger<ImgController>();
 
+        private static ConcurrentDictionary<string, FileContentResult> _imgs = new ConcurrentDictionary<string, FileContentResult>();
+
         // GET api/values/5
         [HttpGet("{id}")]
+        [ResponseCache(Duration = 604800)]
         public FileContentResult Get(string id, int height, int width)
         {
+            var key = id + "." + height + "." + width;
+
+            FileContentResult result;
+
+            if (_imgs.TryGetValue(key, out result))
+            {
+                return result;
+            }
+
             var img = this.GetService<ImgService>().Get(id);
             var ids = this.GetService<ImgService>().GetIds();
 
@@ -46,7 +59,11 @@
             //transform the picture's data from string to an array of bytes
 
             //return array of bytes as the image's data to action's response. We set the image's content mime type to image/jpeg
-            return new FileContentResult(bytes, img.ContentType);
+            result = new FileContentResult(bytes, img.ContentType);
+
+            _imgs.TryAdd(key, result);
+
+            return result;
         }
 
         [Route("Upload")]
