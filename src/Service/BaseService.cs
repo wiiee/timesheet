@@ -44,25 +44,14 @@
             this.repository = Repository<T>.Instance;
             this.collection = repository.GetCollection();
 
-            if (this.GetContext() != null && this.GetContext().IsUseCache)
-            {
-                cache = LocalCache<T>.Instance;
-                RebuildCache();
-            }
-        }
+            //if (this.GetContext() != null && this.GetContext().IsUseCache)
+            //{
+            //    cache = LocalCache<T>.Instance;
+            //    RebuildCache();
+            //}
 
-        //Scoped模式
-        public BaseService(IContext context)
-        {
-            this.context = context;
-            this.repository = Repository<T>.Instance;
-            this.collection = repository.GetCollection();
-
-            if (this.GetContext() != null && this.GetContext().IsUseCache)
-            {
-                cache = LocalCache<T>.Instance;
-                RebuildCache();
-            }
+            cache = LocalCache<T>.Instance;
+            RebuildCache();
         }
 
         public IContext GetContext()
@@ -168,7 +157,7 @@
                         return cache.GetByIdsWithList(ids);
                     }
 
-                    return Get(o => ids.Contains(o.Id));
+                    return Get().Where(o => ids.Contains(o.Id)).ToList();
                 }
                 catch (Exception ex)
                 {

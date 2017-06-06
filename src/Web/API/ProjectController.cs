@@ -199,7 +199,7 @@
             try
             {
                 var group = this.GetService<DepartmentService>().GetUserGroupById(groupId);
-                var projects = this.GetService<ProjectService>().Get(o => 
+                var projects = this.GetService<ProjectService>().Get().Where(o => 
                     !o.Tasks.IsEmpty() && 
                     group.OwnerIds.Intersect(o.OwnerIds).Count() > 0 &&
                     o.Status != Status.Done &&

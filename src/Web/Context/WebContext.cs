@@ -14,7 +14,7 @@
         {
             this.userId = httpContext.GetUserId();
             this.remoteIp = httpContext.GetRemoteIp();
-            this.isUseCache = false;
+            this.isUseCache = true;
         }
 
         //public WebContext(IHttpContextAccessor httpContextAccessor)

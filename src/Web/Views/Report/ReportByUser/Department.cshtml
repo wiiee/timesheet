@@ -17,6 +17,8 @@
 
     var FORMAT = "yyyy/MM/dd";
 
+    var text = searchDateRange.StartDate.ToString(FORMAT);
+
     if (string.IsNullOrEmpty(pageSize))
     {
         pageSize = DefaultPreference.PAGE_SIZE.ToString();
@@ -55,6 +57,7 @@
     <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
     <script type="text/javascript" src="~/js/shared/googlechart.js"></script>
     <script type="text/javascript">
+        var _text = @Html.Raw(text);
         var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
         var _pairs = @Html.Raw(Json.Serialize(pairs));
         var _model = @Html.Raw(Json.Serialize(model));

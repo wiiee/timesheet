@@ -24,13 +24,16 @@
 
                 $http.post(url).then(function (response) {
                     $scope.rowCollection = response.data;
+                    _ajaxProjectSize++;
                     //$rootScope.$broadcast("dataIsReady");
 
-                    $timeout(function () {
-                        $(".userNames, .ownerNames").multiselect({
-                            buttonWidth: "100%"
-                        });
-                    }, 500);
+                    if (_ajaxProjectSize === 3) {
+                        $timeout(function () {
+                            $(".userNames, .ownerNames").multiselect({
+                                buttonWidth: "100%"
+                            });
+                        }, 500);
+                    }
                 });
             }
 

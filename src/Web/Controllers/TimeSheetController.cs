@@ -44,7 +44,7 @@
         {
             var projectService = this.GetService<ProjectService>();
 
-            var projects = projectService.Get(o => o.UserIds.Contains(userId) || o.IsPublic)
+            var projects = projectService.Get().Where(o => o.UserIds.Contains(userId) || o.IsPublic)
                 .Where(o => o.PlanDateRange.EndDate > monday.AddDays(-1) && o.PlanDateRange.StartDate < monday.AddDays(7))
                 .ToList();
 
@@ -134,7 +134,7 @@
                 var projectService = this.GetService<ProjectService>();
 
                 //获取当前正在工作的项目
-                var projects = projectService.Get(o => o.UserIds.Contains(userId) || o.IsPublic)
+                var projects = projectService.Get().Where(o => o.UserIds.Contains(userId) || o.IsPublic)
                     .Where(o => o.PlanDateRange.EndDate > monday.AddDays(-1) && o.PlanDateRange.StartDate < monday.AddDays(7))
                     .Where(o => !(o.Status == Status.Done && o.ActualDateRange.EndDate < monday))
                     .ToList();

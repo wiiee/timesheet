@@ -64,7 +64,7 @@
         //得到所在部门的所有测试人员
         public List<string> GetTestUserIdsByUserId(string userId)
         {
-            return Get(o => o.UserGroups.SelectMany(p => p.Value.UserIds).Contains(userId))
+            return Get().Where(o => o.UserGroups.SelectMany(p => p.Value.UserIds).Contains(userId))
                 .SelectMany(o => o.UserGroups.Where(p => p.Value.IsTest).SelectMany(q => q.Value.UserIds))
                 .ToList();
         }
@@ -72,14 +72,14 @@
         //得到所在部门的测试Leader
         public List<string> GetTestLeaderIdsByUserId(string userId)
         {
-            return Get(o => o.UserGroups.SelectMany(p => p.Value.UserIds).Contains(userId))
+            return Get().Where(o => o.UserGroups.SelectMany(p => p.Value.UserIds).Contains(userId))
                 .SelectMany(o => o.UserGroups.Where(p => p.Value.IsTest).SelectMany(q => q.Value.OwnerIds))
                 .ToList();
         }
 
         public List<string> GetUserIdsByManagerId(string userId)
         {
-            return Get(o => o.OwnerIds.Contains(userId))
+            return Get().Where(o => o.OwnerIds.Contains(userId))
                 .SelectMany(o => o.UserGroups.SelectMany(p => p.Value.UserIds))
                 .ToList();
         }
@@ -99,7 +99,7 @@
                 case UserType.Admin:
                     return ServiceFactory.Instance.GetService<UserService>().GetIds();
                 case UserType.Manager:
-                    var userIds = Get(o => o.OwnerIds.Contains(userId))
+                    var userIds = Get().Where(o => o.OwnerIds.Contains(userId))
                         .SelectMany(o => o.UserGroups.SelectMany(p => p.Value.UserIds)).Distinct().ToList();
                     userIds.Add(userId);
                     userIds = userIds.Distinct().ToList();
@@ -140,7 +140,7 @@
                 }
                 else if (user.UserType == UserType.Manager)
                 {
-                    return Get(o => o.OwnerIds.Contains(userId));
+                    return Get().Where(o => o.OwnerIds.Contains(userId)).ToList();
                 }
             }
 
@@ -230,7 +230,7 @@
             }
             else if(user.UserType == UserType.Manager)
             {
-                return Get(o => o.OwnerIds.Contains(user.Id)).SelectMany(o => o.UserGroups.Values).ToList();
+                return Get().Where(o => o.OwnerIds.Contains(user.Id)).SelectMany(o => o.UserGroups.Values).ToList();
             }
             else
             {

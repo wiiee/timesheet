@@ -2,6 +2,6 @@
 {
     public static class DefaultPreference
     {
-        public const int PAGE_SIZE = 20;
+        public const int PAGE_SIZE = 30;
     }
 }

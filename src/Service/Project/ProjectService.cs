@@ -281,10 +281,10 @@
         //获取用户在该段时间有计划时间的项目,减掉实际结束的项目
         public List<Project> GetProjectsByUserId(string userId, DateTime startDate, DateTime endDate)
         {
-            return Get(o => o.UserIds.Contains(userId) 
+            return Get().Where(o => o.UserIds.Contains(userId) 
                 && !o.PlanHours.IsEmpty() && o.PlanHours.ContainsKey(userId) && o.PlanHours[userId] > 0
                 && o.PlanDateRange.EndDate >= startDate && o.PlanDateRange.StartDate <= endDate
-                && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate)); 
+                && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate)).ToList(); 
         }
 
         //获取用户在该段时间有计划时间的项目,减掉实际结束的项目
@@ -302,20 +302,20 @@
 
         public List<Project> GetProjectsByOwnerId(string ownerId, DateTime startDate, DateTime endDate)
         {
-            return Get(o => o.OwnerIds.Contains(ownerId)
+            return Get().Where(o => o.OwnerIds.Contains(ownerId)
             && !o.PlanHours.IsEmpty()
             && o.PlanDateRange.EndDate >= startDate && o.PlanDateRange.StartDate <= endDate
-            && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate));
+            && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate)).ToList();
         }
 
         //获取用户在该段时间有计划时间的项目,减掉实际结束的项目
         //key为ProjectId
         public Dictionary<string, double> GetPlanHoursByProject(string userId, DateTime startDate, DateTime endDate)
         {
-            var projects = Get(o => o.UserIds.Contains(userId)
+            var projects = Get().Where(o => o.UserIds.Contains(userId)
                 && !o.PlanHours.IsEmpty() && o.PlanHours.ContainsKey(userId) && o.PlanHours[userId] > 0
                 && o.PlanDateRange.EndDate >= startDate && o.PlanDateRange.StartDate <= endDate
-                && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate));
+                && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate)).ToList();
 
             return projects.ToDictionary(o => o.Id, o => o.GetPlanHour(userId, startDate, endDate));
         }
@@ -326,10 +326,10 @@
         {
             var result = new Dictionary<DateTime, double>();
 
-            var projects = Get(o => o.UserIds.Contains(userId)
+            var projects = Get().Where(o => o.UserIds.Contains(userId)
                 && !o.PlanHours.IsEmpty() && o.PlanHours.ContainsKey(userId) && o.PlanHours[userId] > 0
                 && o.PlanDateRange.EndDate >= startDate && o.PlanDateRange.StartDate <= endDate
-                && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate));
+                && !(o.Status == Status.Done && o.ActualDateRange.EndDate < startDate)).ToList();
 
             var firstDate = new DateTime(startDate.Ticks);
 
