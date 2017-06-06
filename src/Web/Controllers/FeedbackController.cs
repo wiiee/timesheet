@@ -45,7 +45,7 @@
                 isDelete = true;
             }
 
-            return new FeedbackModel(feedback, user.Name, isEdit, isDelete);
+            return new FeedbackModel(feedback, user != null ? user.Name : "", isEdit, isDelete);
         }
 
         private List<FeedbackModel> BuildFeedbackModels(List<Feedback> feedbacks)
