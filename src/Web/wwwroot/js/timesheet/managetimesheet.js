@@ -40,5 +40,9 @@
                 $scope.currentTextIndex[userId] = ($scope.currentTextIndex[userId] + 1) % 2;
                 $scope.showText[userId] = $scope.showTexts[$scope.currentTextIndex[userId]];
             };
+
+            $scope.getTimeSheetId = function (monday) {
+                return utility.getTimeSheetId(monday);
+            };
         });
 }());

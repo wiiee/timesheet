@@ -65,7 +65,7 @@
                             </tr>
                             <tr ng-repeat="row in rows" ng-show="row.Status !== 'Done' || currentTextIndex[userId] === 1">
                                 <td>
-                                    <a ng-href="{{'TimeSheet/' + row.Status === 'Done' ? 'Read' : 'Edit' + 'TimeSheet?monday=' + utility.getTimeSheetId(row.Monday) + '&userId=' + userId}}">{{row.Text}}</a>
+                                    <a ng-href="{{'TimeSheet/' + row.Status === 'Done' ? 'Read' : 'Edit' + 'TimeSheet?monday=' + getTimeSheetId(row.Monday) + '&userId=' + userId}}">{{row.Text}}</a>
                                 </td>
                                 <td>{{row.WeekHours}}</td>
                                 <td>{{row.Status}}</td>
