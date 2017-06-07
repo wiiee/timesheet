@@ -3386,7 +3386,7 @@
     };
     google.a.b.Ua = {
         gstatic: {
-            prefix: "http://" + _host + "/lib/googlechart",
+            prefix: "/lib/googlechart",
             debug: "{prefix}/debug/{version}/jsapi_debug_{package}_module.js",
             compiled: "{prefix}/{version}/js/jsapi_compiled_{package}_module.js",
             i18n: "{prefix}/{version}/i18n/jsapi_compiled_i18n_{package}_module__{language}.js",
