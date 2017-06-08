@@ -20,7 +20,7 @@
                 .MinimumLevel.Debug()
                 .Enrich.WithProperty("MachineName", Environment.MachineName)
                 .WriteTo.LiterateConsole()
-                //.WriteTo.RollingFile(FILE_PATH)
+                .WriteTo.RollingFile(FILE_PATH, outputTemplate: TEMPLATE)
                 .CreateLogger();
 
             _loggerFactory = new LoggerFactory().AddSerilog();
