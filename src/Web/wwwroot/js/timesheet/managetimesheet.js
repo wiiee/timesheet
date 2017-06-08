@@ -14,7 +14,7 @@
         el: '#users',
         created: function () {
             var url = _basePath + "/api/TimeSheet/GetManageTimeSheetModel";
-            this.$http.post(url).then(response => {
+            this.$http.post(url).then(function(response) {
                 this.showUsers[0] = response.data;
 
                 this.showUsers[1] = {};
@@ -35,13 +35,13 @@
                 for (var userId in this.showUsers[1]) {
                     this.$set(this.users, userId, this.showUsers[1][userId]);
                 }
-            }, response => { });
+            }, function(error) { });
 
             var names = this.names;
             url = _basePath + "/api/user/GetUserNames";
-            this.$http.post(url).then(response => {
+            this.$http.post(url).then(function(response) {
                 this.names = response.data;
-            }, response => { });
+            }, function(error) { });
         },
         data: {
             showUsers: {

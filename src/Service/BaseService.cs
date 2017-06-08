@@ -26,7 +26,6 @@
         //Singleton lifetime services are created the first time they are requested (or when ConfigureServices is run if you specify an instance there) and then every subsequent request will use the same instance.If your application requires singleton behavior, allowing the services container to manage the service’s lifetime is recommended instead of implementing the singleton design pattern and managing your object’s lifetime in the class yourself.
 
         private IContextRepository contextRepository;
-        private IContext context;
         private IDbCollection<T> collection;
         private Repository<T> repository;
 
@@ -56,11 +55,6 @@
 
         public IContext GetContext()
         {
-            if (this.context != null)
-            {
-                return this.context;
-            }
-
             return this.contextRepository.GetCurrent();
         }
 
