@@ -19,6 +19,8 @@
     "jquery-form-validator": "~2.2.81",
     "bootstrap-fileinput": "~4.3.1",
     "textarea-autosize": "~0.4.2",
-    "angular-lazyload": "angular-imglazyload#*"
+    "angular-lazyload": "angular-imglazyload#*",
+    "vue": "v2.3.4",
+    "vue-resource": "1.3.3"
   }
 }

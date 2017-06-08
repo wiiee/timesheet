@@ -50,6 +50,6 @@ input.error {
     width: 30%;
 }
 
-[ng-cloak] {
+[ng-cloak], [v-cloak] {
   display: none !important;
 }

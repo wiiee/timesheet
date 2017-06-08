@@ -8,7 +8,6 @@
 
 @{
     ViewBag.Title = "Manage TimeSheet";
-    ViewData["ng-app"] = "manageTimeSheet";
 }
 
 @section css {
@@ -17,7 +16,9 @@
 
 @section scripts{
     <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
-    <script type="text/javascript" src="~/js/timesheet/managetimesheet.js"  asp-append-version="true"></script>
+    <script type="text/javascript" src="~/lib/vue/dist/vue.min.js"></script>
+    <script type="text/javascript" src="~/lib/vue-resource/dist/vue-resource.min.js"></script>
+    <script type="text/javascript" src="~/js/timesheet/managetimesheet.js" asp-append-version="true"></script>
 }
 
 @section breadcrumb{
@@ -37,45 +38,45 @@
 
 @Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
 
-<div class="row" ng-controller="manageTimeSheetCtrl" ng-cloak>
+<div class="row" id="users" v-cloak>
     <div class="panel-group" id="userWeeks" role="tablist" aria-multiselectable="true">
-            <div class="panel panel-info" ng-repeat="(userId, rows) in users">
-                <!-- Default panel contents -->
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#userWeeks" ng-href="{{'#' + userId}}" aria-expanded="true" aria-controls="{{userId}}">
-                            {{userId + "_" + names[userId]}}
-                        </a>
-                    </h4>
-                </div>
-                <div class="collapse in" id="{{userId}}">
-                    <!-- Table -->
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Week</th>
-                                <th>Hours</th>
-                                <th>Status</th>
-                                <th>Return</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="4"><a ng-bind="showText[userId]" ng-click="switchShowAll(userId)">Show All</a></td>
-                            </tr>
-                            <tr ng-repeat="row in rows" ng-show="row.Status !== 'Done' || currentTextIndex[userId] === 1">
-                                <td>
-                                    <a ng-href="{{'TimeSheet/' + row.Status === 'Done' ? 'Read' : 'Edit' + 'TimeSheet?monday=' + getTimeSheetId(row.Monday) + '&userId=' + userId}}">{{row.Text}}</a>
-                                </td>
-                                <td>{{row.WeekHours}}</td>
-                                <td>{{row.Status}}</td>
-                                <td>
-                                    <a class="return" href="javascript:void(0)" data-monday="{{utility.getTimeSheetId(row.Monday)}}" data-userId="{{userId}}" ng-if="row.IsReturn">Return</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div class="panel panel-info" v-for="(rows, userId) in users">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#userWeeks" :href="'#' + userId" aria-expanded="true" :aria-controls="userId">
+                        {{userId + "_" + names[userId]}}
+                    </a>
+                </h4>
             </div>
+            <div class="collapse in" :id="userId">
+                <!-- Table -->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Week</th>
+                            <th>Hours</th>
+                            <th>Status</th>
+                            <th>Return</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4"><a @@click="switchShowAll(userId)">{{text[userId]}}</a></td>
+                        </tr>
+                        <tr v-for="row in rows">
+                            <td>
+                                <a :href="editOrRead(row.Status, row.Monday, userId)">{{row.Text}}</a>
+                            </td>
+                            <td>{{row.WeekHours}}</td>
+                            <td>{{row.Status}}</td>
+                            <td>
+                                <a class="return" href="javascript:void(0)" :data-monday="getTimeSheetId(row.Monday)" :data-userId="userId" v-if="row.IsReturn">Return</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
