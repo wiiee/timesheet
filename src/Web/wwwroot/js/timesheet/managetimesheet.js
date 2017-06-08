@@ -20,7 +20,7 @@
                 this.showUsers[1] = {};
                 var data = response.data;
                 for (var userId in data) {
-                    this.$set(this.text, userId, this.showTexts[1]);
+                    this.$set(this.text, userId, this.showTexts[0]);
                     this.text[userId] = this.showTexts[1];
                     this.showUsers[1][userId] = [];
                     for (var rowId in data[userId]) {
