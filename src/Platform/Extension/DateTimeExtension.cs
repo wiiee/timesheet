@@ -34,5 +34,15 @@
         {
             return dateTime == null ? true : dateTime == DateTime.MinValue;
         }
+
+        public static string ToSimpleString(this DateTime dateTime)
+        {
+            return dateTime.IsEmpty() ? "" : dateTime.ToLocalTime().ToString("yyyy/MM/dd");
+        }
+
+        public static string ToShortString(this DateTime dateTime)
+        {
+            return dateTime.IsEmpty() ? "" : dateTime.ToLocalTime().ToString("MM/dd");
+        }
     }
 }

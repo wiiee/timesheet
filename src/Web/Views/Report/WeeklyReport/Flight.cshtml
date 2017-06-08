@@ -170,29 +170,29 @@
                         <td id="td-col-w60">@Html.Raw(item.PercentageCompletion)</td>
                         <td>@Html.Raw(item.ProgressText)</td>
                         <td>@Html.Raw(item.Status)</td>
-                        <td id="td-col-w60">@Html.Raw(item.PlanCombinedTestDate.IsEmpty() ? "" : item.PlanCombinedTestDate.ToString("yyyy-MM-dd"))</td>
-                        <td id="td-col-w60">@Html.Raw(item.ActualCombinedTestDate.IsEmpty() ? "" : item.ActualCombinedTestDate.ToString("yyyy-MM-dd"))</td>
-                        <td id="td-col-w60">@Html.Raw(item.PlanEndDate.IsEmpty() ? "" : item.PlanEndDate.ToString("yyyy-MM-dd"))</td><!-- 预计完成（或上线）时间 -->
-                        <td id="td-col-w60">@Html.Raw(item.ActualEndDate.IsEmpty() ? "" : item.ActualEndDate.ToString("yyyy-MM-dd"))</td>
+                        <td id="td-col-w60">@Html.Raw(item.PlanCombinedTestDate.ToSimpleString())</td>
+                        <td id="td-col-w60">@Html.Raw(item.ActualCombinedTestDate.ToSimpleString())</td>
+                        <td id="td-col-w60">@Html.Raw(item.PlanEndDate.ToSimpleString())</td><!-- 预计完成（或上线）时间 -->
+                        <td id="td-col-w60">@Html.Raw(item.ActualEndDate.ToSimpleString())</td>
                         <td id="td-col-w120">@Html.Raw(item.AllParticipants)</td>
                         <td id="td-col-w240">@Html.Raw(item.Comment)</td>
                         @if (isShowDetails)
                         {
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevManager)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevName)</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevPlanStartDate.IsEmpty()?"":item.ExtrasInfo.DevPlanStartDate.ToString("MM/dd"))</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevActualStartDate.IsEmpty() ? "" : item.ExtrasInfo.DevActualStartDate.ToString("MM/dd"))</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevPlanEndDate.IsEmpty() ? "" : item.ExtrasInfo.DevPlanEndDate.ToString("MM/dd"))</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevActualEndDate.IsEmpty() ? "" : item.ExtrasInfo.DevActualEndDate.ToString("MM/dd"))</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevPlanStartDate.ToShortString())</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevActualStartDate.ToShortString())</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevPlanEndDate.ToShortString())</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevActualEndDate.ToShortString())</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevPlanHour)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevActualHour)</td>
 
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestManager)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestName)</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestPlanStartDate.IsEmpty() ? "" : item.ExtrasInfo.TestPlanStartDate.ToString("MM/dd"))</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestActualStartDate.IsEmpty() ? "" : item.ExtrasInfo.TestActualStartDate.ToString("MM/dd"))</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestPlanEndDate.IsEmpty() ? "" : item.ExtrasInfo.TestPlanEndDate.ToString("MM/dd"))</td>
-                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestActualEndDate.IsEmpty() ? "" : item.ExtrasInfo.TestActualEndDate.ToString("MM/dd"))</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestPlanStartDate.ToShortString())</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestActualStartDate.ToShortString())</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestPlanEndDate.ToShortString())</td>
+                            <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestActualEndDate.ToShortString())</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestPlanHour)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.TestActualHour)</td>
                         }

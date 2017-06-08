@@ -112,7 +112,7 @@
                             }
                         </td>
                         <td>@Html.Raw(string.Format("开发:{0}%<br/> 测试:{1}%", (item.DevPercentage * 100).ToString("0"), (item.TestPercentage * 100).ToString("0")))</td>
-                        <td>@Html.Raw(item.EndDate.ToString("yyyy-MM-dd"))</td>
+                        <td>@Html.Raw(item.EndDate.ToSimpleString())</td>
                         <td>@Html.Raw(item.ProgressText)</td>
                         <td>@Html.Raw(item.NextWeekPlan)</td>
                         <td>@Html.Raw(item.Comment)</td>

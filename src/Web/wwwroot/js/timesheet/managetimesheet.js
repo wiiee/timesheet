@@ -59,23 +59,13 @@
         methods: {
             switchShowAll: function (userId) {
                 if (this.text[userId] === this.showTexts[0]) {
-                    //this.$set(this.text, userId, this.showTexts[1]);
-                    //this.$set(this.users, userId, this.showUsers[1][userId]);
-
                     this.text[userId] = this.showTexts[1];
                     this.users[userId] = this.showUsers[1][userId];
                 }
                 else {
-                    //this.$set(this.text, userId, this.showTexts[1]);
-                    //this.$set(this.users, userId, this.showUsers[1][userId]);
-
                     this.text[userId] = this.showTexts[0];
                     this.users[userId] = this.showUsers[0][userId];
                 }
-                //this.$set(this.currentTextIndex, userId, index);
-                //this.currentTextIndex = Object.assign({}, this.currentTextIndex, { userId: index });
-                //this.$set(this.showText, userId, this.showTexts[index]);
-                //this.showText = Object.assign({}, this.showText, { userId: this.showTexts[index] });
             },
             getTimeSheetId: function (monday) {
                 return utility.getTimeSheetId(monday);

@@ -78,28 +78,28 @@
             strings.Add(PercentageCompletion);
             strings.Add(ProgressText);
             strings.Add(Status);
-            strings.Add(PlanCombinedTestDate.IsEmpty()?"": PlanCombinedTestDate.ToString("yyyy-MM-dd"));
-            strings.Add(ActualCombinedTestDate.IsEmpty() ? "" : ActualCombinedTestDate.ToString("yyyy-MM-dd"));
-            strings.Add(PlanEndDate.IsEmpty() ? "" : PlanEndDate.ToString("yyyy-MM-dd"));
-            strings.Add(ActualEndDate.IsEmpty() ? "" : ActualEndDate.ToString("yyyy-MM-dd"));
+            strings.Add(PlanCombinedTestDate.ToSimpleString());
+            strings.Add(ActualCombinedTestDate.IsEmpty() ? PlanCombinedTestDate.ToSimpleString() : ActualCombinedTestDate.ToSimpleString());
+            strings.Add(PlanEndDate.ToSimpleString());
+            strings.Add(ActualEndDate.ToSimpleString());
             strings.Add(AllParticipants);
             strings.Add(Comment);
             //Extras information
             strings.Add(ExtrasInfo.DevManager);
             strings.Add(ExtrasInfo.DevName);
-            strings.Add(ExtrasInfo.DevPlanStartDate.IsEmpty() ? "" : ExtrasInfo.DevPlanStartDate.ToString("yyyy-MM-dd"));
-            strings.Add(ExtrasInfo.DevActualStartDate.IsEmpty() ? "" : ExtrasInfo.DevActualStartDate.ToString("yyyy-MM-dd"));
-            strings.Add(ExtrasInfo.DevPlanEndDate.IsEmpty() ? "" : ExtrasInfo.DevPlanEndDate.ToString("yyyy-MM-dd"));
-            strings.Add(ExtrasInfo.DevActualEndDate.IsEmpty() ? "" : ExtrasInfo.DevActualEndDate.ToString("yyyy-MM-dd"));
+            strings.Add(ExtrasInfo.DevPlanStartDate.ToSimpleString());
+            strings.Add(ExtrasInfo.DevActualStartDate.ToSimpleString());
+            strings.Add(ExtrasInfo.DevPlanEndDate.ToSimpleString());
+            strings.Add(ExtrasInfo.DevActualEndDate.ToSimpleString());
             strings.Add(ExtrasInfo.DevPlanHour.ToString());
             strings.Add(ExtrasInfo.DevActualHour.ToString());
 
             strings.Add(ExtrasInfo.TestManager);
             strings.Add(ExtrasInfo.TestName);
-            strings.Add(ExtrasInfo.TestPlanStartDate.IsEmpty() ? "" : ExtrasInfo.TestPlanStartDate.ToString("yyyy-MM-dd"));
-            strings.Add(ExtrasInfo.TestActualStartDate.IsEmpty() ? "" : ExtrasInfo.TestActualStartDate.ToString("yyyy-MM-dd"));
-            strings.Add(ExtrasInfo.TestPlanEndDate.IsEmpty() ? "" : ExtrasInfo.TestPlanEndDate.ToString("yyyy-MM-dd"));
-            strings.Add(ExtrasInfo.TestActualEndDate.IsEmpty() ? "" : ExtrasInfo.TestActualEndDate.ToString("yyyy-MM-dd"));
+            strings.Add(ExtrasInfo.TestPlanStartDate.ToSimpleString());
+            strings.Add(ExtrasInfo.TestActualStartDate.ToSimpleString());
+            strings.Add(ExtrasInfo.TestPlanEndDate.ToSimpleString());
+            strings.Add(ExtrasInfo.TestActualEndDate.ToSimpleString());
             strings.Add(ExtrasInfo.TestPlanHour.ToString());
             strings.Add(ExtrasInfo.TestActualHour.ToString());
 
