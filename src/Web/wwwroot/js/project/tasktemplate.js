@@ -1,7 +1,7 @@
 ﻿(function () {
     angular.module("taskTemplate", [])
     .controller("taskTemplateCtrl", function ($scope) {
-        $scope.hours = [2, 4, 6, 8, 10, 12, 14, 16];
+        $scope.hours = [2, 4, 6, 8, 12, 16, 20, 24, 28, 32, 40];
         $scope.tasks = _tasks ? _tasks : [];
         $scope.oriTasks = angular.copy($scope.tasks);
         $scope.taskIndex = $scope.tasks.length;

@@ -231,7 +231,10 @@
                 try
                 {
                     entity.Created = DateTime.Now;
-                    entity.CreatedBy = this.GetContext().UserId;
+                    if(this.GetContext() != null)
+                    {
+                        entity.CreatedBy = this.GetContext().UserId;
+                    }
 
                     var id = collection.AddEntityAsync(entity).Result;
 
@@ -263,7 +266,10 @@
                     foreach (var entity in entities)
                     {
                         entity.Created = DateTime.Now;
-                        entity.CreatedBy = this.GetContext().UserId;
+                        if (this.GetContext() != null)
+                        {
+                            entity.CreatedBy = this.GetContext().UserId;
+                        }
                     }
 
                     var ids = collection.AddEntitiesAsync(entities).Result;
@@ -300,7 +306,10 @@
                 try
                 {
                     entity.LastUpdate = DateTime.Now;
-                    entity.LastUpdatedBy = this.GetContext().UserId;
+                    if (this.GetContext() != null)
+                    {
+                        entity.LastUpdatedBy = this.GetContext().UserId;
+                    }
 
                     if (IsCacheReady())
                     {
@@ -331,7 +340,10 @@
                         {
                             await collection.UpdateEntityAsync(id, field, value);
                             await collection.UpdateEntityAsync(id, LAST_UPDATE, DateTime.Now);
-                            await collection.UpdateEntityAsync(id, LAST_UPDATED_BY, this.GetContext().UserId);
+                            if(this.GetContext() != null)
+                            {
+                                await collection.UpdateEntityAsync(id, LAST_UPDATED_BY, this.GetContext().UserId);
+                            }
                         });
 
                     task.Wait();
@@ -361,7 +373,10 @@
                     foreach (var entity in entities)
                     {
                         entity.LastUpdate = DateTime.Now;
-                        entity.LastUpdatedBy = this.GetContext().UserId;
+                        if(this.GetContext() != null)
+                        {
+                            entity.LastUpdatedBy = this.GetContext().UserId;
+                        }
                     }
 
                     var task = Task.Run(async () => { await collection.UpdateEntitiesAsync(entities); });
@@ -454,7 +469,7 @@
 
         public void LogInformation(string action, string id)
         {
-            if (bool.Parse(Setting.Instance.Get("IsLogInformation")))
+            if (bool.Parse(Setting.Instance.Get("IsLogInformation")) && this.GetContext() != null)
             {
                 _logger.LogInformation(string.Format("Action:{0};Id:{1};UserId:{2};Ip:{3}", action, id, this.GetContext().UserId, this.GetContext().RemoteIp));
             }
@@ -462,12 +477,18 @@
 
         public void LogWarning(string action, string id)
         {
-            _logger.LogWarning(string.Format("Action:{0};Id:{1};UserId:{2};Ip:{3}", action, id, this.GetContext().UserId, this.GetContext().RemoteIp));
+            if(this.GetContext() != null)
+            {
+                _logger.LogWarning(string.Format("Action:{0};Id:{1};UserId:{2};Ip:{3}", action, id, this.GetContext().UserId, this.GetContext().RemoteIp));
+            }
         }
 
         public void LogException(Exception ex)
         {
-            _logger.LogError(string.Format("Message:{0};StackTrace:{1};UserId:{2};Ip:{3}", ex.Message, ex.StackTrace, this.GetContext().UserId, this.GetContext().RemoteIp));
+            if (this.GetContext() != null)
+            {
+                _logger.LogError(string.Format("Message:{0};StackTrace:{1};UserId:{2};Ip:{3}", ex.Message, ex.StackTrace, this.GetContext().UserId, this.GetContext().RemoteIp));
+            }
         }
     }
 }
