@@ -50,7 +50,7 @@
 
             var dbProject = projectService.Get(project.Id);
 
-            if (project == null || string.IsNullOrEmpty(project.Id))
+            if (dbProject == null || string.IsNullOrEmpty(dbProject.Id))
             {
                 return Json(new { errorMsg = string.Format("Project({0}) doesn't exist", project.Id) });
             }
@@ -85,7 +85,7 @@
                 }
                 projectService.Update(project);
 
-                return Json(new { successMsg = string.Format("Edit project({0}) successfully!", project.Id) });
+                return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!", project.Id, project.Name) });
             }
             catch (Exception ex)
             {
@@ -114,9 +114,11 @@
         {
             try
             {
+                Project project = this.GetService<ProjectService>().Get(id);
+                string projectname = project != null ? project.Name : "";
                 this.GetService<ProjectService>().Delete(id);
                 this.GetService<TimeSheetService>().Delete(o => o.ProjectId == id);
-                return Json(new { successMsg = string.Format("Delete project({0}) successfully!", id) });
+                return Json(new { successMsg = string.Format("Delete project({0}:{1}) successfully!", id, projectname) });
             }
             catch (Exception ex)
             {
@@ -246,7 +248,7 @@
             try
             {
                 this.GetService<ProjectService>().EditForUser(project.Id, project.Name, project.Comment, project.Description, project.CodeReview);
-                return Json(new { successMsg = string.Format("Edit project({0}) successfully!", project.Id) });
+                return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!", project.Id, project.Name) });
             }
             catch (Exception ex)
             {
@@ -261,8 +263,10 @@
         {
             try
             {
+                Project project = this.GetService<ProjectService>().Get(projectId);
+                string projectName = project != null ? project.Name : "";
                 this.GetService<ProjectService>().CloseProject(projectId);
-                return Json(new { successMsg = string.Format("Close project({0}) successfully!", projectId)});
+                return Json(new { successMsg = string.Format("Close project({0}:{1}) successfully!", projectId, projectName) });
             }
             catch (Exception ex)
             {
@@ -277,8 +281,10 @@
         {
             try
             {
+                Project project = this.GetService<ProjectService>().Get(projectId);
+                string projectName = project != null ? project.Name : "";
                 this.GetService<ProjectService>().PostponeProject(projectId, postponeReason, comment, endDate);
-                return Json(new { successMsg = string.Format("PostponeProject project({0}) successfully!", projectId) });
+                return Json(new { successMsg = string.Format("PostponeProject project({0}:{1}) successfully!", projectId, projectName) });
             }
             catch (Exception ex)
             {
