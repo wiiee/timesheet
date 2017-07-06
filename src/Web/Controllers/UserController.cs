@@ -98,7 +98,7 @@
         [Authorize(Roles = "0,1,3")]
         public IActionResult AddUser([FromForm]User user)
         {
-            if (user != null)
+            if (user.Id != null)
             {
                 var userService = this.GetService<UserService>();
 
