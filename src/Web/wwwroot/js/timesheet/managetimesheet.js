@@ -70,7 +70,7 @@
                 return utility.getTimeSheetId(monday);
             },
             editOrRead: function (status, monday, userId) {
-                return "TimeSheet/" + status === "Done" ? "Read" : "Edit" + "TimeSheet?monday=" + this.getTimeSheetId(monday) + "&userId=" + userId;
+                return (status === "Done" ? "Read" : "Edit") + "TimeSheet?monday=" + this.getTimeSheetId(monday) + "&userId=" + userId;
             }
         }
     })
