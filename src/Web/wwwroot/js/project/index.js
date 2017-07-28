@@ -587,9 +587,7 @@
             });
 
             $scope.changePlanValue = function (task) {
-                if (!task.Value || task.Value === 0) {
-                    task.Value = task.PlanHour;
-                }
+                task.Value = task.PlanHour;
             };
 
             $scope.changeTaskName = function (task) {
