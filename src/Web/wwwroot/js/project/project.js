@@ -35,6 +35,7 @@
                 isTemplate: $scope.isTemplate,
                 isEdit: true,
                 isDelete: true,
+                isNew: true,
                 PlanDateRange: {}
             });
 
@@ -161,7 +162,9 @@
         };
 
         $scope.changePlanValue = function (task) {
-            task.Value = task.PlanHour;
+            if (task.isNew) {
+                task.Value = task.PlanHour;
+            }
         };
 
         $scope.removeTask = function (id) {
