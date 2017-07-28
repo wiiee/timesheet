@@ -176,7 +176,10 @@
                 {
                     foreach (var item in entry.Value)
                     {
-                        result.Add(new TimeSheetModel(project, item.Key, project.Tasks.Find(o => o.Id == item.Key).Name, project.Tasks.Find(o => o.Id == item.Key).Status == Status.Done, item.Value));
+                        if(project.Tasks.Find(o => o.Id == item.Key) != null)
+                        {
+                            result.Add(new TimeSheetModel(project, item.Key, project.Tasks.Find(o => o.Id == item.Key).Name, project.Tasks.Find(o => o.Id == item.Key).Status == Status.Done, item.Value));
+                        }
                     }
 
                     //没有TimeSheet的Task
