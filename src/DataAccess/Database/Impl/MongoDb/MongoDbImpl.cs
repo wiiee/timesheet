@@ -17,13 +17,13 @@
         public MongoDbImpl(IDatabaseSetting databaseSetting)
         {
             this.databaseSetting = databaseSetting;
-            //string connectionString = "mongodb://" +
-            //    databaseSetting.GetUserName() + ":" +
-            //    databaseSetting.GetPassword() + "@" +
-            //    databaseSetting.GetAddress() + "/" +
-            //    "admin";
+            string connectionString = "mongodb://" +
+                databaseSetting.GetUserName() + ":" +
+                databaseSetting.GetPassword() + "@" +
+                databaseSetting.GetAddress() + "/" +
+                "admin";
 
-            mongoClient = new MongoClient();
+            mongoClient = new MongoClient(connectionString);
             mongoDatabase = mongoClient.GetDatabase(databaseSetting.GetDatabaseName());
         }
 
