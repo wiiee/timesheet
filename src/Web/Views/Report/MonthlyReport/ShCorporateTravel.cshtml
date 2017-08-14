@@ -1,0 +1,180 @@
+﻿@using Entity.User
+@using Web.Model.Report
+@using Entity.ValueType
+
+@{
+    ViewBag.Title = "Corporate Travel Monthly Report";
+    ViewData["ng-app"] = "hotelWeeklyReport";
+    var thisMonthDoneProjects = ViewData["ThisMonthDoneProject"] as List<HotelMonthlyReportModel>;
+    var thisMonthUnDoneProjects = ViewData["ThisMonthUnDoneProject"] as List<HotelMonthlyReportModel>;
+    var thisMonthHighLevelProjects = ViewData["ThisMonthHighLevelProject"] as List<HotelMonthlyReportModel>;
+    var nextMonthDoneProjects = ViewData["NextMonthDoneProject"] as List<HotelMonthlyReportModel>;
+    var nextMonthUnDoneProjects = ViewData["NextMonthUnDoneProject"] as List<HotelMonthlyReportModel>;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/css/report/hotelmonthlyreport.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
+    <script type="text/javascript" src="~/lib/angular-smart-table/dist/smart-table.js"></script>
+
+    <script type="text/javascript">
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+    </script>
+
+    <script type="text/javascript" src="~/js/report/hotelmonthlyreport.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Report</a></li>
+            <li class="active">Corporate Travel Monthly Report</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Corporate Travel Monthly Report</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="projectCtrl" ng-cloak>
+    <form method="post" action="~/Report/MonthlyReport?isShowImportant=true">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="button" id="clearLink" class="btn btn-default" ng-click="clearLink(this)">Clear Link</button>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <table class="table table-bordered">
+            <tbody>
+                <tr><td class="td-large_font-gray-bg">@Html.Raw(ViewData["DepartmentName"] as string)</td></tr>
+                <tr>
+                    <td>
+                        本月已上线项目:
+                        @if (thisMonthDoneProjects.Count > 0)
+                        {
+                            <ol class="ol-left-padding-60">
+                                @foreach (var item in thisMonthDoneProjects)
+                                {
+                                    <li><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.ProjectId)">@Html.Raw(item.ProjectName)</a> - @Html.Raw(item.GroupName)</li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <text>无</text>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        本月开发中项目:
+                        @if (thisMonthUnDoneProjects.Count > 0)
+                        {
+                            <ol class="ol-left-padding-60">
+                                @foreach (var item in thisMonthUnDoneProjects)
+                                {
+                                    <li><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.ProjectId)">@Html.Raw(item.ProjectName)</a> - @Html.Raw(item.GroupName)</li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <text>无</text>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        本月重点工作:
+                        @if (thisMonthHighLevelProjects.Count > 0)
+                        {
+                            <ol class="ol-left-padding-60">
+                                @foreach (var item in thisMonthHighLevelProjects)
+                                {
+                                    <li><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.ProjectId)">@Html.Raw(item.ProjectName)</a> - @Html.Raw(item.GroupName)</li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <text>无</text>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        下月工作计划
+                        <p/>
+                        上线项目:
+                        @if (nextMonthDoneProjects.Count > 0)
+                        {
+                            <ol class="ol-left-padding-60">
+                                @foreach (var item in nextMonthDoneProjects)
+                                {
+                                    <li><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.ProjectId)">@Html.Raw(item.ProjectName)</a> - @Html.Raw(item.GroupName)</li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <text>无</text>
+                        }
+                        开发项目:
+                        @if (nextMonthUnDoneProjects.Count > 0)
+                        {
+                            <ol class="ol-left-padding-60">
+                                @foreach (var item in nextMonthUnDoneProjects)
+                                {
+                                    <li><a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.ProjectId)">@Html.Raw(item.ProjectName)</a> - @Html.Raw(item.GroupName)</li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <text>无</text>
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,143 @@
+﻿@using Entity.User
+@using Web.Model.Report
+@using Entity.ValueType
+@using Platform.Extension
+
+@{
+    ViewBag.Title = "Corporate Travel Weekly Report";
+    ViewData["ng-app"] = "flightWeeklyReport";
+    var models = ViewData["CorporateTravelWeeklyReportModel"] as List<CorporateTravelWeeklyReportModel>;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+    var modelsArray = new List<List<string>>();
+    var reportTitles = new List<string>();
+    reportTitles.Add("项目名称");
+    reportTitles.Add("项目编号");
+    reportTitles.Add("组别");
+    reportTitles.Add("产品经理");
+    reportTitles.Add("完成百分比");
+    reportTitles.Add("整体进度");
+    reportTitles.Add("状态");
+    reportTitles.Add("计划联调日期");
+    reportTitles.Add("实际联调日期");
+    reportTitles.Add("最初要求上线日期");
+    reportTitles.Add("调整后上线日期");
+    reportTitles.Add("参与人员");
+    reportTitles.Add("备注（问题或风险）");
+    var reportTitlesToExport = new List<string>(reportTitles.ToArray());
+    reportTitlesToExport.Add("项目重要性");
+    reportTitlesToExport.Add("IsCR");
+    modelsArray.Add(reportTitlesToExport);
+    for (var i = 0; i < models.Count(); i++)
+    {
+        modelsArray.Add(models[i].ToString().Split('$').ToList());
+    }
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="~/css/report/flightweeklyreport.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
+    <script type="text/javascript" src="~/lib/angular-smart-table/dist/smart-table.js"></script>
+
+    <script type="text/javascript">
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+        var _models = @Html.Raw(Json.Serialize(modelsArray));
+    </script>
+
+    <script type="text/javascript" src="~/js/report/flightweeklyreport.js"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Report</a></li>
+            <li class="active">Corporate Travel Weekly Report</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Corporate Travel Weekly Report</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="projectCtrl" ng-cloak>
+    <form method="post" action="~/Report/WeeklyReport">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="button" id="exportReport" class="btn btn-primary" ng-click="exportData()">Export Report</button>
+                    <button type="button" id="previousWeek" class="btn btn-default" ng-click="previousWeek()">Previous Week</button>
+                    <button type="button" id="nextWeek" class="btn btn-default" ng-click="nextWeek()">Next Week</button>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div id="exportReport" class="row" style="overflow:scroll">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    @foreach(var title in reportTitles)
+                    {
+                        <th>@title</th>
+                    }
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in models)
+                {
+                    <tr @Html.Raw(item.IsImportant == true ? "class='tr-important'" : "")>
+                        <td id="td-col-w200">
+                            <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.ProjectID)">@Html.Raw(item.ProjectName)</a>
+                        </td>
+                        <td id="td-col-w100">@Html.Raw(item.SerialNumber)</td>
+                        <td id="td-col-w120">@Html.Raw(item.UserGroupName)</td>
+                        <td>@Html.Raw(item.ProductManagerName)</td>
+                        <td id="td-col-w60">@Html.Raw(item.PercentageCompletion)</td>
+                        <td>@Html.Raw(item.ProgressText)</td>
+                        <td>@Html.Raw(item.Status)</td>
+                        <td id="td-col-w60">@Html.Raw(item.PlanCombinedTestDate.ToSimpleString())</td>
+                        <td id="td-col-w60">@Html.Raw(item.ActualCombinedTestDate.ToSimpleString())</td>
+                        <td id="td-col-w60">@Html.Raw(item.PlanEndDate.ToSimpleString())</td><!-- 预计完成（或上线）时间 -->
+                        <td id="td-col-w60">@Html.Raw(item.ActualEndDate.ToSimpleString())</td>
+                        <td id="td-col-w120">@Html.Raw(item.AllParticipants)</td>
+                        <td id="td-col-w240">@Html.Raw(item.Comment)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
