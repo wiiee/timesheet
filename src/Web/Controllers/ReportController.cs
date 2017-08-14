@@ -110,7 +110,7 @@
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_CORP_TRAVEL))
             {
-                return getMonthlyReportViewResult<FlightMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHENZHEN_CORP_TRAVEL_EN);
+                return getMonthlyReportViewResult<FlightMonthlyReportModel>(startDate, endDate, false, DepartmentName.SHENZHEN_CORP_TRAVEL_EN);//商旅显示全部项目
             }
             else
             {
@@ -124,7 +124,7 @@
             List<XModel> monthlyReportModels = GetMonthlyProjects<XModel>(startDate, endDate, isShowImportant, department);
             ViewData["ThisMonthDoneProject"] = monthlyReportModels.Where(p => p.IsDone && p.FinishedDate <= endDate).ToList();//完成日期必须落在该月
             ViewData["ThisMonthUnDoneProject"] = monthlyReportModels.Where(p => !p.IsDone).ToList();
-            if (DepartmentName.SHENZHEN_FLIGHT_EN == department || DepartmentName.SHENZHEN_CORP_TRAVEL_EN == department)
+            if (DepartmentName.SHENZHEN_FLIGHT_EN == department)
             {
                 ViewData["ThisMonthHighLevelProject"] = monthlyReportModels.Where(p => (p.Level == 2)).ToList();
             }
@@ -162,7 +162,7 @@
                         if (isShowImportant)
                         {
                             //机票月报只需要显示重要项目
-                            if (DepartmentName.SHENZHEN_FLIGHT_EN == department || DepartmentName.SHENZHEN_CORP_TRAVEL_EN == department)
+                            if (DepartmentName.SHENZHEN_FLIGHT_EN == department)
                             {
                                 projectList = projectList.Where(o => o.Level == ProjectLevel.High);
                             }
