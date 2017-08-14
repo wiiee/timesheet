@@ -89,6 +89,11 @@
             return Get(departmentId).UserGroups.SelectMany(o => o.Value.UserIds).ToList();
         }
 
+        public List<UserGroup> GetTestGroupsByDepartmentId(string departmentId)
+        {
+            return Get(departmentId).UserGroups.Where(o => o.Value.IsTest).Select(p => p.Value).ToList();
+        }
+
         //得到下属成员
         public List<string> GetSubordinatesByUserId(string userId)
         {

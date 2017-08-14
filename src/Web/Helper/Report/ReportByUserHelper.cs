@@ -188,6 +188,7 @@
 
             controller.ViewData["Model"] = BuildComboModel(userIds);
             controller.ViewData["Pairs"] = userService.GetByIds(userIds).Select(o => new KeyValuePair<string, string>(o.Id, o.Name)).ToList();
+            controller.ViewData["GroupId"] = groups[0].Id;
 
             return controller.View("ReportByUser/Group");
         }
