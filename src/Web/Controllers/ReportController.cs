@@ -171,8 +171,13 @@
                                 projectList = projectList.Where(o => o.IsImportant()).Where(o => o.Id != "G10432_TimeSheet").ToList();
                             }
                         }
+                        //深圳商旅只显示项目，不显示CR
+                        if (DepartmentName.SHENZHEN_CORP_TRAVEL_EN == department)
+                        {
+                            projectList = projectList.Where(o => !o.IsCr);
+                        }
 
-                        foreach (var project in projectList)
+                            foreach (var project in projectList)
                         {
                             if (!monthlyReportModels.Exists(p => p.ProjectId == project.Id))
                             {
