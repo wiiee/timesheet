@@ -32,7 +32,7 @@
                     <td title="{{row.TotalPlanHour}}/{{row.TotalActualHour}}">{{row.TotalPlanHour}}/{{row.TotalActualHour}}</td>
                     <td>{{row.Status}}</td>
                     <td>
-                        <span ng-if="row.IsEdit && row.Tasks" ng-click="editProject('lg', row.Id)" title="Edit Project" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                        <a ng-if="row.IsEdit && row.Tasks" target="_blank" href="~/Project/Project?projectId={{row.Id || escape}}"><span title="Edit Project" class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <span ng-if="row.IsDelete" ng-click="deleteProject(row.Id)" title="Delete Project" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                         @*<span ng-if="row.IsClose" ng-click="closeProject(row.Id)" title="Close Project" class="glyphicon glyphicon-off" aria-hidden="true"></span>
                         <span ng-if="row.IsPostpone" ng-click="postponeProject('', row.Id)" title="Postpone Project" class="glyphicon glyphicon-open" aria-hidden="true"></span>*@

@@ -1,6 +1,7 @@
 ﻿namespace Entity.ValueType
 {
     using Platform.Enum;
+    using System.Collections.Generic;
 
     public class ProjectTask
     {
@@ -22,6 +23,9 @@
         public DateRange ActualDateRange { get; set; }
 
         public Status Status { get; set; }
+
+        public string CodeReview { get; set; }
+        public Dictionary<string, double> Values { get; set;}
 
         //工作的价值
         public double Value { get; set; }

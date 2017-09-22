@@ -50,6 +50,7 @@
 
         <label class="taskReview" ng-if="projectId">
             <input class="taskReview" type="checkbox" ng-model="task.IsReviewed" @if (isUser) { <text> disabled</text> } />
+            <span ng-click="editTask('lg', task.Id)" title="Edit Task" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
         </label>
     </div>
 </div>
