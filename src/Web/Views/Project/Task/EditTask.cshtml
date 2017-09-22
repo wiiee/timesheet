@@ -50,7 +50,17 @@
 
         <label class="taskReview" ng-if="projectId">
             <input class="taskReview" type="checkbox" ng-model="task.IsReviewed" @if (isUser) { <text> disabled</text> } />
-            <span ng-click="editTask('lg', task.Id)" title="Edit Task" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <span title="Edit Task" class="glyphicon glyphicon-chevron-down" data-toggle="collapse" href="{{'#task-' + task.id}}" aria-expanded="false" aria-controls="{{'task-' + task.id}}"></span>
         </label>
+    </div>
+</div>
+<div class="row collapse" id="{{'task-' + task.id}}">
+    <div class="form-group col-md-12">
+        <label for="description">Description</label>
+        <textarea type="text" class="form-control" id="description" ng-model="task.Description" spellcheck="false" placeholder="Description"></textarea>
+    </div>
+    <div class="form-group col-md-12">
+        <label for="codeReview">Code Review</label>
+        <textarea type="text" class="form-control" id="codeReview" ng-model="task.CodeReview" spellcheck="false" placeholder="Code Review"></textarea>
     </div>
 </div>
