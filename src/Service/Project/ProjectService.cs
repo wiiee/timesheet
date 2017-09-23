@@ -195,7 +195,7 @@
             base.Update(project);
         }
 
-        public void EditForUser(string id, string name, string comment, string description, string codeReview)
+        public void EditForUser(string id, string name, string comment, string description)
         {
             if (!string.IsNullOrEmpty(name))
             {
@@ -210,11 +210,6 @@
             if (!string.IsNullOrEmpty(description))
             {
                 Update(id, "Description", description);
-            }
-
-            if (!string.IsNullOrEmpty(codeReview))
-            {
-                Update(id, "CodeReview", codeReview);
             }
         }
 

@@ -19,6 +19,7 @@
         $scope.statuses = _statuses;
         $scope.levels = _levels;
         $scope.groups = [];
+        $scope.users = {};
         $scope.owners = [];
         $scope.isOpen = {
             publishDate: false
@@ -36,7 +37,8 @@
                 isEdit: true,
                 isDelete: true,
                 isNew: true,
-                PlanDateRange: {}
+                PlanDateRange: {},
+                Class: "glyphicon glyphicon-chevron-down"
             });
 
             $scope.taskIndex++;
@@ -53,6 +55,24 @@
                     $scope.project = response.data;
                     $scope.oriProject = angular.copy($scope.project);
                     $scope.taskIndex = _.max(_.pluck($scope.project.Tasks, "Id")) + 1;
+
+                    $.each($scope.project.Tasks, function (index, element) {
+                        element.Class = "glyphicon glyphicon-chevron-down";
+
+                        if (!element.Values) {
+                            element.Values = {};
+                        }
+
+                        if ($scope.groups.length > 0) {
+                            var users = _.reduceRight(_.pluck($scope.groups, "Users"), function (a, b) { return a.concat(b); }, []);
+
+                            $.each(users, function (index, user) {
+                                if (!element.Values[user.Id]) {
+                                    element.Values[user.Id] = 0;
+                                }
+                            });
+                        }
+                    });
 
                     $scope.initTemplate();
                 });
@@ -114,6 +134,13 @@
         };
 
         $scope.initUsers = function () {
+            var url = _basePath + "/api/user/GetUserNames";
+            $http.post(url).then(function (response) {
+                $scope.users = response.data;
+            });
+        };
+
+        $scope.initGroups = function () {
             var url = _basePath + "/api/user/getGroups?projectId=" + encodeURIComponent($scope.projectId);
             $http.post(url).then(function (response) {
                 $scope.groups = response.data;
@@ -138,6 +165,7 @@
         };
 
         $scope.init = function () {
+            $scope.initGroups();
             $scope.initUsers();
             $scope.initOwners();
             $scope.initProject();
@@ -161,6 +189,15 @@
             }
         };
 
+        $scope.collapseTask = function (task) {
+            if (task.Class === "glyphicon glyphicon-chevron-down") {
+                task.Class = "glyphicon glyphicon-chevron-up";
+            }
+            else {
+                task.Class = "glyphicon glyphicon-chevron-down";
+            }
+        }
+
         $scope.changePlanValue = function (task) {
             if (task.isNew) {
                 task.Value = task.PlanHour;
@@ -182,12 +219,23 @@
         };
 
         $scope.getUserName = function (userId) {
-            if ($scope.groups.length === 0) {
-                return "";
-            }
-            var users = _.reduceRight(_.pluck($scope.groups, "Users"), function (a, b) { return a.concat(b); }, []);
-            return _.findWhere(users, { Id: userId }).Name;
+            //if ($scope.groups.length === 0) {
+            //    return "";
+            //}
+            //var users = _.reduceRight(_.pluck($scope.groups, "Users"), function (a, b) { return a.concat(b); }, []);
+            //return _.findWhere(users, { Id: userId }).Name;
+            return $scope.users[userId];
         };
+
+        $scope.isUserExist = function (userId) {
+            if ($scope.groups.length === 0) {
+                return false;
+            }
+
+            var users = _.reduceRight(_.pluck($scope.groups, "Users"), function (a, b) { return a.concat(b); }, []);
+
+            return _.findWhere(users, { Id: userId }) !== undefined;
+        }
 
         $scope.isPublic = function () {
             $scope._isPublic = !$scope._isPublic;

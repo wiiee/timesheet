@@ -247,7 +247,7 @@
         {
             try
             {
-                this.GetService<ProjectService>().EditForUser(project.Id, project.Name, project.Comment, project.Description, project.CodeReview);
+                this.GetService<ProjectService>().EditForUser(project.Id, project.Name, project.Comment, project.Description);
                 return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!", project.Id, project.Name) });
             }
             catch (Exception ex)

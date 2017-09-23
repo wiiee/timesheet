@@ -67,8 +67,6 @@
         //实际测试开始结束日期
         public DateTime ActualTestDate { get; set; }
 
-        public string CodeReview { get; set; }
-
         //key为时间的ticks, value为<用户Id, 内容>
         public Dictionary<long, KeyValuePair<string, string>> Murmurs { get; set; }
 
