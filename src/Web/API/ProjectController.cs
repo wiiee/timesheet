@@ -52,8 +52,14 @@
 
             if (dbProject == null || string.IsNullOrEmpty(dbProject.Id))
             {
-                return Json(new { errorMsg = string.Format("Project({0}) doesn't exist", project.Id) });
+                return Json(new { errorMsg = string.Format("Project({0}) doesn't exist.", project.Id) });
             }
+
+            //ToDo: 不是最新的数据，返回错误，请重新编辑
+             if (dbProject || string.IsNullOrEmpty(dbProject.Id))
+            {
+                return Json(new { errorMsg = string.Format("{0} updated project, please try it again.", dbProject) });
+            }           
 
             //没有权限
             //if (!this.GetService<DepartmentService>().IsBoss(this.GetUserId(), dbProject.OwnerIds)
@@ -96,16 +102,25 @@
 
         // PUT api/values/5
         [HttpPut]
-        public void Put([FromBody]Project project)
+        public JsonResult Put([FromBody]Project project)
         {
             project.Name = project.Name.Trim();
+
             if (project.IsPublic)
             {
                 project.OwnerIds = new List<string>(new string[] { this.GetUserId() });
                 project.UserIds = new List<string>(new string[] { this.GetUserId() });
             }
-
-            this.GetService<ProjectService>().Create(project);
+            
+            try{
+                this.GetService<ProjectService>().Create(project);
+                return Json(new { successMsg = string.Format("Create project({0}:{1}) successfully!", project.Id, project.Name) });
+            }
+             catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Json(new { errorMsg = ex.Message });
+            }
         }
 
         // DELETE api/values/5

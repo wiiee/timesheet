@@ -25,6 +25,8 @@
             publishDate: false
         };
 
+        $scope.isSubmitted = false;
+
         $scope.addTask = function () {
             $scope.isOpen[$scope.taskIndex] = {
                 isStartDateOpen: false,
@@ -260,18 +262,24 @@
 
         $scope.submit = function () {
             if ($("form").isValid()) {
-                if ($scope.projectId) {
-                    var url = _basePath + "/api/Project";
-                    $http.post(url, $scope.project).then(function (response) {
-                        location = _basePath + "/Project/Index";
-                    });
+                if(!$scope.isSubmitted){
+                    $scope.isSubmitted = true;
+                    if ($scope.projectId) {
+                        var url = _basePath + "/api/Project";
+                        $http.post(url, $scope.project).then(function (response) {
+                            var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
+                            location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
+                        });
+                    }
+                    else {
+                        var url = _basePath + "/api/Project";
+                        $http.put(url, $scope.project).then(function (response) {
+                            var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
+                            location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
+                        });
+                    }
                 }
-                else {
-                    var url = _basePath + "/api/Project";
-                    $http.put(url, $scope.project).then(function (response) {
-                        location = _basePath + "/Project/Index";
-                    });
-                }
+
             }
         };
     });
