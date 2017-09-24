@@ -75,7 +75,8 @@
         </div>
         <div ng-if="value !== -1">
             <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
-            <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="value" />
+            <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="value" ng-if="id === userId" />
+            <input class="form-control" id="{{'user-' + id}}" value="{{value}}" ng-if="id !== userId" disabled />
         </div>
     </div>
 </div>

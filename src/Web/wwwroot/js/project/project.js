@@ -18,6 +18,7 @@
         $scope.phases = _phases;
         $scope.statuses = _statuses;
         $scope.levels = _levels;
+        $scope.userId = _userId;
         $scope.groups = [];
         $scope.users = {};
         $scope.owners = [];
@@ -177,9 +178,29 @@
         };
 
         $scope.changeUser = function (task) {
-            if (!task.Values) {
+            if(!task.UserId){
                 task.Values = {};
             }
+
+            //不存在或者换到另外一个组的时候，就初始化
+            if (!task.Values || !_.contains(_.values(task.Values), task.UserId)) {
+                initTaskValues(task);
+            }
+        };
+
+        $scope.initTaskValues = function(task) {
+            task.Values = {};
+            $.each($scope.groups, function (index, element) {
+                var ids = _.pluck(element.Users, 'Id');
+                if(_.contains(ids, task.UserId)) {
+                    $.each(ids, function (i, e) {
+                        task.Values[e] = 0;
+                    });
+
+                    //退出循环
+                    return false;
+                }
+            });
         };
 
         $scope.collapseTask = function (task) {
