@@ -124,14 +124,19 @@
                     //现有的task更新
                     if (dbProject != null && dbProject.Tasks.Exists(o => o.Id == task.Id))
                     {
-                        task.Values = dbProject.Tasks.Find(o => o.Id == task.Id).Values;
+                        var dbTask = dbProject.Tasks.Find(o => o.Id == task.Id);
 
-                        if (task.Values.ContainsKey(this.GetUserId()))
+                        if (!dbTask.Values.IsEmpty() && dbTask.Values.ContainsKey(this.GetUserId()))
                         {
                             var value = task.Values[this.GetUserId()];
 
+                            task.Values = dbTask.Values;
                             task.Values.Remove(this.GetUserId());
                             task.Values.Add(this.GetUserId(), value == -1 ? 0 : value);
+                        }
+                        else
+                        {
+                            task.Values = dbTask.Values;
                         }
                     }
                     //新的Task
