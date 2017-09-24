@@ -342,7 +342,7 @@
                     {
                         if(task.Values == null)
                         {
-                            task.Values = new Dictionary<string, double>();
+                            task.Values = new Dictionary<string, int>();
 
                             var ownerId = this.GetService<DepartmentService>().GetLeaderIdByUserId(task.UserId);
 
@@ -369,6 +369,19 @@
 
                     this.GetService<ProjectService>().Update(project);
                 }
+            }
+
+            return "Done";
+        }
+
+        [Authorize(Roles = "0")]
+        public string RefactorTask()
+        {
+            var projects = this.GetService<ProjectService>().Get();
+
+            foreach (var project in projects)
+            {
+                this.GetService<ProjectService>().Update(project);
             }
 
             return "Done";

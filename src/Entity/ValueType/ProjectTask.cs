@@ -2,7 +2,6 @@
 {
     using Platform.Enum;
     using Platform.Extension;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -28,10 +27,14 @@
         public Status Status { get; set; }
 
         public string CodeReview { get; set; }
-        public Dictionary<string, double> Values { get; set;}
+        public Dictionary<string, int> Values { get; set;}
 
-        //工作的价值
-        public double Value { get; set; }
+        public int Value {
+            get
+            {
+                return CalculateValue();
+            }
+        }
 
         public bool IsReviewed { get; set; }
 
