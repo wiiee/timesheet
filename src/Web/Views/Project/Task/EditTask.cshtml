@@ -30,8 +30,8 @@
                     ng-options="statuses.indexOf(selectedItem) as selectedItem for selectedItem in statuses"></select>
         </div>
         <div class="col-md-4">
-            <input class="form-control" ng-if="!task.isTemplate" data-validation="required" ng-model="task.PlanHour" ng-change="changePlanValue(task)" />
-            <select class="form-control" ng-if="task.isTemplate" ng-model="task.PlanHour" ng-change="changePlanValue(task)" data-validation="custom" data-validation-regexp="^(number:\d+)$"
+            <input class="form-control" ng-if="!task.isTemplate" data-validation="required" ng-model="task.PlanHour" />
+            <select class="form-control" ng-if="task.isTemplate" ng-model="task.PlanHour" data-validation="custom" data-validation-regexp="^(number:\d+)$"
                     ng-options="hour for hour in hours[task.Name]"></select>
         </div>
         <div class="col-md-3">
@@ -42,7 +42,7 @@
         <!--select class="form-control taskUserId" ng-model="task.UserId" data-validation="custom" data-validation-regexp="^(string:[GS][0-9]{5})$"
                 ng-options="user in {group.Users group by group.Name for group in users}"></!--select-->
         
-        <select id="example-multiple-optgroups" class="form-control taskUserId" ng-model="task.UserId" name="{{'Tasks[' + $index + '].UserId'}}" data-validation="custom" data-validation-regexp="^([GS][0-9]{5})$">
+        <select id="example-multiple-optgroups" class="form-control taskUserId" ng-change="changeUser(task)" ng-model="task.UserId" name="{{'Tasks[' + $index + '].UserId'}}" data-validation="custom" data-validation-regexp="^([GS][0-9]{5})$">
             <optgroup ng-repeat="group in groups" label={{group.Name}}>
                 <option ng-repeat="user in group.Users" value={{user.Id}}>{{user.Name}}</option>
             </optgroup>
@@ -51,13 +51,13 @@
             </optgroup>
         </select>
 
-        <label class="taskReview" ng-if="projectId">
+        <label class="taskReview">
             <input class="taskReview" type="checkbox" ng-model="task.IsReviewed" @if (isUser) { <text> disabled</text> } />
             <span title="Edit Task" ng-class="task.Class" ng-click="collapseTask(task)" data-toggle="collapse" href="{{'#task-' + task.Id}}" aria-expanded="false" aria-controls="{{'task-' + task.Id}}"></span>
         </label>
     </div>
 </div>
-<div class="row top-margin collapse" id="{{'task-' + task.Id}}">
+<div class="row top-margin collapse taskCollapse" id="{{'task-' + task.Id}}">
     <div class="form-group col-md-12">
         <label for="description">Description</label>
         <textarea type="text" class="form-control" id="description" ng-model="task.Description" spellcheck="false" placeholder="Description"></textarea>
@@ -68,8 +68,14 @@
         <textarea type="text" class="form-control" id="codeReview" ng-model="task.CodeReview" spellcheck="false" placeholder="Code Review"></textarea>
     </div>
 
-    <div class="form-group col-md-2" ng-repeat="(id, name) in task.Values">
-        <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
-        <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="name" @if (isUser) { <text> disabled</text> } />
+    <div class="form-group col-md-2" ng-repeat="(id, value) in task.Values">
+        <div ng-if="value === -1">
+            <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
+            <input class="form-control" id="{{'user-' + id}}" value="*" disabled />
+        </div>
+        <div ng-if="value !== -1">
+            <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
+            <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="value" />
+        </div>
     </div>
 </div>

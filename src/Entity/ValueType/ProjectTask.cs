@@ -29,10 +29,17 @@
         public string CodeReview { get; set; }
         public Dictionary<string, int> Values { get; set;}
 
+        private int _value = -9999;
+
         public int Value {
             get
             {
-                return CalculateValue();
+                if(_value == -9999)
+                {
+                    _value = CalculateValue();
+                }
+
+                return _value; 
             }
         }
 
@@ -48,6 +55,11 @@
             {
                 var vaildValues = Values.Where(o => o.Value > 0).ToList();
 
+                if(vaildValues.Count == 0)
+                {
+                    return 0;
+                }
+
                 var total = vaildValues.Sum(o => o.Value);
                 var min = vaildValues.Min(o => o.Value);
                 var max = vaildValues.Max(o => o.Value);
@@ -55,26 +67,26 @@
 
                 if(count < 2)
                 {
-                    return (int)total;
+                    return total;
                 }
                 else if(count == 2)
                 {
-                    return (int)min;
+                    return min;
                 }
                 else
                 {
-                    var result = (total - min - max) / (count - 2);
-                    return (int)result;
+                    return (total - min - max) / (count - 2);
                 }
             }
         }
 
         public void EncryptValues(string userId, bool isLeader = false)
         {
-            var result = new Dictionary<string, double>();
             if (!isLeader)
             {
-                foreach(var value in Values)
+                var result = new Dictionary<string, int>();
+
+                foreach (var value in Values)
                 {
                     if(value.Key != userId)
                     {
@@ -85,6 +97,8 @@
                         result.Add(value.Key, value.Value);
                     }
                 }
+
+                Values = result;
             }
         }
     }

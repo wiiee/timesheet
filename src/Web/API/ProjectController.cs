@@ -95,10 +95,14 @@
                 }
 
                 project.UpdateProjectStatus();
+
                 if(project.Status == Status.Done)//update actual date range when mark project done (all tasks completed)
                 {
                     project.UpdateProjectActualTime();
                 }
+
+                UpdateTaskValues(dbProject, project);
+
                 projectService.Update(project);
 
                 return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!", project.Id, project.Name) });
@@ -107,6 +111,47 @@
             {
                 _logger.LogError(ex.Message);
                 return Json(new { errorMsg = ex.Message });
+            }
+        }
+
+        //更新task的value部分
+        private void UpdateTaskValues(Project dbProject, Project project)
+        {
+            if (!project.IsPublic && this.GetUserType() == UserType.User)
+            {
+                foreach (var task in project.Tasks)
+                {
+                    //现有的task更新
+                    if (dbProject != null && dbProject.Tasks.Exists(o => o.Id == task.Id))
+                    {
+                        task.Values = dbProject.Tasks.Find(o => o.Id == task.Id).Values;
+
+                        if (task.Values.ContainsKey(this.GetUserId()))
+                        {
+                            var value = task.Values[this.GetUserId()];
+
+                            task.Values.Remove(this.GetUserId());
+                            task.Values.Add(this.GetUserId(), value == -1 ? 0 : value);
+                        }
+                    }
+                    //新的Task
+                    else
+                    {
+                        if (!task.Values.IsEmpty())
+                        {
+                            var values = new Dictionary<string, int>();
+
+                            foreach(var value in values)
+                            {
+                                values.Add(value.Key, value.Value == -1 ? 0 : value.Value);
+                            }
+                        }
+                        else
+                        {
+                            task.Values = new Dictionary<string, int>();
+                        }
+                    }
+                }
             }
         }
 
@@ -121,6 +166,8 @@
                 project.OwnerIds = new List<string>(new string[] { this.GetUserId() });
                 project.UserIds = new List<string>(new string[] { this.GetUserId() });
             }
+
+            UpdateTaskValues(null, project);
             
             try{
                 this.GetService<ProjectService>().Create(project);

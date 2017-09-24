@@ -38,7 +38,6 @@
                 isTemplate: $scope.isTemplate,
                 isEdit: true,
                 isDelete: true,
-                isNew: true,
                 PlanDateRange: {},
                 Class: "glyphicon glyphicon-chevron-down"
             });
@@ -60,20 +59,6 @@
 
                     $.each($scope.project.Tasks, function (index, element) {
                         element.Class = "glyphicon glyphicon-chevron-down";
-
-                        if (!element.Values) {
-                            element.Values = {};
-                        }
-
-                        if ($scope.groups.length > 0) {
-                            var users = _.reduceRight(_.pluck($scope.groups, "Users"), function (a, b) { return a.concat(b); }, []);
-
-                            $.each(users, function (index, user) {
-                                if (!element.Values[user.Id]) {
-                                    element.Values[user.Id] = 0;
-                                }
-                            });
-                        }
                     });
 
                     $scope.initTemplate();
@@ -191,6 +176,12 @@
             }
         };
 
+        $scope.changeUser = function (task) {
+            if (!task.Values) {
+                task.Values = {};
+            }
+        };
+
         $scope.collapseTask = function (task) {
             if (task.Class === "glyphicon glyphicon-chevron-down") {
                 task.Class = "glyphicon glyphicon-chevron-up";
@@ -199,12 +190,6 @@
                 task.Class = "glyphicon glyphicon-chevron-down";
             }
         }
-
-        $scope.changePlanValue = function (task) {
-            if (task.isNew) {
-                task.Value = task.PlanHour;
-            }
-        };
 
         $scope.removeTask = function (id) {
             $scope.project.Tasks = _.reject($scope.project.Tasks, { Id: id });
@@ -271,14 +256,30 @@
                     var url = _basePath + "/api/Project";
                     if ($scope.projectId) {
                         $http.post(url, $scope.project).then(function (response) {
-                            var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
-                            location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
+                            if (response.successMsg || response.errorMsg) {
+                                var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
+
+                                if (response.errorMsg) {
+                                    location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
+                                }
+                                else {
+                                    location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
+                                }
+                            }
                         });
                     }
                     else {
                         $http.put(url, $scope.project).then(function (response) {
-                            var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
-                            location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
+                            if (response.successMsg || response.errorMsg) {
+                                var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
+
+                                if (response.errorMsg) {
+                                    location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
+                                }
+                                else {
+                                    location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
+                                }
+                            }
                         });
                     }
                 }

@@ -115,8 +115,9 @@
             return models;
         }
 
-        public IActionResult Project(string projectId)
+        public IActionResult Project(string projectId, string successMsg, string errorMsg)
         {
+            this.BuildHeaderMsg(successMsg, errorMsg);
             ViewData["ProjectId"] = projectId;
             return View();
         }
