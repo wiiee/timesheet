@@ -33,7 +33,17 @@
         [HttpGet("{id}")]
         public Project Get(string id)
         {
-            return this.GetService<ProjectService>().Get(id);
+            var project = this.GetService<ProjectService>().Get(id);
+
+            if(project != null && !project.Tasks.IsEmpty())
+            {
+                foreach(var task in project.Tasks)
+                {
+                    task.EncryptValues(this.GetUserId(), this.GetUserType() != UserType.User);
+                }
+            }
+
+            return project;
         }
 
         // POST api/values
@@ -56,17 +66,17 @@
             }
 
             //ToDo: 不是最新的数据，返回错误，请重新编辑
-             if (dbProject || string.IsNullOrEmpty(dbProject.Id))
+             if (dbProject.LastUpdate != project.LastUpdate)
             {
-                return Json(new { errorMsg = string.Format("{0} updated project, please try it again.", dbProject) });
-            }           
+                return Json(new { errorMsg = string.Format("{0} updated project, please try it again.", dbProject.LastUpdatedBy) });
+            }
 
             //没有权限
-            //if (!this.GetService<DepartmentService>().IsBoss(this.GetUserId(), dbProject.OwnerIds)
-            //    && !dbProject.UserIds.Contains(this.GetUserId()))
-            //{
-            //    return Json(new { errorMsg = "You don't have right!" });
-            //}
+            if (!this.GetService<DepartmentService>().IsBoss(this.GetUserId(), dbProject.OwnerIds)
+                && !this.GetService<DepartmentService>().GetUsersByUserIds(dbProject.OwnerIds).Select(o => o.Id).Contains(this.GetUserId()))
+            {
+                return Json(new { errorMsg = "You don't have right!" });
+            }
 
             try
             {

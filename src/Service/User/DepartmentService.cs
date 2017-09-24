@@ -39,6 +39,30 @@
             return testerIds.Contains(userId);
         }
 
+        //如果是User，返回第一个直属上级；如果是Leader/Manager，返回自己
+        public string GetLeaderIdByUserId(string userId)
+        {
+            var user = ServiceFactory.Instance.GetService<UserService>().Get(userId);
+
+            if(user == null)
+            {
+                return null;
+            }
+            else if (user.UserType == UserType.User)
+            {
+                if(GetUserGroupsWithList().Where(o => o.UserIds.Contains(userId)).Count() == 0)
+                {
+                    return null;
+                }
+
+                return GetUserGroupsWithList().Where(o => o.UserIds.Contains(userId)).First().OwnerIds.First();
+            }
+            else
+            {
+                return userId;
+            }
+        }
+
         public List<string> GetLeaderIdsByUserId(string userId)
         {
             var user = ServiceFactory.Instance.GetService<UserService>().Get(userId);

@@ -329,6 +329,51 @@
             return Redirect("~/Home");
         }
 
+        [Authorize(Roles = "0")]
+        public string RefreshProjectTask()
+        {
+            var projects = this.GetService<ProjectService>().Get();
+
+            foreach (var project in projects)
+            {
+                if (!project.Tasks.IsEmpty())
+                {
+                    foreach(var task in project.Tasks)
+                    {
+                        if(task.Values == null)
+                        {
+                            task.Values = new Dictionary<string, double>();
+
+                            var ownerId = this.GetService<DepartmentService>().GetLeaderIdByUserId(task.UserId);
+
+                            if(ownerId == null)
+                            {
+                                continue;
+                            }
+
+                            if (this.GetService<UserService>().Get(task.UserId).UserType == UserType.User)
+                            {
+                                var group = this.GetService<DepartmentService>().GetUserGroupsByUserId(task.UserId).First();
+
+                                foreach (var userId in group.UserIds)
+                                {
+                                    task.Values.Add(userId, userId == ownerId ? (int)task.Value : 0);
+                                }
+                            }
+                            else
+                            {
+                                task.Values.Add(ownerId, (int)task.Value);
+                            }
+                        }
+                    }
+
+                    this.GetService<ProjectService>().Update(project);
+                }
+            }
+
+            return "Done";
+        }
+
         private void ResetProfile()
         {
             var profileService = this.GetService<ProfileService>();

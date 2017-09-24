@@ -230,6 +230,10 @@
         };
 
         $scope.isUserExist = function (userId) {
+            if (userId === undefined) {
+                return true;
+            }
+
             if ($scope.groups.length === 0) {
                 return false;
             }
@@ -264,15 +268,14 @@
             if ($("form").isValid()) {
                 if(!$scope.isSubmitted){
                     $scope.isSubmitted = true;
+                    var url = _basePath + "/api/Project";
                     if ($scope.projectId) {
-                        var url = _basePath + "/api/Project";
                         $http.post(url, $scope.project).then(function (response) {
                             var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
                             location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
                         });
                     }
                     else {
-                        var url = _basePath + "/api/Project";
                         $http.put(url, $scope.project).then(function (response) {
                             var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
                             location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
