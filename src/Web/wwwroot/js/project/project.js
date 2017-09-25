@@ -184,7 +184,7 @@
 
             //不存在或者换到另外一个组的时候，就初始化
             if (!task.Values || !_.contains(_.values(task.Values), task.UserId)) {
-                initTaskValues(task);
+                $scope.initTaskValues(task);
             }
         };
 
