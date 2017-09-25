@@ -273,14 +273,15 @@
         $scope.submit = function () {
             if ($("form").isValid()) {
                 if(!$scope.isSubmitted){
-                    $scope.isSubmitted = true;
                     var url = _basePath + "/api/Project";
                     if ($scope.projectId) {
                         $http.post(url, $scope.project).then(function (response) {
-                            if (response.successMsg || response.errorMsg) {
-                                var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
+                            $scope.isSubmitted = true;
+                            $updateInfo = response.data;
+                            if ($updateInfo.successMsg || $updateInfo.errorMsg) {
+                                var msg = $updateInfo.successMsg ? "successMsg=" + $updateInfo.successMsg : "errorMsg=" + $updateInfo.errorMsg;
 
-                                if (response.errorMsg) {
+                                if ($updateInfo.errorMsg) {
                                     location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
                                 }
                                 else {
@@ -291,10 +292,12 @@
                     }
                     else {
                         $http.put(url, $scope.project).then(function (response) {
-                            if (response.successMsg || response.errorMsg) {
-                                var msg = response.successMsg ? "successMsg=" + response.successMsg : "errorMsg=" + response.errorMsg;
+                            $scope.isSubmitted = true;
+                            $updateInfo = response.data;
+                            if ($updateInfo.successMsg || $updateInfo.errorMsg) {
+                                var msg = $updateInfo.successMsg ? "successMsg=" + $updateInfo.successMsg : "errorMsg=" + $updateInfo.errorMsg;
 
-                                if (response.errorMsg) {
+                                if ($updateInfo.errorMsg) {
                                     location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
                                 }
                                 else {
