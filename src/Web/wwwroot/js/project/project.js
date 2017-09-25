@@ -184,13 +184,15 @@
             }
         };
 
-        $scope.initTaskValues = function(task) {
+        $scope.initTaskValues = function (task) {
+            var oriValues = task.Values ? angular.copy(task.Values) : {};
             task.Values = {};
+
             $.each($scope.groups, function (index, element) {
                 var ids = _.pluck(element.Users, 'Id');
                 if(_.contains(ids, task.UserId)) {
                     $.each(ids, function (i, e) {
-                        task.Values[e] = 0;
+                        task.Values[e] = oriValues[e] ? oriValues[e] : 0;
                     });
 
                     //退出循环
