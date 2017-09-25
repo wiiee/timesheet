@@ -112,10 +112,6 @@
                             element.isEdit = false;
                             element.isDelete = false;
                         }
-
-                        if (element.Value === 0) {
-                            element.Value = element.PlanHour;
-                        }
                     });
                 }
             });

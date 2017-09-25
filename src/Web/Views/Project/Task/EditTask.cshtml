@@ -75,7 +75,7 @@
         </div>
         <div ng-if="value !== -1">
             <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
-            <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="value" />
+            <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="task.Values[id]" />
         </div>
     </div>
 </div>
