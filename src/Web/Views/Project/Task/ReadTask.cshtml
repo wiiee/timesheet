@@ -26,6 +26,29 @@
         <input class="form-control taskUserId" value="{{getUserName(task.UserId)}}" disabled />
         <label class="taskReview">
             <input type="checkbox" ng-model="task.IsReviewed" disabled />
+            <span title="Edit Task" ng-class="task.Class" ng-click="collapseTask(task)" data-toggle="collapse" href="{{'#task-' + task.Id}}" aria-expanded="false" aria-controls="{{'task-' + task.Id}}"></span>
         </label>
     </div>
+</div>
+<div class="row top-margin collapse taskCollapse" id="{{'task-' + task.Id}}">
+    <div class="form-group col-md-12">
+        <label for="description">Description</label>
+        <textarea type="text" class="form-control" id="description" ng-model="task.Description" spellcheck="false" placeholder="Description"></textarea>
     </div>
+
+    <div class="form-group col-md-12">
+        <label for="codeReview">Code Review</label>
+        <textarea type="text" class="form-control" id="codeReview" ng-model="task.CodeReview" spellcheck="false" placeholder="Code Review"></textarea>
+    </div>
+
+    <div class="form-group col-md-2" ng-repeat="(id, value) in task.Values">
+        <div ng-if="value === -1">
+            <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
+            <input class="form-control" id="{{'user-' + id}}" value="*" disabled />
+        </div>
+        <div ng-if="value !== -1">
+            <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
+            <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="task.Values[id]" />
+        </div>
+    </div>
+</div>

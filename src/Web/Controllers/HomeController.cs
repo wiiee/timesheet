@@ -278,6 +278,27 @@
         }
 
         [Authorize(Roles = "0")]
+        public string ResetPublicProject()
+        {
+            var projectService = this.GetService<ProjectService>();
+            var userService = this.GetService<UserService>();
+            var projects = projectService.Get();
+            var userIds = userService.Get().Select(o => o.Id).ToList();
+
+            foreach (var project in projects)
+            {
+                if (project.IsPublic)
+                {
+                    project.ActualHours = project.ActualHours.Where(o => userIds.Contains(o.Key)).ToDictionary(o => o.Key, o => o.Value);
+                    projectService.Update(project);
+                }
+            }
+
+            return "done";
+        }
+
+
+        [Authorize(Roles = "0")]
         public IActionResult ResetTimeSheet()
         {
             var projectService = this.GetService<ProjectService>();

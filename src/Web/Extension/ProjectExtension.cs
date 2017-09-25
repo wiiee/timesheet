@@ -296,7 +296,7 @@
             }
             else
             {
-                if (project.UserIds.Contains(user.Id))
+                if (ServiceFactory.Instance.GetService<DepartmentService>().IsBoss(project.OwnerIds, user.Id))
                 {
                     isEdit = true;
                     isClose = true;

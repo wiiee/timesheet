@@ -194,6 +194,18 @@
             return GetSubordinatesByUserId(bossId).Contains(memberId);
         }
 
+        public bool IsBoss(List<String> bossIds, string memberId)
+        {
+            foreach(var bossId in bossIds)
+            {
+                if(IsBoss(bossId, memberId)){
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool IsBoss(string bossId, IEnumerable<string> memberIds)
         {
             if (string.IsNullOrEmpty(bossId))

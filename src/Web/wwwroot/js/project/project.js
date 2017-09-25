@@ -19,6 +19,7 @@
         $scope.statuses = _statuses;
         $scope.levels = _levels;
         $scope.userId = _userId;
+        $scope.userType = _userType;
         $scope.groups = [];
         $scope.users = {};
         $scope.owners = [];

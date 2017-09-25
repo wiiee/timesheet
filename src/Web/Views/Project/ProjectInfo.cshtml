@@ -111,8 +111,9 @@
             </thead>
             <tbody>
                 <tr ng-repeat="task in project.Tasks">
-                    <td ng-if="task.isEdit">@Html.Partial("Task/EditTask")</td>
-                    <td ng-if="!task.isEdit">@Html.Partial("Task/ReadTask")</td>
+                    <td>@Html.Partial("Task/EditTask")</td>
+                    @*<td ng-if="task.isEdit">@Html.Partial("Task/EditTask")</td>*@
+                    @*<td ng-if="!task.isEdit">@Html.Partial("Task/ReadTask")</td>*@
                 </tr>
             </tbody>
         </table>
