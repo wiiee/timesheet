@@ -102,5 +102,15 @@
             }
             return new DateTime(year, month, 1).AddDays(-1);
         }
+
+        public static DateTime Max(DateTime d1, DateTime d2)
+        {
+            return (d1.CompareTo(d2) > 0)? d1 : d2;
+        }
+
+        public static DateTime Min(DateTime d1, DateTime d2)
+        {
+            return (d1.CompareTo(d2) < 0) ? d1 : d2;
+        }
     }
 }

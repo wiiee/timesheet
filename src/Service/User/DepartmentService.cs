@@ -273,6 +273,10 @@
             {
                 return Get().Where(o => o.OwnerIds.Contains(user.Id)).SelectMany(o => o.UserGroups.Values).ToList();
             }
+            else if(user.UserType == UserType.Leader)
+            {
+                return GetUserGroupsWithList().Where(o => o.OwnerIds.Contains(userId)).ToList();
+            }
             else
             {
                 return GetUserGroupsWithList().Where(o => o.UserIds.Contains(userId)).ToList();
@@ -381,7 +385,8 @@
             List<GroupModel> groupModels = new List<GroupModel>();
             foreach (var item in userGroups)
             {
-                var userInfos = getSubordinatesByLeaderId(item.OwnerIds.FirstOrDefault());
+                //var userInfos = getSubordinatesByLeaderId(item.OwnerIds.FirstOrDefault());
+                var userInfos = getUserInfosByIds(item.UserIds.ToList());
                 groupModels.Add(new GroupModel(item.Id, item.Name.Replace("深圳", ""), item.OwnerIds, userInfos));
             }
 
@@ -412,7 +417,8 @@
             List<GroupModel> groupModels = new List<GroupModel>();
             foreach (var item in userGroups)
             {
-                var userInfos = getSubordinatesByLeaderId(item.OwnerIds.FirstOrDefault());
+                //var userInfos = getSubordinatesByLeaderId(item.OwnerIds.FirstOrDefault());
+                var userInfos = getUserInfosByIds(item.UserIds.ToList());
                 groupModels.Add(new GroupModel(item.Id, item.Name.Replace("深圳",""), item.OwnerIds, userInfos));
             }
 
@@ -428,6 +434,17 @@
                         .SelectMany(o => o.UserIds)
                         .Distinct().ToList();
 
+            List<UserInfo> userInfos = new List<UserInfo>();
+            foreach (var id in userIds)
+            {
+                var tmp = ServiceFactory.Instance.GetService<UserService>().Get(id);
+                userInfos.Add(new UserInfo(tmp.Id, tmp.Name));
+            }
+            return userInfos;
+        }
+
+        private List<UserInfo> getUserInfosByIds(List<string> userIds)
+        {
             List<UserInfo> userInfos = new List<UserInfo>();
             foreach (var id in userIds)
             {

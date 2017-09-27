@@ -94,7 +94,7 @@
             if (OwnerIds.IsEmpty())
             {
                 ViewData["Department"] = dbDepartment;
-                ViewData["Owners"] = this.GetService<UserService>().Get(o => o.UserType == UserType.Manager);
+                ViewData["Owners"] = this.GetService<UserService>().Get(o => o.UserType == UserType.Manager && o.AccountType == AccountType.Public);
                 ViewData["UserGroups"] = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId());
                 return View();
             }
@@ -190,7 +190,7 @@
                 }
 
                 ViewData["Owners"] = userService.Get(o => o.UserType == UserType.Leader || o.UserType == UserType.Manager);
-                ViewData["Users"] = userService.Get(o => o.UserType != UserType.Admin);
+                ViewData["Users"] = userService.Get(o => o.UserType != UserType.Admin && o.AccountType == AccountType.Public);
                 return View();
             }
         }
@@ -222,7 +222,7 @@
             {
                 ViewData["UserGroup"] = dbUserGroup;
                 ViewData["Owners"] = userService.Get(o => o.UserType == UserType.Leader || o.UserType == UserType.Manager);
-                ViewData["Users"] = userService.Get(o => o.UserType != UserType.Admin);
+                ViewData["Users"] = userService.Get(o => o.UserType != UserType.Admin && o.AccountType == AccountType.Public);
                 return View();
             }
             else

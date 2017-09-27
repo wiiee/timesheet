@@ -271,15 +271,16 @@
 
         $scope.submit = function () {
             if ($("form").isValid()) {
-                if(!$scope.isSubmitted){
+                if (!$scope.isSubmitted) {
+                    $scope.isSubmitted = true;
                     var url = _basePath + "/api/Project";
+
                     if ($scope.projectId) {
                         $http.post(url, $scope.project).then(function (response) {
-                            $scope.isSubmitted = true;
                             $updateInfo = response.data;
+
                             if ($updateInfo.successMsg || $updateInfo.errorMsg) {
                                 var msg = $updateInfo.successMsg ? "successMsg=" + $updateInfo.successMsg : "errorMsg=" + $updateInfo.errorMsg;
-
                                 if ($updateInfo.errorMsg) {
                                     location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
                                 }
@@ -291,11 +292,10 @@
                     }
                     else {
                         $http.put(url, $scope.project).then(function (response) {
-                            $scope.isSubmitted = true;
                             $updateInfo = response.data;
+
                             if ($updateInfo.successMsg || $updateInfo.errorMsg) {
                                 var msg = $updateInfo.successMsg ? "successMsg=" + $updateInfo.successMsg : "errorMsg=" + $updateInfo.errorMsg;
-
                                 if ($updateInfo.errorMsg) {
                                     location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
                                 }

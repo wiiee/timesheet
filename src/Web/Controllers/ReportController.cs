@@ -177,7 +177,7 @@
                             projectList = projectList.Where(o => !o.IsCr);
                         }
 
-                            foreach (var project in projectList)
+                        foreach (var project in projectList)
                         {
                             if (!monthlyReportModels.Exists(p => p.ProjectId == project.Id))
                             {
@@ -518,11 +518,27 @@
         {
             var departmentService = GetService<DepartmentService>();
             //遍历参与项目的组别，去掉'深圳机票'前缀
-            var projUserGroups = departmentService.GetUserGroupsByOwnerIds(project.OwnerIds);
-            List<string> groupNames = new List<string>();
-            foreach (var projUserGroup in projUserGroups)
+            //var projGroups = departmentService.GetUserGroupsByOwnerIds(project.OwnerIds);
+            var projGroups = new List<UserGroup>();
+            foreach (var ownerId in project.OwnerIds)
             {
-                groupNames.Add(projUserGroup.Name);
+                foreach(var group in departmentService.GetUserGroupsByOwnerId(ownerId))
+                {
+                    foreach(var userId in project.UserIds)
+                    {
+                        if(group.UserIds.Contains(userId))
+                        {
+                            projGroups.Add(group);
+                        }
+                    }
+                }
+            }
+            projGroups = projGroups.Distinct().ToList();
+            
+            List<string> groupNames = new List<string>();
+            foreach (var projGroup in projGroups)
+            {
+                groupNames.Add(projGroup.Name);
             }
             return string.Join("\\", groupNames).Replace("深圳机票", "");
         }
@@ -563,7 +579,7 @@
                             //遍历参与开发、测试人员
                             List<string> devNames = new List<string>();
                             List<string> testNames = new List<string>();
-                            foreach (var usrId in project.UserIds)
+                            foreach (var usrId in project.GetContributionUserIds(startDate, endDate))
                             {
                                 var usr = userService.Get(usrId);
                                 if (departmentService.IsTester(usrId))
@@ -599,9 +615,7 @@
                         }
                     }
                 }
-                //var sortedWeeklyReportModels = new List<FlightWeeklyReportModel>();
-                //var sortedTestWeeklyReportModels = new List<FlightWeeklyReportModel>();
-                //sortedWeeklyReportModels = models.OrderBy(p => p.UserGroupName).ThenBy(p => p.ActualEndDate).ToList();
+
                 models = models.OrderByDescending(o => o.Project.Level).ThenBy(o => o.Project.GetEndDate()).ToList();
             }
 

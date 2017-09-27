@@ -158,7 +158,8 @@
             {
                 if (groups.Count > 1)
                 {
-                    return BuildGroups(groups);
+                    return BuildSuperGroup(groups);
+                    //return BuildGroups(groups);
                 }
                 else
                 {
@@ -177,6 +178,21 @@
             controller.ViewData["GroupId"] = group.Id;
 
             return controller.View("ReportByUser/Group");
+        }
+
+        private IActionResult BuildSuperGroup(List<UserGroup> userGroups)
+        {
+            var department = departmentService.GetDepartmentsByUserId(user.Id).FirstOrDefault();
+
+            var userIds = userGroups.SelectMany(o => o.UserIds).ToList();
+            userIds = userIds.Where(o => userService.Get(o).AccountType == AccountType.Public).ToList();
+
+            controller.ViewData["Model"] = BuildComboModel(userIds);
+            controller.ViewData["Pairs"] = userService.GetByIds(userIds).Select(o => new KeyValuePair<string, string>(o.Id, o.Name)).ToList();
+            controller.ViewData["GroupPairs"] = userGroups.Select(o => new KeyValuePair<string, string>(o.Id, o.Name)).ToList();
+            controller.ViewData["DepartmentId"] = department.Id;
+
+            return controller.View("ReportByUser/Department");
         }
 
         private IActionResult BuildGroups(List<UserGroup> groups)
