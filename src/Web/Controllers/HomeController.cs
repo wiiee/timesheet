@@ -408,6 +408,54 @@
             return "Done";
         }
 
+        [Authorize(Roles = "0")]
+        public string AmendTask()
+        {
+            var projects = this.GetService<ProjectService>().Get();
+            int projCount = 0;
+            int taskCount = 0;
+            foreach (var project in projects)
+            {
+                Boolean hasInvalidData = false;
+                if (project.Tasks.IsEmpty())
+                {
+                    continue;
+                }
+
+                foreach (var task in project.Tasks)
+                {
+                    if(task.Values == null || task.Values.IsEmpty())
+                    {
+                        continue;
+                    }
+
+                    var result = new Dictionary<string, int>();
+                    foreach (var val in task.Values)
+                    {
+                        if (val.Value == -1)
+                        {
+                            taskCount++;
+                            hasInvalidData = true;
+                            var point = this.GetService<UserService>().Get(val.Key).UserType == UserType.User ? 0 : (int)task.Value;
+                            result.Add(val.Key, point);
+                        }
+                        else
+                        {
+                            result.Add(val.Key, val.Value);
+                        }
+                    }
+                    task.Values = result;
+                }
+
+                if(hasInvalidData)
+                {
+                    projCount++;
+                }
+            }
+
+            return string.Format("Total {0} projects and {1} tasks has invalid data.", projCount, taskCount);
+        }
+
         private void ResetProfile()
         {
             var profileService = this.GetService<ProfileService>();
