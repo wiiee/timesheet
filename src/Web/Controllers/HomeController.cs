@@ -449,6 +449,7 @@
 
                 if(hasInvalidData)
                 {
+                    this.GetService<ProjectService>().Update(project);
                     projCount++;
                 }
             }
