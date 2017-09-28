@@ -29,12 +29,12 @@
         public string CodeReview { get; set; }
         public Dictionary<string, int> Values { get; set;}
 
-        private int _value = -9999;
+        private int _value = 0;
 
         public int Value {
             get
             {
-                if(_value == -9999)
+                if(!Values.Values.Contains(-1))
                 {
                     _value = CalculateValue();
                 }
