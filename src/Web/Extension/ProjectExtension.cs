@@ -14,6 +14,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using Service;
+    using System.Reflection;
+    using Newtonsoft.Json;
 
     public static class ProjectExtension
     {
@@ -319,6 +321,11 @@
             }
 
             return new ProjectModel(project, departmentNames, string.Join(",", userService.GetByIds(project.OwnerIds).Select(o => o.Name)), string.Join(",", userService.GetByIds(project.UserIds).Select(o => o.Name)), project.GetTotalPlanHour(), project.GetTotalActualHour(), isEdit, isDelete, isClose, isPostpone);
+        }
+
+        public static T DeepCopy<T>(this T project) where T : class
+        {
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(project));
         }
     }
 }

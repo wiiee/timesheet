@@ -33,9 +33,9 @@
         [HttpGet("{id}")]
         public Project Get(string id)
         {
-            var project = this.GetService<ProjectService>().Get(id);
+            var project = this.GetService<ProjectService>().Get(id).DeepCopy();
 
-            if(project != null && !project.Tasks.IsEmpty())
+            if (project != null && !project.Tasks.IsEmpty())
             {
                 foreach(var task in project.Tasks)
                 {
