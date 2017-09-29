@@ -126,7 +126,7 @@
                     {
                         var dbTask = dbProject.Tasks.Find(o => o.Id == task.Id);
 
-                        if (!dbTask.Values.IsEmpty() && dbTask.Values.ContainsKey(this.GetUserId()))
+                        if (!task.Values.IsEmpty() && task.Values.ContainsKey(this.GetUserId()))
                         {
                             var value = task.Values[this.GetUserId()];
 
