@@ -35,7 +35,7 @@
                     ng-options="hour for hour in hours[task.Name]"></select>
         </div>
         <div class="col-md-3">
-            <input class="form-control" data-validation="number" ng-model="task.Value" disabled />
+            <input class="form-control" data-validation="number" value="{{ taskValues[task.Id] }}" disabled />
         </div>
     </div>
     <div class="col-md-2">

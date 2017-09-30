@@ -378,12 +378,12 @@
 
                                 foreach (var userId in group.UserIds)
                                 {
-                                    task.Values.Add(userId, userId == ownerId ? (int)task.Value : 0);
+                                    task.Values.Add(userId, userId == ownerId ? (int)task.CalculateValue() : 0);
                                 }
                             }
                             else
                             {
-                                task.Values.Add(ownerId, (int)task.Value);
+                                task.Values.Add(ownerId, (int)task.CalculateValue());
                             }
                         }
                     }
@@ -436,7 +436,7 @@
                         {
                             taskCount++;
                             hasInvalidData = true;
-                            var point = this.GetService<UserService>().Get(val.Key).UserType == UserType.User ? 0 : (int)task.Value;
+                            var point = this.GetService<UserService>().Get(val.Key).UserType == UserType.User ? 0 : (int)task.CalculateValue();
                             result.Add(val.Key, point);
                         }
                         else

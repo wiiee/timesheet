@@ -115,7 +115,7 @@
             double totalValue = 0;
             foreach (var task in Tasks)
             {
-                if (task.UserId == userId && task.IsReviewed && task.Value > 0)
+                if (task.UserId == userId && task.IsReviewed && task.CalculateValue() > 0)
                 {
                     var actualStartDate = task.ActualDateRange.StartDate;
                     var actualEndDate = task.ActualDateRange.EndDate;
@@ -126,7 +126,7 @@
                     int calWorkingDays = DateTimeUtil.GetWorkingDays(calStartDate, calEndDate);
                     if (calWorkingDays == 0) continue;
 
-                    totalValue += (task.Value * calWorkingDays / actualWorkingDays);
+                    totalValue += (task.CalculateValue() * calWorkingDays / actualWorkingDays);
                 }
             }
 

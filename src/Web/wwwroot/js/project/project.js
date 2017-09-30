@@ -15,6 +15,7 @@
         $scope._isPublic = false;
         $scope.taskIndex = 0;
         $scope.hours = {};
+        $scope.taskValues = {};
         $scope.phases = _phases;
         $scope.statuses = _statuses;
         $scope.levels = _levels;
@@ -65,12 +66,21 @@
 
                     $scope.initTemplate();
                 });
+
+                $scope.initTaskValues($scope.projectId);
             }
             else
             {
                 $scope.initTemplate();
             }
         };
+
+        $scope.initTaskValues = function (projectId) {
+            var url = _basePath + "/api/project/getTaskValues?projectId=" + encodeURIComponent($scope.projectId);
+            $http.post(url).then(function (response) {
+                $scope.taskValues = response.data;
+            });
+        }
 
         $scope.initTemplate = function () {
             var url = _basePath + "/api/project/getTaskTemplates";

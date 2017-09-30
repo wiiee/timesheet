@@ -33,8 +33,9 @@
         [HttpGet("{id}")]
         public Project Get(string id)
         {
-            var project = this.GetService<ProjectService>().Get(id).DeepCopy();
-
+            var dbProject = this.GetService<ProjectService>().Get(id);
+            var project = JsonUtil.FromJson<Project>(JsonUtil.ToJson(dbProject));
+            
             if (project != null && !project.Tasks.IsEmpty())
             {
                 foreach(var task in project.Tasks)
@@ -375,6 +376,20 @@
         public Project GetProject(string projectId)
         {
             return this.GetService<ProjectService>().Get(projectId);
+        }
+
+        [Route("GetTaskValues")]
+        [HttpPost]
+        public Dictionary<int, int> GetTaskValues(string projectId)
+        {
+            var project = this.GetService<ProjectService>().Get(projectId);
+
+            if (!project.Tasks.IsEmpty())
+            {
+                return project.Tasks.ToDictionary(o => o.Id, o => o.CalculateValue());
+            }
+
+            return null;
         }
 
         [Route("GetProjectModel")]
