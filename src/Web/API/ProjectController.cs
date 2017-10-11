@@ -81,17 +81,26 @@
 
             try
             {
-                var deleteIds = dbProject.Tasks.Select(o => o.Id).Except(project.Tasks.Select(o => o.Id).ToList()).ToList();
-
-                if (!deleteIds.IsEmpty())
+                if (dbProject.IsPublic) //公共项目更新结束时间
                 {
-                    var timeSheetService = this.GetService<TimeSheetService>();
-                    var timeSheets = timeSheetService.Get(o => o.ProjectId == project.Id).ToList();
-                    
-                    foreach(var timeSheet in timeSheets)
+                    project.PlanDateRange.EndDate = project.PublishDate;
+                    project.PlanEndDate = project.PublishDate;
+                    project.ActualDateRange.EndDate = project.PublishDate;
+                }
+                else
+                {
+                    var deleteIds = dbProject.Tasks.Select(o => o.Id).Except(project.Tasks.Select(o => o.Id).ToList()).ToList();
+
+                    if (!deleteIds.IsEmpty())
                     {
-                        timeSheet.DeleteTasks(deleteIds);
-                        timeSheetService.Update(timeSheet);
+                        var timeSheetService = this.GetService<TimeSheetService>();
+                        var timeSheets = timeSheetService.Get(o => o.ProjectId == project.Id).ToList();
+
+                        foreach (var timeSheet in timeSheets)
+                        {
+                            timeSheet.DeleteTasks(deleteIds);
+                            timeSheetService.Update(timeSheet);
+                        }
                     }
                 }
 

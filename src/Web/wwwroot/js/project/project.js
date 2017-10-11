@@ -59,11 +59,13 @@
                     $scope.project = response.data;
                     $scope.oriProject = angular.copy($scope.project);
                     $scope.taskIndex = _.max(_.pluck($scope.project.Tasks, "Id")) + 1;
+                    $scope.isPublic();
 
-                    $.each($scope.project.Tasks, function (index, element) {
-                        element.Class = "glyphicon glyphicon-chevron-down";
-                    });
-
+                    if ($scope.project.Tasks !== null) {
+                        $.each($scope.project.Tasks, function (index, element) {
+                            element.Class = "glyphicon glyphicon-chevron-down";
+                        });
+                    }
                     $scope.initTemplate();
                 });
 
@@ -86,7 +88,7 @@
             var url = _basePath + "/api/project/getTaskTemplates";
             $http.post(url).then(function (response) {
                 $scope.templates = response.data;
-                $scope.isTemplate = $scope.templates.length > 0;
+                $scope.isTemplate = $scope.project.Tasks !== null && $scope.templates.length > 0;
 
                 if ($scope.isTemplate) {
                     $.each($scope.templates, function (index, element) {
@@ -101,7 +103,7 @@
                 if (!$scope.projectId) {
                     $scope.addTask();
                 }
-                else {
+                else if ($scope.project.Tasks !== null) {
                     $.each($scope.project.Tasks, function (index, element) {
                         $scope.isOpen[index] = {
                             isStartDateOpen: false,
@@ -259,9 +261,9 @@
         }
 
         $scope.isPublic = function () {
-            $scope._isPublic = !$scope._isPublic;
-            
-            if ($scope._isPublic)
+            //$scope._isPublic = !$scope._isPublic;
+
+            if ($scope.project.IsPublic)
             {
                 $("#userIds").removeAttr('data-validation');
                 $("#ownerIds").removeAttr('data-validation');
