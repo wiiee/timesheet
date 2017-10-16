@@ -58,6 +58,8 @@
             $scope.murmurs = _murmurs ? _murmurs : [];
             $scope.isStartDateOpen = false;
             $scope.isEndDateOpen = false;
+            $scope.statuses = _statuses;
+            $scope.tasks = _tasks;
 
             $scope.openStartDate = function () {
                 $scope.isStartDateOpen = !$scope.isStartDateOpen;

@@ -2,6 +2,7 @@
 @using Web.Model.Report
 @using Entity.ValueType
 @using Platform.Extension
+@using Platform.Enum
 @using Web.Extension
 @using Web.Constant
 @using Service.User
@@ -20,6 +21,17 @@
     {
         userName = userService.Get(this.GetUserId()).Name;
     }
+
+    var tasks = model.Project.IsPublic ? null :
+        model.Project.Tasks.Select(o => new {
+            Id = o.Id, Name = o.Name,
+            Status = o.Status,
+            ActualStartDate = o.ActualDateRange.StartDate,
+            ActualEndDate = o.ActualDateRange.EndDate,
+            ActualHour = o.ActualHour,
+            Value = o.CalculateValue(),
+            UserName = userService.Get(o.UserId).Name
+        }).ToList();
 
     var murmurs = model.Project.Murmurs.IsEmpty() ? null :
         model.Project.Murmurs.Select(o => new {
@@ -55,6 +67,8 @@
         var _model = @Html.Raw(Json.Serialize(model));
         var _murmurs = @Html.Raw(Json.Serialize(murmurs));
         var _userName = "@Html.Raw(userName)";
+        var _statuses = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Status))));
+        var _tasks =  @Html.Raw(Json.Serialize(tasks));
     </script>
     <script type="text/javascript" src="~/js/shared/googlechart.js"></script>
     <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
@@ -215,6 +229,40 @@
             </tbody>
         </table>
     </div>
+
+    @if (!@model.Project.IsPublic)
+    {
+        <div class="row">
+            <h2>Tasks List</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Actual Start Date</th>
+                        <th>Actual End Date</th>
+                        <th>Actual Hour</th>
+                        <th>Value</th>
+                        <th>User Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in tasks">
+                        <td>{{row.Id}}</td>
+                        <td>{{row.Name}}</td>
+                        <td>{{statuses[row.Status]}}</td>
+                        <td>{{row.ActualStartDate | date:"yyyy/MM/dd HH:mm:ss"}}</td>
+                        <td>{{row.ActualEndDate | date:"yyyy/MM/dd HH:mm:ss"}}</td>
+                        <td>{{row.ActualHour}}</td>
+                        <td>{{row.Value}}</td>
+                        <td>{{row.UserName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+    
 
     @if (model.Burndown.Names.Count > 0)
     {
