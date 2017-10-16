@@ -7,6 +7,7 @@
     using Model.Report;
     using Platform.Enum;
     using Platform.Extension;
+    using Platform.Util;
     using Service;
     using Service.Project;
     using Service.User;
@@ -319,5 +320,61 @@
 
             return new ProjectModel(project, departmentNames, string.Join(",", userService.GetByIds(project.OwnerIds).Select(o => o.Name)), string.Join(",", userService.GetByIds(project.UserIds).Select(o => o.Name)), project.GetTotalPlanHour(), project.GetTotalActualHour(), isEdit, isDelete, isClose, isPostpone);
         }
+
+        //获取某个周期内有贡献的用户Id
+        public static List<string> GetContributionUserIds(this Project project, DateTime startDate, DateTime endDate)
+        {
+            List<string> userIds = new List<string>();
+            foreach (var task in project.Tasks)
+            {
+                if (IsTaskInProcess(task, startDate, endDate))
+                {
+                    userIds.Add(task.UserId);
+                }
+            }
+            return userIds.Distinct().ToList();
+        }
+
+        //满足max(A.start,B.start)<=min(A.end,B,end)，即可判断A，B重叠
+        private static bool IsTaskInProcess(ProjectTask task, DateTime startDate, DateTime endDate)
+        {
+            if (task.Status != Status.Pending)
+            {
+                DateTime taskEndDate = task.Status == Status.Done ? task.ActualDateRange.EndDate : DateTime.MaxValue;
+                return (DateTimeUtil.Max(task.ActualDateRange.StartDate, startDate).CompareTo(DateTimeUtil.Min(taskEndDate, endDate)) <= 0);
+            }
+            return false;
+        }
+
+        public static string GetContributionInfo(this Project project, DateTime startDate, DateTime endDate)
+        {
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            foreach (var task in project.Tasks)
+            {
+                if (IsTaskInProcess(task, startDate, endDate))
+                {
+                    string val = null;
+                    if (dic.TryGetValue(task.UserId, out val))
+                    {
+                        val += ";" + task.Name;
+                        dic.Remove(task.UserId);
+                        dic.Add(task.UserId, val);
+                    }
+                    else
+                    {
+                        dic.Add(task.UserId, task.Name);
+                    }
+                }
+            }
+            string ret = string.Empty;
+            var userService = ServiceFactory.Instance.GetService<UserService>();
+            foreach (var item in dic)
+            {
+                ret += userService.Get(item.Key).Name + ":" + item.Value + "\r\n";
+            }
+
+            return ret;
+        }
+
     }
 }

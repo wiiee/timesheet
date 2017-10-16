@@ -27,14 +27,16 @@
         public bool IsImportant { get; set; } //是否重要项目
         public string AllParticipants{ get; set;}
         public Project Project { get; set; }
+        private int ShowDetails { get; set; }
 
         public WeeklyReportExtrasInfo ExtrasInfo { get; set; }
 
         public FlightWeeklyReportModel(Project project, string userGroupName, string percentageCompletion, string progressText,
-            string status, List<string> devManagers, List<string> testManagers, List<string> devNames, List<string> testNames)
+            string status, List<string> devManagers, List<string> testManagers, List<string> devNames, List<string> testNames, 
+            string contributionInfo, int iShowDetails)
         {
             this.Project = project;
-            this.ExtrasInfo = new WeeklyReportExtrasInfo(project, devManagers, testManagers, devNames, testNames);
+            this.ExtrasInfo = new WeeklyReportExtrasInfo(project, devManagers, testManagers, devNames, testNames, contributionInfo);
             this.UserGroupName = userGroupName;
             this.ProjectName = project.Name;
             this.ProjectID = project.Id;
@@ -52,6 +54,7 @@
             this.PercentageCompletion = percentageCompletion;
             this.AllParticipants = getAllParticipants(devNames, testNames);
             this.Status = status;
+            this.ShowDetails = iShowDetails;
         }
 
         private string getAllParticipants(List<string> devNames, List<string> testNames)
@@ -68,6 +71,7 @@
         }
 
         //导出到Excel表专用
+        //0:只添加IsCr,重要性;1:再加任务贡献;2:输出所有信息
         public override string ToString()
         {
             IList<string> strings = new List<string>();
@@ -84,27 +88,35 @@
             strings.Add(ActualEndDate.ToSimpleString());
             strings.Add(AllParticipants);
             strings.Add(Comment);
-            //Extras information
-            strings.Add(ExtrasInfo.DevManager);
-            strings.Add(ExtrasInfo.DevName);
-            strings.Add(ExtrasInfo.DevPlanStartDate.ToSimpleString());
-            strings.Add(ExtrasInfo.DevActualStartDate.ToSimpleString());
-            strings.Add(ExtrasInfo.DevPlanEndDate.ToSimpleString());
-            strings.Add(ExtrasInfo.DevActualEndDate.ToSimpleString());
-            strings.Add(ExtrasInfo.DevPlanHour.ToString());
-            strings.Add(ExtrasInfo.DevActualHour.ToString());
+            if(this.ShowDetails > 0)
+            {
+                //Extras information
+                strings.Add(ExtrasInfo.ContributionInfo);
 
-            strings.Add(ExtrasInfo.TestManager);
-            strings.Add(ExtrasInfo.TestName);
-            strings.Add(ExtrasInfo.TestPlanStartDate.ToSimpleString());
-            strings.Add(ExtrasInfo.TestActualStartDate.ToSimpleString());
-            strings.Add(ExtrasInfo.TestPlanEndDate.ToSimpleString());
-            strings.Add(ExtrasInfo.TestActualEndDate.ToSimpleString());
-            strings.Add(ExtrasInfo.TestPlanHour.ToString());
-            strings.Add(ExtrasInfo.TestActualHour.ToString());
+                if (this.ShowDetails == 2)
+                {
+                    strings.Add(ExtrasInfo.DevManager);
+                    strings.Add(ExtrasInfo.DevName);
+                    strings.Add(ExtrasInfo.DevPlanStartDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.DevActualStartDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.DevPlanEndDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.DevActualEndDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.DevPlanHour.ToString());
+                    strings.Add(ExtrasInfo.DevActualHour.ToString());
 
+                    strings.Add(ExtrasInfo.TestManager);
+                    strings.Add(ExtrasInfo.TestName);
+                    strings.Add(ExtrasInfo.TestPlanStartDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.TestActualStartDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.TestPlanEndDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.TestActualEndDate.ToSimpleString());
+                    strings.Add(ExtrasInfo.TestPlanHour.ToString());
+                    strings.Add(ExtrasInfo.TestActualHour.ToString());
+                }
+            }
             strings.Add(Project.Level.ToString());
             strings.Add(Project.IsCr ? "True" : "False");
+
             return string.Join("$", strings);
         }
     }
@@ -132,14 +144,17 @@
         public double TestPlanHour { get; set; } // 计划测试时长
         public double TestActualHour { get; set; } // 实际测试时长
 
+        public string ContributionInfo { get; set; }//本周任务贡献
+
         public WeeklyReportExtrasInfo(Project project, List<string> devManagers, List<string> testManagers, List<string> devNames, 
-            List<string> testNames)
+            List<string> testNames, string contributionInfo)
         {
             this.DevManager = string.Join("\\", devManagers);
             this.TestManager = string.Join("\\", testManagers);
             this.DevName = string.Join("\\", devNames);
             this.TestName = string.Join("\\", testNames);
-            
+            this.ContributionInfo = contributionInfo;
+
             //plan and actual hours
             this.DevPlanHour = project.Tasks.Where(o=>o.Phase < Phase.Test).Sum(o=>o.PlanHour);
             this.DevActualHour = project.Tasks.Where(o => o.Phase < Phase.Test).Sum(o => o.ActualHour);

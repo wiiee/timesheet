@@ -92,24 +92,7 @@
             return 0;
         }
         
-        //获取某个周期内有贡献的用户Id
-        public List<string> GetContributionUserIds(DateTime startDate, DateTime endDate)
-        {
-            List<string> userIds = new List<string>();
-            foreach (var task in Tasks)
-            {
-                if (task.Status == Status.Pending) continue;
-
-                DateTime taskEndDate = task.Status == Status.Done ? task.ActualDateRange.EndDate : DateTime.MaxValue;
-                //满足max(A.start,B.start)<=min(A.end,B,end)，即可判断A，B重叠
-                if (DateTimeUtil.Max(task.ActualDateRange.StartDate, startDate).CompareTo(DateTimeUtil.Min(taskEndDate, endDate)) <=0 )
-                {
-                    userIds.Add(task.UserId);
-                }
-            }
-            return userIds.Distinct().ToList();
-        }
-
+        
         public double GetContribution(string userId, DateTime startDate, DateTime endDate)
         {
             double totalValue = 0;

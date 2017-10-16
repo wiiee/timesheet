@@ -8,7 +8,7 @@
     ViewData["ng-app"] = "flightWeeklyReport";
     var models = ViewData["FlightWeeklyReportModels"] as List<FlightWeeklyReportModel>;
     var searchDateRange = ViewData["SearchDateRange"] as DateRange;
-    var isShowDetails = (bool)ViewData["isShowDetails"];
+    var iShowDetails = (int)ViewData["iShowDetails"];
     var modelsArray = new List<List<string>>();
     var reportTitles = new List<string>();
     reportTitles.Add("项目名称");
@@ -24,47 +24,32 @@
     reportTitles.Add("调整后上线日期");
     reportTitles.Add("参与人员");
     reportTitles.Add("备注（问题或风险）");
-    if (isShowDetails)
+    if (iShowDetails > 0)
     {
-        reportTitles.Add("开发经理");
-        reportTitles.Add("开发人员");
-        reportTitles.Add("编码计划开始日期");
-        reportTitles.Add("编码实际开始日期");
-        reportTitles.Add("编码计划结束日期");
-        reportTitles.Add("编码实际结束日期");
-        reportTitles.Add("编码计划小时数");
-        reportTitles.Add("编码实际小时数");
+        reportTitles.Add("本周贡献");
 
-        reportTitles.Add("测试经理");
-        reportTitles.Add("测试人员");
-        reportTitles.Add("测试计划开始日期");
-        reportTitles.Add("测试实际开始日期");
-        reportTitles.Add("测试计划结束日期");
-        reportTitles.Add("测试实际结束日期");
-        reportTitles.Add("测试计划小时数");
-        reportTitles.Add("测试实际小时数");
+        if (iShowDetails > 1)
+        {
+            reportTitles.Add("开发经理");
+            reportTitles.Add("开发人员");
+            reportTitles.Add("编码计划开始日期");
+            reportTitles.Add("编码实际开始日期");
+            reportTitles.Add("编码计划结束日期");
+            reportTitles.Add("编码实际结束日期");
+            reportTitles.Add("编码计划小时数");
+            reportTitles.Add("编码实际小时数");
+
+            reportTitles.Add("测试经理");
+            reportTitles.Add("测试人员");
+            reportTitles.Add("测试计划开始日期");
+            reportTitles.Add("测试实际开始日期");
+            reportTitles.Add("测试计划结束日期");
+            reportTitles.Add("测试实际结束日期");
+            reportTitles.Add("测试计划小时数");
+            reportTitles.Add("测试实际小时数");
+        }
     }
     var reportTitlesToExport = new List<string>(reportTitles.ToArray());
-    if (!isShowDetails)
-    {
-        reportTitlesToExport.Add("开发经理");
-        reportTitlesToExport.Add("开发人员");
-        reportTitlesToExport.Add("编码计划开始日期");
-        reportTitlesToExport.Add("编码实际开始日期");
-        reportTitlesToExport.Add("编码计划结束日期");
-        reportTitlesToExport.Add("编码实际结束日期");
-        reportTitlesToExport.Add("编码计划小时数");
-        reportTitlesToExport.Add("编码实际小时数");
-
-        reportTitlesToExport.Add("测试经理");
-        reportTitlesToExport.Add("测试人员");
-        reportTitlesToExport.Add("测试计划开始日期");
-        reportTitlesToExport.Add("测试实际开始日期");
-        reportTitlesToExport.Add("测试计划结束日期");
-        reportTitlesToExport.Add("测试实际结束日期");
-        reportTitlesToExport.Add("测试计划小时数");
-        reportTitlesToExport.Add("测试实际小时数");
-    }
     reportTitlesToExport.Add("项目重要性");
     reportTitlesToExport.Add("IsCR");
     modelsArray.Add(reportTitlesToExport);
@@ -176,8 +161,13 @@
                         <td id="td-col-w60">@Html.Raw(item.ActualEndDate.ToSimpleString())</td>
                         <td id="td-col-w120">@Html.Raw(item.AllParticipants)</td>
                         <td id="td-col-w240">@Html.Raw(item.Comment)</td>
-                        @if (isShowDetails)
+                        @if (iShowDetails == 1)
                         {
+                            <td id="td-col-w240">@Html.Raw(item.ExtrasInfo.ContributionInfo)</td>
+                        }
+                        @if (iShowDetails == 2)
+                        {
+                            <td id="td-col-w240">@Html.Raw(item.ExtrasInfo.ContributionInfo)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevManager)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevName)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevPlanStartDate.ToShortString())</td>

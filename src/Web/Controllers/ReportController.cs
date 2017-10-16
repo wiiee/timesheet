@@ -251,9 +251,9 @@
         }
 
         [Authorize(Roles = "0,1,3")]
-        public IActionResult WeeklyReport(DateTime startDate, DateTime endDate, bool isShowImportant, bool isShowDetails)
+        public IActionResult WeeklyReport(DateTime startDate, DateTime endDate, bool isShowImportant, int iShowDetails)
         {
-            ViewData["isShowDetails"] = isShowDetails;
+            ViewData["iShowDetails"] = iShowDetails;
             bool isFlightDepart = this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_FLIGHT);
             if (isFlightDepart)
             {
@@ -289,7 +289,7 @@
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_FLIGHT))
             {
-                ViewData["FlightWeeklyReportModels"] = BuildFlightWeeklyReportModel(startDate, endDate, isShowDetails);
+                ViewData["FlightWeeklyReportModels"] = BuildFlightWeeklyReportModel(startDate, endDate, iShowDetails);
                 return View("WeeklyReport/Flight");
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_CORP_TRAVEL))
@@ -543,7 +543,7 @@
             return string.Join("\\", groupNames).Replace("深圳机票", "");
         }
 
-        private List<FlightWeeklyReportModel> BuildFlightWeeklyReportModel(DateTime startDate, DateTime endDate, bool isShowDetails)
+        private List<FlightWeeklyReportModel> BuildFlightWeeklyReportModel(DateTime startDate, DateTime endDate, int iShowDetails)
         {
             var userId = this.GetUserId();
             var departmentService = GetService<DepartmentService>();
@@ -609,9 +609,10 @@
 
                             string progressText = ReportHelper.GetFlightProgressText(isDone, devPercentage, testPercentage);
                             string percentageCompletion = ReportHelper.GetPercentageCompletion(devNames, testNames, devPercentage, testPercentage);
+                            string contributionInfo = project.GetContributionInfo(startDate, endDate);
 
                             models.Add(new FlightWeeklyReportModel(project, getAllUserGroupNamesByProject(project), percentageCompletion,
-                                progressText, ReportHelper.GetProjectStatus(project), devManagers, testManagers, devNames, testNames));
+                                progressText, ReportHelper.GetProjectStatus(project), devManagers, testManagers, devNames, testNames, contributionInfo, iShowDetails));
                         }
                     }
                 }
