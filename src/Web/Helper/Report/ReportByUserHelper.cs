@@ -80,7 +80,7 @@
                 return BuildGroup(departmentService.GetUserGroupById(groupId));
             }
 
-            if (!string.IsNullOrEmpty(departmentId))
+            if (!string.IsNullOrEmpty(departmentId) && user.UserType != UserType.Leader)
             {
                 return BuildDepartment(departmentService.Get(departmentId));
             }

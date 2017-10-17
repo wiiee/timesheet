@@ -82,7 +82,7 @@
                 return BuildGroup(departmentService.GetUserGroupById(groupId));
             }
 
-            if (!string.IsNullOrEmpty(departmentId))
+            if (!string.IsNullOrEmpty(departmentId) && user.UserType != UserType.Leader)
             {
                 return BuildDepartment(departmentService.Get(departmentId));
             }
@@ -165,7 +165,8 @@
             {
                 if (groups.Count > 1)
                 {
-                    return BuildGroups(groups);
+                    return BuildSuperGroup(groups);
+                    //return BuildGroups(groups);
                 }
                 else
                 {
@@ -195,6 +196,25 @@
             controller.ViewData["GroupId"] = group.Id;
 
             return controller.View("ReportByProject/Group");
+        }
+
+        private IActionResult BuildSuperGroup(List<UserGroup> groups)
+        {
+            var department = departmentService.GetDepartmentsByUserId(user.Id).FirstOrDefault();
+            var userIds = groups.SelectMany(o => o.UserIds).ToList();
+            var projects = projectService.GetProjectsByUserIds(userIds, startDate, endDate);
+
+            controller.ViewData["Name"] = string.Join(",", groups.Select(o => o.Name).ToList());
+            controller.ViewData["Model"] = BuildTimelineModel(projects);
+            controller.ViewData["BubbleModel"] = BuildBubbleModel(projects);
+            controller.ViewData["Pairs"] = projects.Select(o => new KeyValuePair<string, string>(o.Id, o.Name)).ToList();
+
+            controller.ViewData["ExpiredProjects"] = projects.Where(o => !o.PostponeReasons.IsEmpty()).ToList();
+            controller.ViewData["OvertimeProjects"] = projects.Where(o => o.GetTotalPlanHour() < o.GetTotalActualHour()).ToList();
+            controller.ViewData["GroupPairs"] = groups.Select(o => new KeyValuePair<string, string>(o.Id, o.Name)).ToList();
+            controller.ViewData["DepartmentId"] = department.Id;
+
+            return controller.View("ReportByProject/Department");
         }
 
         private IActionResult BuildGroups(List<UserGroup> groups)
