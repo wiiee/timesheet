@@ -199,6 +199,9 @@
 
         $scope.initTaskValues = function (task) {
             var oriValues = task.Values ? angular.copy(task.Values) : {};
+            if (!task.Values || task.Status == 0) {
+                oriValues[$scope.userId] = task.PlanHour;
+            }
             task.Values = {};
 
             $.each($scope.groups, function (index, element) {
@@ -212,6 +215,14 @@
                     return false;
                 }
             });
+        };
+
+        //编辑时修改value值
+        $scope.changePlanValue = function (task) {
+            var ids = _.keys(task.Values);
+            if (_.contains(ids, $scope.userId)) {
+                task.Values[$scope.userId] = task.PlanHour;
+            }
         };
 
         $scope.collapseTask = function (task) {
