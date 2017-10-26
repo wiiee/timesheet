@@ -44,7 +44,8 @@
                 //return helper.BuildTimeSheetOverViewModel(this.GetUserId());
                 var userIds = this.GetService<DepartmentService>().GetSubordinatesByUserId(this.GetUserId());
                 var adminIds = this.GetService<UserService>().Get().Where(o => o.UserType == UserType.Admin).Select(o => o.Id).ToList();
-                userIds = userIds.Except(adminIds).ToList();
+                var internalIds = this.GetService<UserService>().Get().Where(o => o.AccountType == AccountType.Internal).Select(o => o.Id).ToList();
+                userIds = userIds.Except(adminIds).Except(internalIds).ToList();
                 var helper = new TimeSheetHelper(this);
 
                 return helper.BuildUserTimeSheetOverViewModels(userIds);
