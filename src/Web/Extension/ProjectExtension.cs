@@ -356,13 +356,13 @@
                     string val = null;
                     if (dic.TryGetValue(task.UserId, out val))
                     {
-                        val += ";" + task.Name;
+                        val += ";" + task.Name + (task.Status == Status.Done? "(Done)": "");
                         dic.Remove(task.UserId);
                         dic.Add(task.UserId, val);
                     }
                     else
                     {
-                        dic.Add(task.UserId, task.Name);
+                        dic.Add(task.UserId, task.Name+ (task.Status == Status.Done ? "(Done)" : ""));
                     }
                 }
             }

@@ -592,6 +592,8 @@
                                 }
                             }
 
+                            if (devNames.IsEmpty() && testNames.IsEmpty()) continue;//本周无贡献
+
                             List<string> devManagers = new List<string>();
                             List<string> testManagers = new List<string>();
                             foreach (var ownerId in project.OwnerIds)
