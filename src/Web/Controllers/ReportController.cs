@@ -253,6 +253,11 @@
         [Authorize(Roles = "0,1,3")]
         public IActionResult WeeklyReport(DateTime startDate, DateTime endDate, bool isShowImportant, int iShowDetails)
         {
+            if (iShowDetails == 0 && this.GetUserId() == "G10402")
+            {
+                iShowDetails = 1;
+            }
+
             ViewData["iShowDetails"] = iShowDetails;
             bool isFlightDepart = this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_FLIGHT);
             if (isFlightDepart)
