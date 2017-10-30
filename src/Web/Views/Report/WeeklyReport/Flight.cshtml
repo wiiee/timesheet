@@ -8,7 +8,7 @@
     ViewData["ng-app"] = "flightWeeklyReport";
     var models = ViewData["FlightWeeklyReportModels"] as List<FlightWeeklyReportModel>;
     var searchDateRange = ViewData["SearchDateRange"] as DateRange;
-    var iShowDetails = (int)ViewData["iShowDetails"];
+    var iCTRB = (int)ViewData["iCTRB"];
     var modelsArray = new List<List<string>>();
     var reportTitles = new List<string>();
     reportTitles.Add("项目名称");
@@ -24,11 +24,11 @@
     reportTitles.Add("调整后上线日期");
     reportTitles.Add("参与人员");
     reportTitles.Add("备注（问题或风险）");
-    if (iShowDetails > 0)
+    if (iCTRB > 0)
     {
         reportTitles.Add("本周贡献");
 
-        if (iShowDetails > 1)
+        if (iCTRB > 1)
         {
             reportTitles.Add("开发经理");
             reportTitles.Add("开发人员");
@@ -146,26 +146,26 @@
                 @foreach (var item in models)
                 {
                     <tr @Html.Raw(item.IsImportant == true ? "class='tr-important'" : "")>
-                        <td id="td-col-w200">
+                        <td id="td-col-w160">
                             <a href="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(item.ProjectID)">@Html.Raw(item.ProjectName)</a>
                         </td>
-                        <td id="td-col-w100">@Html.Raw(item.SerialNumber)</td>
-                        <td id="td-col-w120">@Html.Raw(item.UserGroupName)</td>
-                        <td>@Html.Raw(item.ProductManagerName)</td>
+                        <td id="td-col-w120">@Html.Raw(item.SerialNumber)</td>
+                        <td id="td-col-w80">@Html.Raw(item.UserGroupName)</td>
+                        <td id="td-col-w60">@Html.Raw(item.ProductManagerName)</td>
                         <td id="td-col-w60">@Html.Raw(item.PercentageCompletion)</td>
                         <td>@Html.Raw(item.ProgressText)</td>
-                        <td>@Html.Raw(item.Status)</td>
-                        <td id="td-col-w60">@Html.Raw(item.PlanCombinedTestDate.ToSimpleString())</td>
-                        <td id="td-col-w60">@Html.Raw(item.ActualCombinedTestDate.ToSimpleString())</td>
-                        <td id="td-col-w60">@Html.Raw(item.PlanEndDate.ToSimpleString())</td><!-- 预计完成（或上线）时间 -->
-                        <td id="td-col-w60">@Html.Raw(item.ActualEndDate.ToSimpleString())</td>
+                        <td id="td-col-w30">@Html.Raw(item.Status)</td>
+                        <td id="td-col-w30">@Html.Raw(item.PlanCombinedTestDate.ToSimpleString())</td>
+                        <td id="td-col-w30">@Html.Raw(item.ActualCombinedTestDate.ToSimpleString())</td>
+                        <td id="td-col-w30">@Html.Raw(item.PlanEndDate.ToSimpleString())</td><!-- 预计完成（或上线）时间 -->
+                        <td id="td-col-w30">@Html.Raw(item.ActualEndDate.ToSimpleString())</td>
                         <td id="td-col-w120">@Html.Raw(item.AllParticipants)</td>
                         <td id="td-col-w240">@Html.Raw(item.Comment)</td>
-                        @if (iShowDetails == 1)
+                        @if (iCTRB == 1)
                         {
                             <td id="td-col-w240">@Html.Raw(item.ExtrasInfo.ContributionInfo)</td>
                         }
-                        @if (iShowDetails == 2)
+                        @if (iCTRB == 2)
                         {
                             <td id="td-col-w240">@Html.Raw(item.ExtrasInfo.ContributionInfo)</td>
                             <td id="td-col-w30">@Html.Raw(item.ExtrasInfo.DevManager)</td>

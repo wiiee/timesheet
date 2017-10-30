@@ -69,7 +69,7 @@
             {
                 return string.Format("开发:{0}%", (devPercentage * 100).ToString("0"));
             }
-            return string.Format("开发:{0}% 测试:{1}%", (devPercentage * 100).ToString("0"), (testPercentage * 100).ToString("0"));
+            return string.Format("开发:{0}%\r\n测试:{1}%", (devPercentage * 100).ToString("0"), (testPercentage * 100).ToString("0"));
 
         }
 

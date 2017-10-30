@@ -60,6 +60,7 @@
                         else
                         {
                             task.Status = Status.Pending;
+                            task.ActualDateRange = new DateRange();
                             task.ActualDateRange.StartDate = DateTime.MinValue;
                             task.ActualDateRange.EndDate = DateTime.MinValue;
                         }

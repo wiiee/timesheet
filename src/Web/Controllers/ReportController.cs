@@ -251,14 +251,14 @@
         }
 
         [Authorize(Roles = "0,1,3")]
-        public IActionResult WeeklyReport(DateTime startDate, DateTime endDate, bool isShowImportant, int iShowDetails)
+        public IActionResult WeeklyReport(DateTime startDate, DateTime endDate, bool isShowImportant, int iCTRB = -1)
         {
-            if (iShowDetails == 0 && this.GetUserId() == "G10402")
+            if (iCTRB < 0 && this.GetUserId() == "G10402")
             {
-                iShowDetails = 1;
+                iCTRB = 1;
             }
 
-            ViewData["iShowDetails"] = iShowDetails;
+            ViewData["iCTRB"] = iCTRB;
             bool isFlightDepart = this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_FLIGHT);
             if (isFlightDepart)
             {
@@ -294,7 +294,7 @@
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_FLIGHT))
             {
-                ViewData["FlightWeeklyReportModels"] = BuildFlightWeeklyReportModel(startDate, endDate, iShowDetails);
+                ViewData["FlightWeeklyReportModels"] = BuildFlightWeeklyReportModel(startDate, endDate, iCTRB);
                 return View("WeeklyReport/Flight");
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_CORP_TRAVEL))
@@ -548,7 +548,7 @@
             return string.Join("\\", groupNames).Replace("深圳机票", "");
         }
 
-        private List<FlightWeeklyReportModel> BuildFlightWeeklyReportModel(DateTime startDate, DateTime endDate, int iShowDetails)
+        private List<FlightWeeklyReportModel> BuildFlightWeeklyReportModel(DateTime startDate, DateTime endDate, int iCTRB)
         {
             var userId = this.GetUserId();
             var departmentService = GetService<DepartmentService>();
@@ -619,7 +619,7 @@
                             string contributionInfo = project.GetContributionInfo(startDate, endDate);
 
                             models.Add(new FlightWeeklyReportModel(project, getAllUserGroupNamesByProject(project), percentageCompletion,
-                                progressText, ReportHelper.GetProjectStatus(project), devManagers, testManagers, devNames, testNames, contributionInfo, iShowDetails));
+                                progressText, ReportHelper.GetProjectStatus(project), devManagers, testManagers, devNames, testNames, contributionInfo, iCTRB));
                         }
                     }
                 }

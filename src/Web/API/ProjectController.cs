@@ -10,6 +10,7 @@
     using Platform.Enum;
     using Platform.Extension;
     using Platform.Util;
+    using Service.Extension;
     using Service.Project;
     using Service.User;
     using System;
@@ -104,12 +105,7 @@
                     }
                 }
 
-                project.UpdateProjectStatus();
-
-                if(project.Status == Status.Done)//update actual date range when mark project done (all tasks completed)
-                {
-                    project.UpdateProjectActualTime();
-                }
+                project.UpdateProject();//update actual date range when mark task done
 
                 UpdateTaskValues(dbProject, project);
 

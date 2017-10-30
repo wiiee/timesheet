@@ -23,7 +23,13 @@
 
 .tr-important{font-Weight : bold;}
 #td-col-w30 {max-width: 30px;}
+#td-col-w40 {
+    max-width: 40px;
+}
 #td-col-w60 {max-width: 60px;}
+#td-col-w80 {
+    max-width: 80px;
+}
 #td-col-w100 {max-width: 100px;}
 #td-col-w120 {max-width: 120px;}
 #td-col-w160 {max-width: 160px;}

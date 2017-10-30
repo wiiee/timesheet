@@ -33,7 +33,7 @@
 
         public FlightWeeklyReportModel(Project project, string userGroupName, string percentageCompletion, string progressText,
             string status, List<string> devManagers, List<string> testManagers, List<string> devNames, List<string> testNames, 
-            string contributionInfo, int iShowDetails)
+            string contributionInfo, int iCTRB)
         {
             this.Project = project;
             this.ExtrasInfo = new WeeklyReportExtrasInfo(project, devManagers, testManagers, devNames, testNames, contributionInfo);
@@ -54,7 +54,7 @@
             this.PercentageCompletion = percentageCompletion;
             this.AllParticipants = getAllParticipants(devNames, testNames);
             this.Status = status;
-            this.ShowDetails = iShowDetails;
+            this.ShowDetails = iCTRB;
         }
 
         private string getAllParticipants(List<string> devNames, List<string> testNames)
@@ -67,7 +67,7 @@
             {
                 return string.Format("开发:{0}", string.Join("\\", devNames));
             }
-            return string.Format("开发:{0} 测试:{1}", string.Join("\\", devNames), string.Join("\\", testNames));
+            return string.Format("开发:{0}\r\n测试:{1}", string.Join("\\", devNames), string.Join("\\", testNames));
         }
 
         //导出到Excel表专用
