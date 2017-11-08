@@ -137,8 +137,8 @@
 
         public double GetTaskHours(int taskId)
         {
-            return WeekTimeSheets.ToList().Where(o => o.Value.ContainsKey(taskId) && o.Value[taskId].Sum() > 0).SelectMany(o => o.Value)
-                .Select(o => o.Value.Sum()).Sum();
+            return WeekTimeSheets.Where(o => o.Value.ContainsKey(taskId) && o.Value[taskId].Sum() > 0).SelectMany(o => o.Value).
+                Where(o => o.Key == taskId).Sum(o => o.Value.Sum());
         }
 
         public DateTime GetTaskStartDate(int taskId)
