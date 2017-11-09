@@ -180,6 +180,36 @@
             return result;
         }
 
+        //遍历项目timesheet，找到对应task周期内实际值
+        public double GetTaskActualHour(string projectId, int taskId, DateTime startDate, DateTime endDate)
+        {
+            double ret = 0;
+            var timeSheets = Get(o => o.ProjectId == projectId);
+            
+            foreach (var item in timeSheets)
+            {
+                var weeks = item.WeekTimeSheets.Where(o => o.Value.ContainsKey(taskId) && o.Value[taskId].Sum() > 0).OrderBy(o => o.Key).ToList();
+                if(weeks.Count > 0)
+                {
+                    foreach(var week in weeks)
+                    {
+                        var monday = DateTime.Parse(week.Key);
+                        var sunday = monday.AddDays(6);
+                        if(week.Value.ContainsKey(taskId) && DateTimeUtil.Max(monday, startDate).CompareTo(DateTimeUtil.Min(sunday, endDate)) <= 0)
+                        {
+                            var start = (int)DateTimeUtil.Max(startDate, monday).Subtract(monday).TotalDays;
+                            var end = (int)DateTimeUtil.Min(endDate, sunday).Subtract(monday).TotalDays;
+                            for(var i=start; i<end; i++)
+                            {
+                                ret += week.Value[taskId][i];
+                            }
+                        }
+                    }
+                }
+            }
+            return ret;
+        }
+
         //key为[DEV],[TEST]
         //获取用户在某个时间段在某个项目上的时间分配，只返回有数据的用户
         public Dictionary<string, DateRange> GetActualWorkingRangesByUserType(string projectId, DateTime startDate, DateTime endDate)

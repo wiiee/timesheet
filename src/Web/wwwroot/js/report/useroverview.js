@@ -7,10 +7,10 @@
 
         $.each(model, function (property, value) {
             if (isPlan) {
-                data.push(_.findWhere(_pairs, {Id: property}).Value, value.Key);
+                data.push([_.findWhere(_pairs, {Key: property}).Value, value.Key]);
             }
             else {
-                data.push(_.findWhere(_pairs, {Id: property}).Value, value.Value);
+                data.push([_.findWhere(_pairs, { Key: property }).Value, value.Value]);
             } 
         });
 

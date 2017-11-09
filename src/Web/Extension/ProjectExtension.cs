@@ -21,7 +21,7 @@
         {
             Dictionary<string, HourItem> result = new Dictionary<string, HourItem>();
             var userService = ServiceFactory.Instance.GetService<UserService>();
-            var timeSheetService = ServiceFactory.Instance.GetService<TimeSheetService>(); ;
+            var timeSheetService = ServiceFactory.Instance.GetService<TimeSheetService>();
 
             var searchHours = timeSheetService.GetProjectHoursByUserId(project.Id, startDate, endDate);
 
@@ -327,23 +327,21 @@
             List<string> userIds = new List<string>();
             foreach (var task in project.Tasks)
             {
-                if (IsTaskInProcess(task, startDate, endDate))
+                if (TaskHourInPeriod(project.Id, task, startDate, endDate) > 0)
                 {
                     userIds.Add(task.UserId);
                 }
             }
             return userIds.Distinct().ToList();
         }
-
-        //满足max(A.start,B.start)<=min(A.end,B,end)，即可判断A，B重叠
-        private static bool IsTaskInProcess(ProjectTask task, DateTime startDate, DateTime endDate)
+        
+        private static double TaskHourInPeriod(string projectId, ProjectTask task, DateTime startDate, DateTime endDate)
         {
             if (task.Status != Status.Pending)
             {
-                DateTime taskEndDate = task.Status == Status.Done ? task.ActualDateRange.EndDate : DateTime.MaxValue;
-                return (DateTimeUtil.Max(task.ActualDateRange.StartDate, startDate).CompareTo(DateTimeUtil.Min(taskEndDate, endDate)) <= 0);
+                return ServiceFactory.Instance.GetService<TimeSheetService>().GetTaskActualHour(projectId, task.Id, startDate, endDate);
             }
-            return false;
+            return 0;
         }
 
         public static string GetContributionInfo(this Project project, DateTime startDate, DateTime endDate)
@@ -351,21 +349,22 @@
             Dictionary<string, string> dic = new Dictionary<string, string>();
             foreach (var task in project.Tasks)
             {
-                if (IsTaskInProcess(task, startDate, endDate))
+                var tskHrs = TaskHourInPeriod(project.Id, task, startDate, endDate);
+                if (tskHrs <= 0) continue;
+
+                string val = null;
+                if (dic.TryGetValue(task.UserId, out val))
                 {
-                    string val = null;
-                    if (dic.TryGetValue(task.UserId, out val))
-                    {
-                        val += ";" + task.Name + (task.Status == Status.Done? "(Done)": "");
-                        dic.Remove(task.UserId);
-                        dic.Add(task.UserId, val);
-                    }
-                    else
-                    {
-                        dic.Add(task.UserId, task.Name+ (task.Status == Status.Done ? "(Done)" : ""));
-                    }
+                    val += ";" + task.Name + "[" + tskHrs + "h]" +(task.Status == Status.Done? "(Done)": "");
+                    dic.Remove(task.UserId);
+                    dic.Add(task.UserId, val);
+                }
+                else
+                {
+                    dic.Add(task.UserId, task.Name + "[" + tskHrs + "h]" + (task.Status == Status.Done ? "(Done)" : ""));
                 }
             }
+
             string ret = string.Empty;
             var userService = ServiceFactory.Instance.GetService<UserService>();
             foreach (var item in dic)
