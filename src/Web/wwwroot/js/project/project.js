@@ -303,12 +303,13 @@
                             $updateInfo = response.data;
 
                             if ($updateInfo.successMsg || $updateInfo.errorMsg) {
-                                var msg = $updateInfo.successMsg ? "successMsg=" + $updateInfo.successMsg : "errorMsg=" + $updateInfo.errorMsg;
+                                var fieldName = $updateInfo.successMsg ? "successMsg=" : "errorMsg=";
+                                var fieldValue = $updateInfo.successMsg ? $updateInfo.successMsg : $updateInfo.errorMsg;
                                 if ($updateInfo.errorMsg) {
-                                    location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
+                                    location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + filedName + encodeURIComponent(fieldValue);
                                 }
                                 else {
-                                    location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
+                                    location = _basePath + "/Project/Index?" + filedName + encodeURIComponent(fieldValue);
                                 }
                             }
                         });
