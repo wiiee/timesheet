@@ -1,4 +1,13 @@
 ﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+
+@{
+    var app = ViewData["ng-app"];
+
+    if (app == null)
+    {
+        app = "default";
+    }
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +29,7 @@
     @RenderSection("css", required: false)
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
-<body @if (ViewData["ng-app"] != null) { <text> ng-app="@ViewData["ng-app"]" </text>  }>
+<body ng-app="@app" ng-cloak>
     <div class="navbar navbar-default" id="header">
         @Html.Partial("~/Views/Shared/Header.cshtml")
     </div>
@@ -76,5 +85,7 @@
 
     @RenderSection("Scripts", required: false)
 </body>
+
+
 
 </html>

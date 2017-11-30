@@ -1,6 +1,9 @@
 ﻿namespace Web.Extension
 {
     using Entity.User;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Platform.Enum;
     using System.Collections.Generic;
@@ -84,12 +87,12 @@
                         };
 
             var identity = new ClaimsIdentity(claims, "Password");
-            controller.HttpContext.Authentication.SignInAsync("Cookies", new ClaimsPrincipal(identity));
+            controller.Request.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
         }
 
         public static void LogOffCookie(this Controller controller, string returnUrl)
         {
-            controller.HttpContext.Authentication.SignOutAsync("Cookies");
+            controller.Request.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
     }
 }

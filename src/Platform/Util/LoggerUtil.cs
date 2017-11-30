@@ -1,9 +1,10 @@
 ﻿namespace Platform.Util
 {
-    using System;
+    using Enricher;
     using Microsoft.Extensions.Logging;
     using Serilog;
     using Setting;
+    using System;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public static class LoggerUtil
@@ -16,12 +17,22 @@
         static LoggerUtil()
         {
             var elasticSearchLogUri = Setting.Instance.Get("ElasticSearchLogUri");
+
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .Enrich.WithProperty("MachineName", Environment.MachineName)
-                .WriteTo.LiterateConsole()
-                .WriteTo.RollingFile(FILE_PATH, outputTemplate: TEMPLATE)
-                .CreateLogger();
+                  .MinimumLevel.Debug()
+                  .Enrich.With(new ThreadIdEnricher())
+                  .Enrich.WithProperty("MachineName", Environment.MachineName)
+               .CreateLogger();
+
+            //Log.Logger = new LoggerConfiguration()
+            //   .MinimumLevel.Debug()
+            //   .Enrich.WithEnvironmentUserName()
+            //   .Enrich.WithMachineName()
+            //   .Enrich.WithProcessId()
+            //   .Enrich.WithThreadId()
+            //   .WriteTo.RollingFile(FILE_PATH, outputTemplate: TEMPLATE)
+            //   .WriteTo.MongoDBCapped(MONGODB_PATH, collectionName: "Log")
+            //   .CreateLogger();
 
             _loggerFactory = new LoggerFactory().AddSerilog();
         }

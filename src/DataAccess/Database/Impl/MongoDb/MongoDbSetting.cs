@@ -11,7 +11,9 @@
         private string password;
         private bool isUseSharding;
         private bool isUseReplicaSet;
+        private bool isAuth;
         private string replicaSetName;
+        
 
         public string GetAddress()
         {
@@ -58,11 +60,17 @@
             return isUseSharding;
         }
 
-        public MongoDbSetting(string address, string databaseName, string userName, string password, 
+        public bool IsAuth()
+        {
+            return isAuth;
+        }
+
+        public MongoDbSetting(string address, string databaseName, bool isAuth, string userName, string password, 
             bool isUseReplicaSet, bool isUseSharding, string replicaSetName)
         {
             this.address = address;
             this.databaseName = databaseName;
+            this.isAuth = isAuth;
             this.userName = userName;
             this.password = password;
             this.isUseReplicaSet = isUseReplicaSet;

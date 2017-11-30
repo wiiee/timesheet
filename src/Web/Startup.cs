@@ -17,6 +17,7 @@
     using Service.User;
     using Web.Context;
     using Web.Extension.Middleware;
+    using Microsoft.AspNetCore.Authentication.Cookies;
 
     public class Startup
     {
@@ -47,6 +48,14 @@
 
             services.AddDistributedMemoryCache();
             services.AddSession();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(o => {
+                o.LoginPath = new PathString("/Account/Login");
+                o.LogoutPath = new PathString("/Account/LogOff");
+                o.AccessDeniedPath = new PathString("/Home");
+                o.ExpireTimeSpan = TimeSpan.FromDays(30);
+            });
 
             services.AddSingleton<IContextRepository, WebContextRepository>();
             services.AddSingleton<ImgService>();
@@ -110,16 +119,7 @@
 
             app.UseStaticFiles();
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = "Cookies",
-                LoginPath = new PathString("/Account/Login"),
-                LogoutPath = new PathString("/Account/LogOff"),
-                AccessDeniedPath = new PathString("/Home"),
-                ExpireTimeSpan = TimeSpan.FromDays(30),
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true
-            });
+            app.UseAuthentication();
 
             app.UseSession();
             app.UseContext();

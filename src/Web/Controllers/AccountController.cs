@@ -2,6 +2,8 @@
 {
     using Common;
     using Entity.User;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
     using Platform.Enum;
     using Platform.Util;
@@ -112,7 +114,7 @@
 
         public IActionResult LogOff(string returnUrl)
         {
-            HttpContext.Authentication.SignOutAsync("Cookies");
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Redirect(UrlUtil.GetRelativeUrl(returnUrl));
         }
 
@@ -125,7 +127,7 @@
                         };
 
             var identity = new ClaimsIdentity(claims, "Password");
-            HttpContext.Authentication.SignInAsync("Cookies", new ClaimsPrincipal(identity));
+            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
         }
     }
 }

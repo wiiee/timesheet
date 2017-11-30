@@ -41,7 +41,7 @@
                 switch(item.DatabaseType)
                 {
                     case DatabaseType.MongoDB:
-                        databaseSetting = new MongoDbSetting(item.Address, item.Name, item.UserName, item.Password, false, false, string.Empty);
+                        databaseSetting = new MongoDbSetting(item.Address, item.Name, item.IsAuth, item.UserName, item.Password, false, false, string.Empty);
                         break;
                     default:
                         break;

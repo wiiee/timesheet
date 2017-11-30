@@ -152,7 +152,7 @@
                     img.Length = (int)file.Length;
                     //get the file's name
                     var parsedContentDisposition = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
-                    img.Name = parsedContentDisposition.FileName.Trim('"');
+                    img.Name = parsedContentDisposition.FileName.ToString().Trim('"');
                     img.ContentType = file.ContentType;
 
                     //get the bytes from the content stream of the file

@@ -7,6 +7,7 @@
         DatabaseType GetDatabaseType();
         bool IsUseReplicaSet();
         bool IsUseSharding();
+        bool IsAuth();
         string GetAddress();
         string GetDatabaseName();
         string GetUserName();
