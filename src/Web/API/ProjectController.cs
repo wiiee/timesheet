@@ -67,15 +67,10 @@
                 return Json(new { errorMsg = string.Format("Project({0}) doesn't exist.", project.Id) });
             }
 
-            //不是最新的数据，返回错误，请重新编辑
+            //ToDo: 不是最新的数据，返回错误，请重新编辑
              if (dbProject.LastUpdate != project.LastUpdate)
             {
-                project = project.Merge(dbProject);
-
-                if(project == null)
-                {
-                    return Json(new { errorMsg = string.Format("{0} updated project, please try it again.", dbProject.LastUpdatedBy) });
-                }  
+                return Json(new { errorMsg = string.Format("{0} updated project, please try it again.", dbProject.LastUpdatedBy) });
             }
 
             //没有权限
