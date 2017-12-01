@@ -60,12 +60,13 @@
             <script type="text/javascript" src="~/js/shared/utility.js"></script>
         }
 
-        @if (ViewData["ng-app"] != null)
-        {
-            <script type="text/javascript" src="~/lib/angular/angular.min.js"></script>
-            <script type="text/javascript" src="~/js/shared/filters.js"></script>
-            <script type="text/javascript" src="~/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-        }
+        <script type="text/javascript" src="~/lib/angular/angular.min.js"></script>
+        <script type="text/javascript" src="~/js/shared/filters.js"></script>
+        <script type="text/javascript" src="~/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+
+        <script type="text/javascript">
+            var app = angular.module("@app", []);
+        </script>
     </environment>
     <environment names="Staging,Production">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"

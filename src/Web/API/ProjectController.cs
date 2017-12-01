@@ -509,5 +509,24 @@
                 return 0;
             }
         }
+
+        [Route("ReviewTask")]
+        [HttpPost]
+        public JsonResult ReviewTask(string projectId, int taskId, int value)
+        {
+            try
+            {
+                var project = this.GetService<ProjectService>().Get(projectId);
+                var index = project.Tasks.FindIndex(o => o.Id == taskId);
+
+                this.GetService<ProjectService>().Update(projectId, string.Format("Tasks.{0}.Values[{1}]", index, this.GetUserId()), value);
+                return Json(new { successMsg = string.Format("Review project({0}:{1}) successfully!", projectId, taskId) });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Json(new { errorMsg = ex.Message });
+            }
+        }
     }
 }
