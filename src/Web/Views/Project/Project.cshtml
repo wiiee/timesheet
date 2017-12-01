@@ -53,6 +53,8 @@
     </div>
 </div>
 
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
 <div class="row" ng-controller="projectCtrl" ng-cloak>
     <form method="post" ng-submit="submit()">
         @Html.Partial("~/Views/Project/ProjectInfo.cshtml")

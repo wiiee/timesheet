@@ -76,6 +76,7 @@
         <div ng-if="value !== -1">
             <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
             <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="task.Values[id]" ng-disabled="userType === 'User' && (userId !== id || task.IsReviewed)" />
+            <button type="button" class="btn btn-success" ng-click="reviewTask(task.Id, id, task.Values[id])">Review</button>
         </div>
     </div>
 </div>

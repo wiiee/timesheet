@@ -512,20 +512,21 @@
 
         [Route("ReviewTask")]
         [HttpPost]
-        public JsonResult ReviewTask(string projectId, int taskId, int value)
+        public JsonResult ReviewTask(string projectId, string userId, int taskId, int value)
         {
-            try
+            if(this.GetService<DepartmentService>().IsBoss(this.GetUserId(), userId))
             {
                 var project = this.GetService<ProjectService>().Get(projectId);
                 var index = project.Tasks.FindIndex(o => o.Id == taskId);
+                var userIndex = project.Tasks[index].Values.Keys.ToList().IndexOf(userId);
 
-                this.GetService<ProjectService>().Update(projectId, string.Format("Tasks.{0}.Values[{1}]", index, this.GetUserId()), value);
+                this.GetService<ProjectService>().Update(projectId, string.Format("Tasks.{0}.Values.{1}.1", index, userIndex), value);
+
                 return Json(new { successMsg = string.Format("Review project({0}:{1}) successfully!", projectId, taskId) });
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex.Message);
-                return Json(new { errorMsg = ex.Message });
+                return Json(new { errorMsg = "You don't have right to review it" });
             }
         }
     }
