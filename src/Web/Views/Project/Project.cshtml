@@ -26,6 +26,8 @@
 @section scripts {
     <script type="text/javascript" src="~/lib/textarea-autosize/dist/jquery.textarea_autosize.min.js"></script>
     <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+
     <script type="text/javascript">
         var _phases = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Phase))));
         var _statuses = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Status))));

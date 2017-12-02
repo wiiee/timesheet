@@ -9,6 +9,7 @@
     using Model.Report;
     using Platform.Enum;
     using Platform.Extension;
+    using Platform.Constant;
     using Platform.Util;
     using Service.Project;
     using Service.User;
@@ -231,7 +232,7 @@
             var user = userService.Get(userId);
 
             //获取项目的时间，除掉公共项目
-            var hours = timeSheetService.GetUserHoursByProjectId(userId, startDate, endDate);
+            var hours = timeSheetService.GetUserHoursByProjectId(userId, startDate, endDate).Where(o => o.Value > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
             hours = hours.Where(o => !projectService.Get(o.Key).IsPublic).ToDictionary(pair => pair.Key, pair => pair.Value);
 
             var planProjectIds = projectService.GetProjectsByUserId(userId, startDate, endDate).Select(o => o.Id).ToList();
@@ -244,6 +245,9 @@
             var projects = projectService.GetByIds(hours.Keys);
 
             var planHours = projects.Select(o => o.GetPlanHour(userId, startDate, endDate)).ToList();
+
+            projects.AddRange(projectService.GetProjectsByUserId(userId, startDate, endDate).Where(o => o.Name.StartsWith(Constant.REWARD_PROJECT_PREFIX) && o.GetTotalActualHour() == 0));
+            projects = projects.Distinct().ToList();
             var contributions = projects.Select(o => o.GetContribution(userId, startDate, endDate)).ToList();
 
             var items = new List<KeyValuePair<string, double>>();

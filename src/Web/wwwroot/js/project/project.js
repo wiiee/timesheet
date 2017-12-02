@@ -50,7 +50,7 @@
             setTimeout(function () {
                 $.validate();
             }, 300);
-        }
+        };
 
         $scope.initProject = function () {
             if ($scope.projectId) {
@@ -82,7 +82,7 @@
             $http.post(url).then(function (response) {
                 $scope.taskValues = response.data;
             });
-        }
+        };
 
         $scope.initTemplate = function () {
             var url = _basePath + "/api/project/getTaskTemplates";
@@ -232,7 +232,7 @@
             else {
                 task.Class = "glyphicon glyphicon-chevron-down";
             }
-        }
+        };
 
         $scope.removeTask = function (id) {
             $scope.project.Tasks = _.reject($scope.project.Tasks, { Id: id });
@@ -269,7 +269,7 @@
             var users = _.reduceRight(_.pluck($scope.groups, "Users"), function (a, b) { return a.concat(b); }, []);
 
             return _.findWhere(users, { Id: userId }) !== undefined;
-        }
+        };
 
         $scope.isPublic = function () {
             //$scope._isPublic = !$scope._isPublic;
@@ -297,9 +297,7 @@
                 var url = _basePath + "/api/Project/ReviewTask?projectId=" + $scope.projectId + "&userId=" + userId + "&taskId=" + taskId + "&value=" + value;
                 $http.post(url, $scope.project).then(function (response) {
                     if (response.data.successMsg || response.data.errorMsg) {
-                        var fieldName = response.data.successMsg ? "successMsg=" : "errorMsg=";
-                        var fieldValue = response.data.successMsg ? response.data.successMsg : response.data.errorMsg;
-                        location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + fieldName + encodeURIComponent(fieldValue);
+                        bootbox.alert(response.data.successMsg ? response.data.successMsg : response.data.errorMsg);
                     }
                 });
             }

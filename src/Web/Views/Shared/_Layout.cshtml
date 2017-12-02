@@ -1,13 +1,5 @@
 ﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
 
-@{
-    var app = ViewData["ng-app"];
-
-    if (app == null)
-    {
-        app = "default";
-    }
-}
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,16 +21,33 @@
     @RenderSection("css", required: false)
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
-<body ng-app="@app" ng-cloak>
-    <div class="navbar navbar-default" id="header">
-        @Html.Partial("~/Views/Shared/Header.cshtml")
-    </div>
-    <div class="container body-content">
-        @RenderSection("breadcrumb", required: false)
-        @RenderBody()
+<body>
+    @if (ViewData["ng-app"] != null)
+    {
+        <div ng-app="@ViewData["ng-app"]" ng-cloak>
+            <div class="navbar navbar-default" id="header">
+                @Html.Partial("~/Views/Shared/Header.cshtml")
+            </div>
+            <div class="container body-content">
+                @RenderSection("breadcrumb", required: false)
+                @RenderBody()
 
-        @Html.Partial("~/Views/Shared/Footer.cshtml")
-    </div>
+                @Html.Partial("~/Views/Shared/Footer.cshtml")
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="navbar navbar-default" id="header">
+            @Html.Partial("~/Views/Shared/Header.cshtml")
+        </div>
+        <div class="container body-content">
+            @RenderSection("breadcrumb", required: false)
+            @RenderBody()
+
+            @Html.Partial("~/Views/Shared/Footer.cshtml")
+        </div>
+    }
 
     <environment names="Development">
         <script type="text/javascript">
@@ -60,13 +69,12 @@
             <script type="text/javascript" src="~/js/shared/utility.js"></script>
         }
 
-        <script type="text/javascript" src="~/lib/angular/angular.min.js"></script>
-        <script type="text/javascript" src="~/js/shared/filters.js"></script>
-        <script type="text/javascript" src="~/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-
-        <script type="text/javascript">
-            var app = angular.module("@app", []);
-        </script>
+        @if (ViewData["ng-app"] != null)
+        {
+            <script type="text/javascript" src="~/lib/angular/angular.min.js"></script>
+            <script type="text/javascript" src="~/js/shared/filters.js"></script>
+            <script type="text/javascript" src="~/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+        }
     </environment>
     <environment names="Staging,Production">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"

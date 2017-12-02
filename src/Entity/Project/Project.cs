@@ -8,6 +8,8 @@
     using ValueType;
     using Platform.Util;
     using Platform.Setting;
+    using Platform.Constant;
+
     public class Project : BaseEntity
     {
         //Id为[Owner]_[Name]
@@ -100,8 +102,16 @@
             {
                 if (task.UserId == userId && task.IsReviewed && task.CalculateValue() > 0)
                 {
+
                     var actualStartDate = task.ActualDateRange.StartDate;
                     var actualEndDate = task.ActualDateRange.EndDate;
+
+                    if (Name.StartsWith(Constant.REWARD_PROJECT_PREFIX) && task.ActualDateRange.StartDate == DateTime.MinValue && task.ActualDateRange.EndDate == DateTime.MinValue)
+                    {
+                        actualStartDate = task.PlanDateRange.StartDate;
+                        actualEndDate = task.PlanDateRange.EndDate;
+                    }
+
                     var calStartDate = actualStartDate < startDate ? startDate : actualStartDate;
                     var calEndDate = actualEndDate < endDate ? actualEndDate : endDate;
                     int actualWorkingDays = DateTimeUtil.GetWorkingDays(actualStartDate, actualEndDate);
