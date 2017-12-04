@@ -323,7 +323,8 @@
                             if (response.data.successMsg || response.data.errorMsg) {
                                 var fieldName = response.data.successMsg ? "successMsg=" : "errorMsg=";
                                 var fieldValue = response.data.successMsg ? response.data.successMsg : response.data.errorMsg;
-                                location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + fieldName + encodeURIComponent(fieldValue);
+                                var projectId = response.data.successMsg.substring(response.data.successMsg.indexOf("("), response.data.successMsg.indexOf(":"));
+                                location = _basePath + "/Project/Project?projectId=" + encodeURIComponent(projectId) + "&" + fieldName + encodeURIComponent(fieldValue);
                             }
                         });
                     }
