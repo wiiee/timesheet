@@ -5,10 +5,21 @@
 
     public class WebContextRepository : IContextRepository
     {
+        private ThreadLocal<IContext> contexts;
+
+        private WebContextRepository()
+        {
+            this.contexts = new ThreadLocal<IContext>();
+        }
+
+        public void SetContext(IContext context)
+        {
+            contexts.Value = context;
+        }
+
         public IContext GetCurrent()
         {
-            var threadId = Thread.CurrentThread.ManagedThreadId;
-            return WebContextUtil.Instance.GetContext(threadId);
+            return this.contexts.Value;
         }
     }
 }

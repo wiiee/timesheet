@@ -3,5 +3,6 @@
     public interface IContextRepository
     {
         IContext GetCurrent();
+        void SetContext(IContext context);
     }
 }

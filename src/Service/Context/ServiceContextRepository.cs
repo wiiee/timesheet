@@ -17,5 +17,10 @@
         {
             return new ServiceContext("Service", "127.0.0.1");
         }
+
+        public void SetContext(IContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
