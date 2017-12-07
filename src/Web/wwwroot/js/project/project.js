@@ -50,7 +50,7 @@
             setTimeout(function () {
                 $.validate();
             }, 300);
-        }
+        };
 
         $scope.initProject = function () {
             if ($scope.projectId) {
@@ -82,7 +82,7 @@
             $http.post(url).then(function (response) {
                 $scope.taskValues = response.data;
             });
-        }
+        };
 
         $scope.initTemplate = function () {
             var url = _basePath + "/api/project/getTaskTemplates";
@@ -199,7 +199,7 @@
 
         $scope.initTaskValues = function (task) {
             var oriValues = task.Values ? angular.copy(task.Values) : {};
-            if (!task.Values || task.Status == 0) {
+            if (!task.Values || task.Status === 0) {
                 oriValues[$scope.userId] = task.PlanHour;
             }
             task.Values = {};
@@ -232,7 +232,7 @@
             else {
                 task.Class = "glyphicon glyphicon-chevron-down";
             }
-        }
+        };
 
         $scope.removeTask = function (id) {
             $scope.project.Tasks = _.reject($scope.project.Tasks, { Id: id });
@@ -269,7 +269,7 @@
             var users = _.reduceRight(_.pluck($scope.groups, "Users"), function (a, b) { return a.concat(b); }, []);
 
             return _.findWhere(users, { Id: userId }) !== undefined;
-        }
+        };
 
         $scope.isPublic = function () {
             //$scope._isPublic = !$scope._isPublic;
@@ -292,6 +292,17 @@
             $scope.project = angular.copy($scope.oriProject);
         };
 
+        $scope.reviewTask = function (taskId, userId, value) {
+            if ($scope.projectId) {
+                var url = _basePath + "/api/Project/ReviewTask?projectId=" + $scope.projectId + "&userId=" + userId + "&taskId=" + taskId + "&value=" + value;
+                $http.post(url, $scope.project).then(function (response) {
+                    if (response.data.successMsg || response.data.errorMsg) {
+                        bootbox.alert(response.data.successMsg ? response.data.successMsg : response.data.errorMsg);
+                    }
+                });
+            }
+        };
+
         $scope.submit = function () {
             if ($("form").isValid()) {
                 if (!$scope.isSubmitted) {
@@ -300,32 +311,20 @@
 
                     if ($scope.projectId) {
                         $http.post(url, $scope.project).then(function (response) {
-                            $updateInfo = response.data;
-
-                            if ($updateInfo.successMsg || $updateInfo.errorMsg) {
-                                var fieldName = $updateInfo.successMsg ? "successMsg=" : "errorMsg=";
-                                var fieldValue = $updateInfo.successMsg ? $updateInfo.successMsg : $updateInfo.errorMsg;
-                                if ($updateInfo.errorMsg) {
-                                    location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + filedName + encodeURIComponent(fieldValue);
-                                }
-                                else {
-                                    location = _basePath + "/Project/Index?" + filedName + encodeURIComponent(fieldValue);
-                                }
+                            if (response.data.successMsg || response.data.errorMsg) {
+                                var fieldName = response.data.successMsg ? "successMsg=" : "errorMsg=";
+                                var fieldValue = response.data.successMsg ? response.data.successMsg : response.data.errorMsg;
+                                location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + fieldName + encodeURIComponent(fieldValue);
                             }
                         });
                     }
                     else {
                         $http.put(url, $scope.project).then(function (response) {
-                            $updateInfo = response.data;
-
-                            if ($updateInfo.successMsg || $updateInfo.errorMsg) {
-                                var msg = $updateInfo.successMsg ? "successMsg=" + $updateInfo.successMsg : "errorMsg=" + $updateInfo.errorMsg;
-                                if ($updateInfo.errorMsg) {
-                                    location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + encodeURIComponent(msg);
-                                }
-                                else {
-                                    location = _basePath + "/Project/Index?" + encodeURIComponent(msg);
-                                }
+                            if (response.data.successMsg || response.data.errorMsg) {
+                                var fieldName = response.data.successMsg ? "successMsg=" : "errorMsg=";
+                                var fieldValue = response.data.successMsg ? response.data.successMsg : response.data.errorMsg;
+                                var projectId = response.data.successMsg.substring(response.data.successMsg.indexOf("("), response.data.successMsg.indexOf(":"));
+                                location = _basePath + "/Project/Project?projectId=" + encodeURIComponent(projectId) + "&" + fieldName + encodeURIComponent(fieldValue);
                             }
                         });
                     }

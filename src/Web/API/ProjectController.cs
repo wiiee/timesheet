@@ -67,15 +67,10 @@
                 return Json(new { errorMsg = string.Format("Project({0}) doesn't exist.", project.Id) });
             }
 
-            //不是最新的数据，返回错误，请重新编辑
+            //ToDo: 不是最新的数据，返回错误，请重新编辑
              if (dbProject.LastUpdate != project.LastUpdate)
             {
-                project = project.Merge(dbProject);
-
-                if(project == null)
-                {
-                    return Json(new { errorMsg = string.Format("{0} updated project, please try it again.", dbProject.LastUpdatedBy) });
-                }  
+                return Json(new { errorMsg = string.Format("{0} updated project, please try it again.", dbProject.LastUpdatedBy) });
             }
 
             //没有权限
@@ -512,6 +507,26 @@
             {
                 _logger.LogError(ex.Message);
                 return 0;
+            }
+        }
+
+        [Route("ReviewTask")]
+        [HttpPost]
+        public JsonResult ReviewTask(string projectId, string userId, int taskId, int value)
+        {
+            if(this.GetService<DepartmentService>().IsBoss(this.GetUserId(), userId))
+            {
+                var project = this.GetService<ProjectService>().Get(projectId);
+                var index = project.Tasks.FindIndex(o => o.Id == taskId);
+                var userIndex = project.Tasks[index].Values.Keys.ToList().IndexOf(userId);
+
+                this.GetService<ProjectService>().Update(projectId, string.Format("Tasks.{0}.Values.{1}.1", index, userIndex), value);
+
+                return Json(new { successMsg = string.Format("Review project({0}:{1}) successfully!", projectId, taskId) });
+            }
+            else
+            {
+                return Json(new { errorMsg = "You don't have right to review it" });
             }
         }
     }

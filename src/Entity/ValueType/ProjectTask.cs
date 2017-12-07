@@ -2,8 +2,6 @@
 {
     using Platform.Enum;
     using Platform.Extension;
-    using Platform.Util;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -88,38 +86,6 @@
 
                 Values = result;
             }
-        }
-
-        public ProjectTask Merge(ProjectTask other)
-        {
-            var a = JsonUtil.FromJson<ProjectTask>(JsonUtil.ToJson(this));
-            var b = JsonUtil.FromJson<ProjectTask>(JsonUtil.ToJson(other));
-
-            a.Values = null;
-            b.Values = null;
-
-            if(JsonUtil.ToJson(a) == JsonUtil.ToJson(b) && JsonUtil.ToJson(this.Values.Keys) == JsonUtil.ToJson(other.Values.Keys))
-            {
-                var values = new Dictionary<string, int>();
-
-                foreach(var item in this.Values)
-                {
-                    //如果两个数据一样，或者其中有一个是0，或者有一个是-1的，表示没有冲突
-                    if(item.Value == other.Values[item.Key] || item.Value * other.Values[item.Key] <= 0)
-                    {
-                        values.Add(item.Key, Math.Max(item.Value, other.Values[item.Key]));
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-
-                this.Values = values;
-                return this;
-            }
-
-            return null;
         }
     }
 }

@@ -8,6 +8,7 @@
     using ValueType;
     using Platform.Util;
     using Platform.Setting;
+    using Platform.Constant;
 
     public class Project : BaseEntity
     {
@@ -101,8 +102,16 @@
             {
                 if (task.UserId == userId && task.IsReviewed && task.CalculateValue() > 0)
                 {
+
                     var actualStartDate = task.ActualDateRange.StartDate;
                     var actualEndDate = task.ActualDateRange.EndDate;
+
+                    if (Name.StartsWith(Constant.REWARD_PROJECT_PREFIX) && task.ActualDateRange.StartDate == DateTime.MinValue && task.ActualDateRange.EndDate == DateTime.MinValue)
+                    {
+                        actualStartDate = task.PlanDateRange.StartDate;
+                        actualEndDate = task.PlanDateRange.EndDate;
+                    }
+
                     var calStartDate = actualStartDate < startDate ? startDate : actualStartDate;
                     var calEndDate = actualEndDate < endDate ? actualEndDate : endDate;
                     int actualWorkingDays = DateTimeUtil.GetWorkingDays(actualStartDate, actualEndDate);
@@ -225,46 +234,6 @@
                 ActualDateRange.StartDate = startDates.Count() > 0 ? startDates.Min() : DateTime.MinValue;
                 ActualDateRange.EndDate = endDates.Count() > 0 ? endDates.Max() : DateTime.MinValue;
             }
-        }
-
-        public Project Merge(Project other)
-        {
-            var a = JsonUtil.FromJson<Project>(JsonUtil.ToJson(this));
-            var b = JsonUtil.FromJson<Project>(JsonUtil.ToJson(other));
-
-            a.Tasks = null;
-            b.Tasks = null;
-
-            a.LastUpdate = b.LastUpdate;
-            b.LastUpdatedBy = a.LastUpdatedBy;
-
-            if(JsonUtil.ToJson(a) == JsonUtil.ToJson(b))
-            {
-                var aIds = this.Tasks.Select(o => o.Id);
-                var bIds = other.Tasks.Select(o => o.Id);
-                var exceptIds = bIds.Except(aIds);
-                var intersectIds = aIds.Intersect(bIds);
-
-                foreach(var taskId in intersectIds)
-                {
-                    var task = this.Tasks.Find(o => o.Id == taskId);
-                    task = task.Merge(other.Tasks.Find(o => o.Id == taskId));
-
-                    if(task == null)
-                    {
-                        return null;
-                    }
-                }
-
-                foreach (var taskId in exceptIds)
-                {
-                    this.Tasks.Add(other.Tasks[taskId]);
-                }
-
-                return this;
-            }
-
-            return null;
         }
     }
 }

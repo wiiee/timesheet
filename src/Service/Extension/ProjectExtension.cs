@@ -18,7 +18,7 @@
                 return;
             }
 
-            var timeSheets = ServiceFactory.Instance.GetService<TimeSheetService>().Get(o => o.ProjectId == project.Id);
+            var timeSheets = ServiceFactory.Instance.GetService<TimeSheetService>().Get(o => o.ProjectId == project.Id).Where(o => o.GetTotalHours() > 0).ToList();
 
             project.ActualHours = new Dictionary<string, double>();
 
