@@ -7,7 +7,7 @@
     {
         private ThreadLocal<IContext> contexts;
 
-        private WebContextRepository()
+        public WebContextRepository()
         {
             this.contexts = new ThreadLocal<IContext>();
         }
