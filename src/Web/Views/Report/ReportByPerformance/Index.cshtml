@@ -1,0 +1,307 @@
+﻿@using Entity.User
+@using Web.Model.Report
+@using Entity.ValueType
+@using Platform.Extension
+@using Platform.Enum
+@using Web.Extension
+@using Web.Constant
+@using Service.User
+
+@{
+    ViewBag.Title = "Project Overview";
+    ViewData["ng-app"] = "projectOverview";
+    var model = ViewData["Model"] as ProjectOverviewModel;
+    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
+    var isAdmin = this.IsAdmin();
+    var userService = this.GetService<UserService>();
+
+    var userName = this.GetUserName();
+
+    if(string.IsNullOrEmpty(userName))
+    {
+        userName = userService.Get(this.GetUserId()).Name;
+    }
+
+    var tasks = model.Project.IsPublic ? null :
+        model.Project.Tasks.Select(o => new {
+            Id = o.Id, Name = o.Name,
+            Status = o.Status,
+            ActualStartDate = o.ActualDateRange.StartDate,
+            ActualEndDate = o.ActualDateRange.EndDate,
+            ActualHour = o.ActualHour,
+            Value = o.CalculateValue(),
+            UserName = userService.Get(o.UserId).Name
+        }).ToList();
+
+    var murmurs = model.Project.Murmurs.IsEmpty() ? null :
+        model.Project.Murmurs.Select(o => new {
+            Id = o.Key.ToString(),
+            Time = new DateTime(o.Key),
+            UserId = o.Value.Key,
+            UserName = userService.Get(o.Value.Key).Name,
+            Content = o.Value.Value
+        }).ToList();
+}
+
+@section css {
+    <link rel="stylesheet" href="~/css/report/projectoverview.css" />
+}
+
+@section scripts {
+    <script type="text/ng-template" id="murmur.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Murmur</h3>
+        </div>
+        <div class="modal-body">
+            <textarea class="form-control" ng-model="content"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Submit</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+    <script type="text/javascript" src="~/lib/textarea-autosize/dist/jquery.textarea_autosize.min.js"></script>
+    <script type="text/javascript" src="~/lib/googlechart/loader.js"></script>
+    <script type="text/javascript">
+        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
+        var _model = @Html.Raw(Json.Serialize(model));
+        var _murmurs = @Html.Raw(Json.Serialize(murmurs));
+        var _userName = "@Html.Raw(userName)";
+        var _statuses = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(Status))));
+        var _tasks =  @Html.Raw(Json.Serialize(tasks));
+    </script>
+    <script type="text/javascript" src="~/js/shared/googlechart.js"></script>
+    <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
+    <script type="text/javascript" src="~/js/report/projectoverview.js" asp-append-version="true"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Report</a></li>
+            <li class="active">Project Overview</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Project Overview</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div ng-controller="projectOverviewCtrl" ng-cloak>
+    <form method="post" action="~/Report/ProjectOverview?projectId=@Html.UrlEncoder.Encode(model.Project.Id)">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="startDate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="searchDateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="endDate">End Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="searchDateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openEndDate()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row bottom-margin top-margin">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <h2>Murmurs <span title="Add a new murmur" class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="open('', '@this.GetUserId()', '@(model.Project.Id)', 0, '')"></span></h2>
+        <ul class="list-group" ng-show="murmurs">
+            <li class="list-group-item" ng-repeat="row in murmurs">
+                <div class="row">
+                    <div class="col-md-8">{{row.Content}}</div>
+                    <div class="col-md-1">{{row.UserName}}</div>
+                    <div class="col-md-2">{{row.Time | date:'yyyy/MM/dd hh:mm:ss'}}</div>
+                    <div class="col-md-1">
+                        <span ng-if="row.UserId === '@this.GetUserId()' || @isAdmin" ng-click="open('', '@this.GetUserId()', '@(model.Project.Id)', row.Id, row.Content)" title="Edit Murmur" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                        <span ng-if="row.UserId === '@this.GetUserId()' || @isAdmin" ng-click="deleteMurmur('@(model.Project.Id)', row.Id)" title="Edit Murmur" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <h2>{{model.Project.Name}} <a href="~/Project/Project?projectId={{model.Project.Id || escape}}"><span title="Edit Project" class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="2">Status</th>
+                    <th colspan="2">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Overall</td>
+                    <td class="percentage"><progressbar class="progress-striped" value="@(model.Percentage * 100)" type="{{model.Percentage | progresstype}}">{{model.Percentage | percentage:2}}</progressbar></td>
+                    <td>
+                        <div>Owners</div>
+                        <div>Users</div>
+                    </td>
+                    <td>
+                        <div>{{model.OwnerNames}}</div>
+                        <div>{{model.UserNames}}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dev Status</td>
+                    <td>
+                        <progressbar class="progress-striped" value="@(model.DevPercentage * 100)" type="{{model.DevPercentage | progresstype}}">{{model.DevPercentage | percentage:2}}</progressbar>
+                    </td>
+                    <td>
+                        <div>Plan Time</div>
+                        <div>Actual Time</div>
+                    </td>
+                    <td>
+                        <div>{{model.Project.PlanDateRange.StartDate | date:"yyyy/MM/dd"}} - {{model.Project.PlanDateRange.EndDate | date:"yyyy/MM/dd"}}</div>
+                        <div>{{model.Project.ActualDateRange.StartDate | date:"yyyy/MM/dd"}} - {{model.Project.ActualDateRange.EndDate | date:"yyyy/MM/dd"}}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Test Status</td>
+                    <td><progressbar class="progress-striped" value="@(model.TestPercentage * 100)" type="{{model.TestPercentage | progresstype}}">{{model.TestPercentage | percentage:2}}</progressbar></td>
+                    <td>
+                        <div>SN</div>
+                        <div>PM</div>
+                    </td>
+                    <td>
+                        <div>{{model.Project.SerialNumber ? model.Project.SerialNumber : "None"}}</div>
+                        <div>{{model.Project.ProductManagerName ? model.Project.ProductManagerName : "None"}}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div>Created</div>
+                        <div>LastUpdate</div>
+                    </td>
+                    <td>
+                        <div>{{model.Project.Created | date:"yyyy/MM/dd HH:mm:ss"}}</div>
+                        <div>{{model.Project.LastUpdate | date:"yyyy/MM/dd HH:mm:ss"}}</div>
+                    </td>
+                    <td>
+                        <div>Created By</div>
+                        <div>LastUpdated By</div>
+                    </td>
+                    <td>
+                        <div>{{model.CreatedBy ? model.CreatedBy : "None"}}</div>
+                        <div>{{model.LastUpdatedBy ? model.LastUpdatedBy : "None"}}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Status</td>
+                    <td>{{model.Status}}</td>
+                    <td>Postpone</td>
+                    <td>{{model.PostponeReasons}}<span ng-if="model.PostponeReasons !== 'None'">, plan to publish on <b>{{model.Project.PlanEndDate | date:"yyyy/MM/dd"}}</b> originally.</span></td>
+                </tr>
+                <tr>
+                    <td>Plan Hour</td>
+                    <td>@(model.Project.GetTotalPlanHour())</td>
+                    <td>Actual Hour</td>
+                    <td>@(model.Project.GetTotalActualHour())</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td colspan="3">@(model.Project.Description)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    @if (!@model.Project.IsPublic)
+    {
+        <div class="row">
+            <h2>Tasks List</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Actual Start Date</th>
+                        <th>Actual End Date</th>
+                        <th>Actual Hour</th>
+                        <th>Value</th>
+                        <th>User Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in tasks">
+                        <td>{{row.Id}}</td>
+                        <td>{{row.Name}}</td>
+                        <td>{{statuses[row.Status]}}</td>
+                        <td>{{row.ActualStartDate | date:"yyyy/MM/dd HH:mm:ss"}}</td>
+                        <td>{{row.ActualEndDate | date:"yyyy/MM/dd HH:mm:ss"}}</td>
+                        <td>{{row.ActualHour}}</td>
+                        <td>{{row.Value}}</td>
+                        <td>{{row.UserName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+    
+
+    @if (model.Burndown.Names.Count > 0)
+    {
+        <div class="row">
+            <h2>Burndown Chart</h2>
+            <div id="lineChart"></div>
+        </div>
+    }
+
+    <div class="row">
+        <h2>Overall Hours</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Plan Hour</th>
+                    <th>Actual Hour</th>
+                    <th>Search Hour</th>
+                    <th class="pieChart">Pie Chart</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="(name, hour) in model.Hours">
+                    <td>{{name}}</td>
+                    <td>{{hour.Plan}}</td>
+                    <td>{{hour.Actual}}</td>
+                    <td>{{hour.Search}}</td>
+                    <td rowspan="@(model.Hours.Count)" ng-if="$index === 0">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="overallPieChart"></div>
+                            </div>
+                            <div class="col-md-6" ng-if="isShowSearchHours()">
+                                <div id="searchPieChart"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

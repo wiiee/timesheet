@@ -61,6 +61,13 @@
 
         <div class="row">
             <div class="form-group col-md-12">
+                <label for="level">Level</label>
+                <input type="text" class="form-control" id="level" name="level" value="@user.Level" data-validation="number" placeholder="level" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
                 <label for="gender">Gender</label>
                 <select class="form-control" id="gender" name="gender" data-validation="required">
                     @foreach (var item in genders)

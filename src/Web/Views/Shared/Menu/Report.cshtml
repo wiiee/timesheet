@@ -2,6 +2,7 @@
 
 @{
     bool isGeLeader = this.IsGeLeader();
+    bool isLeader = this.IsLeader();
 }
 
 @if (isGeLeader)
@@ -13,6 +14,9 @@
         <ul class="dropdown-menu">
             <li><a asp-controller="Report" asp-action="ReportByUser">By User</a></li>
             <li><a asp-controller="Report" asp-action="ReportByProject">By Project</a></li>
+            @if (isLeader){
+                <li><a asp-controller="Report" asp-action="ReportByPerformance">By Performance</a></li>
+            }
             <li><a href="~/Report/WeeklyReport?isShowImportant=true">Weekly Report</a></li>
             <li><a href="~/Report/MonthlyReport?isShowImportant=true">Monthly Report</a></li>
         </ul>

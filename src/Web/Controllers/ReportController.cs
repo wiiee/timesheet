@@ -47,6 +47,12 @@
             return new ReportByProjectHelper(this, departmentId, groupId, startDate, endDate).Build();
         }
 
+        [Authorize(Roles = "0,1,3")]
+        public IActionResult ReportByPerformance(string groupId, DateTime startDate, DateTime endDate)
+        {
+            return View("ReportByPerformance/Index");
+        }
+
         //id为ProjectId
         public IActionResult ProjectOverview(string projectId, DateTime startDate, DateTime endDate)
         {

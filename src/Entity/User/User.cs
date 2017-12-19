@@ -13,6 +13,7 @@
         public string Password { get; set; }
         public List<string> Pics { get; set; }
         public Gender Gender { get; set; }
+        public int Level { get; set; }
 
         public UserType UserType { get; set; }
 
