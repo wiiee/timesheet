@@ -4,6 +4,7 @@
     using Entity.User;
     using Entity.ValueType;
     using Platform.Context;
+    using Platform.Extension;
 
     public class UserPerformanceService: BaseService<UserPerformance>
     {
@@ -18,7 +19,10 @@
 
             var index = entity.Items.FindIndex(o => o.Id == item.Id);
 
-            index = index == -1 ? entity.Items.Count : index;
+            if(index == -1)
+            {
+                index = entity.Items.IsEmpty() ? 1 : entity.Items.Last().Id + 1;
+            }
 
             var levels = ServiceFactory.Instance.GetService<UserService>().GetByIds(item.Values.Keys.ToList()).ToDictionary(o => o.Id, o => o.Level);
 

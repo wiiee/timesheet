@@ -89,7 +89,7 @@
                     }
                 }
 
-                result.Add(new UserModel(item.Id, item.NickName, item.Name, item.MobileNo, item.Gender, item.UserType, item.AccountType, isEdit, isDelete, isResetPassword));
+                result.Add(new UserModel(item.Id, item.NickName, item.Name, item.MobileNo, item.Level, item.Gender, item.UserType, item.AccountType, isEdit, isDelete, isResetPassword));
             }
 
             return result;

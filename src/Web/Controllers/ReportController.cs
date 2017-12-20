@@ -35,7 +35,7 @@
             return new ReportByUserHelper(this, departmentId, groupId, startDate, endDate).Build();
         }
 
-        [Authorize(Roles = "0,1,3")]
+        [Authorize(Roles = "1")]
         public IActionResult ReportByProject(string departmentId, string groupId, DateTime startDate, DateTime endDate)
         {
             //if (!string.IsNullOrEmpty(userId) 
@@ -48,8 +48,27 @@
         }
 
         [Authorize(Roles = "0,1,3")]
-        public IActionResult ReportByPerformance(string groupId, DateTime startDate, DateTime endDate)
+        public IActionResult ReportByPerformance()
         {
+            var startDate = DateTimeUtil.GetCurrentMonday();
+            var endDate = DateTimeUtil.GetCurrentMonday().AddDays(6);
+            var userService = this.GetService<UserService>();
+
+            ViewData["SearchDateRange"] = new DateRange(startDate, endDate);
+
+            var group = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
+
+            var userIds = group.UserIds.ToList();
+
+            userIds = userIds.Where(o => userService.Get(o).AccountType == AccountType.Public).ToList();
+
+            ViewData["Pairs"] = userService.GetByIds(userIds).ToDictionary(o => o.Id, o => new {
+                Name = o.Name,
+                Level = o.Level
+            }).ToList();
+
+            ViewData["GroupId"] = group.Id;
+
             return View("ReportByPerformance/Index");
         }
 

@@ -8,6 +8,7 @@
         public string NickName { get; set; }
         public string Name { get; set; }
         public string MobileNo { get; set; }
+        public int Level { get; set; }
         public string Password { get; set; }
         public UserType UserType { get; set; }
         public AccountType AccountType { get; set; }
@@ -16,11 +17,12 @@
         public bool IsDelete { get; set; }
         public bool IsResetPassword { get; set; }
 
-        public UserModel(string id, string nickName, string name, string mobileNo, Gender gender, UserType userType, AccountType accountType, bool isEdit, bool isDelete, bool isResetPassword)
+        public UserModel(string id, string nickName, string name, string mobileNo, int level, Gender gender, UserType userType, AccountType accountType, bool isEdit, bool isDelete, bool isResetPassword)
         {
             this.Id = id;
             this.NickName = nickName;
             this.Name = name;
+            this.Level = level;
             this.MobileNo = mobileNo;
             this.Gender = gender;
             this.UserType = userType;

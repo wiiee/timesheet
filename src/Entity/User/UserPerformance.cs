@@ -5,12 +5,12 @@
 
     public class UserPerformance : BaseEntity
     {
-        //Id为UserId
+        //Id为GroupId
 
         public List<PerformanceItem> Items;
 
-        public UserPerformance(string userId){
-            this.Id = userId;
+        public UserPerformance(string groupId){
+            this.Id = groupId;
             this.Items = new List<PerformanceItem>();
         }
     }

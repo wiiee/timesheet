@@ -68,6 +68,7 @@
             services.AddSingleton<ProfileService>();
             services.AddSingleton<UserService>();
             services.AddSingleton<UserTimeSheetStatusService>();
+            services.AddSingleton<UserPerformanceService>();
         }
 
         private void InitServiceFactory(IApplicationBuilder app)
@@ -84,6 +85,7 @@
             AddService(services, app.ApplicationServices.GetService<ProfileService>());
             AddService(services, app.ApplicationServices.GetService<UserService>());
             AddService(services, app.ApplicationServices.GetService<UserTimeSheetStatusService>());
+            AddService(services, app.ApplicationServices.GetService<UserPerformanceService>());
 
             ServiceFactory.Instance.Init(services);
         }
