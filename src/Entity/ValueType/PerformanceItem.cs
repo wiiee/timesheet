@@ -20,10 +20,10 @@
             Values = new Dictionary<string, Score>();
         }
 
-        public void Calculate(Dictionary<string, int> levels){
+        public void Calculate(){
             foreach(var item in Values){
-                var level = Math.Max(1, levels[item.Key]);
-                item.Value.StandardValue = Convert.ToInt32(item.Value.TimeSheetValue / Math.Pow(level, Factor));
+                item.Value.Level = Math.Max(1, item.Value.Level);
+                item.Value.StandardValue = Convert.ToInt32(item.Value.TimeSheetValue / Math.Pow(item.Value.Level, Factor));
             }
 
             var averageValue = Values.Average(o => o.Value.StandardValue);

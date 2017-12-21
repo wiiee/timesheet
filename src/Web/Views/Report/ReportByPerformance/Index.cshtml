@@ -128,16 +128,20 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-2"></div>
-                        <div class="col-md-2"></div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" ng-model="currentItem.TimeSheetPercentage" spellcheck="false" placeholder="百分比" />
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" ng-model="currentItem.ManagerPercentage" spellcheck="false" placeholder="百分比" />
+                        </div>
                     </div>
                     <table class="table table-striped" ng-if="item.Items">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Level</th>
-                                <th>Ratio</th>
                                 <th>Score</th>
+                                <th>Value</th>
                                 <th>Comment</th>
                                 <th>Result</th>
                             </tr>
@@ -146,12 +150,9 @@
                             <tr v-repeat="row in item.Items">
                                 <td>{{row.Status}}</td>
                                 <td>{{row.Level}}</td>
-                                <td>{{item.TimeSheetPercentage}}/{{item.ManagerPercentage}}</td>
-                                <td>
-                                    Raw: {{row.TimeSheetValue}}/{{row.StandardValue}}/{{row.Outcome}}<br>
-                                    Manager: {{row.ManagerValue}}
-                                </td>
-                                <td>{{row.ManagerComment}}</td>
+                                <td>{{row.TimeSheetValue}}/{{row.StandardValue}}/{{row.Outcome}}</td>
+                                <td><input type="text" class="form-control" ng-model="row.ManagerValue" spellcheck="false" placeholder="评分" /></td>
+                                <td><input type="text" class="form-control" ng-model="row.ManagerComment" spellcheck="false" placeholder="评语" /></td>
                                 <td>{{row.Result}}</td>
                             </tr>
                         </tbody>

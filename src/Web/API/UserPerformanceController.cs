@@ -1,13 +1,11 @@
 ﻿namespace Web.API
 {
     using Common;
-    using Entity.User;
     using Entity.ValueType;
     using Extension;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Platform.Enum;
     using Platform.Extension;
     using Platform.Util;
     using Service.Project;
@@ -22,61 +20,18 @@
     {
         private static ILogger _logger = LoggerUtil.CreateLogger<UserPerformanceController>();
 
-        // GET: api/user
-        [Route("GetUserNames")]
-        [HttpPost]
-        public Dictionary<string, string> GetUserNames()
-        {
-            var users = this.GetService<UserService>().Get();
-            var entities = users.Select(
-                c => new
-                {
-                    id = c.Id,
-                    //password = c.Password,
-                    name = c.Name,
-                    //adminTypes = c.UserType.GetEnumsWithName()
-                }
-            ).ToDictionary(key => key.id, value => value.name);
-
-            return entities;
-        }
-
-        // POST api/values
-        [HttpPost]
-        public JsonResult Post([FromBody]User user)
-        {
-            string msg = "Action: Edit" + "; UserId: " + user.Id;
-
-            try
-            {
-                this.GetService<UserService>().Update(user);
-            }
-            catch (Exception ex)
-            {
-                msg += "; Error:" + ex.Message;
-            }
-
-
-            object json = new
-            {
-                status = Result.Success,
-                msg = msg
-            };
-
-            return Json(json);
-        }
-
         // PUT api/values
-        [HttpPut]
-        public JsonResult Put([FromBody]User user)
+        [HttpPost]
+        public JsonResult Save([FromBody]PerformanceItem item)
         {
-            try { 
-                return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!")});
+            try {
+                var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
+                this.GetService<UserPerformanceService>().Update(userGroup.Id, item);
+                return Json(new { successMsg = string.Format("Save performance successfully!")});
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-
                 return Json(new { errorMsg = ex.Message});
             }
         }
@@ -112,27 +67,47 @@
         [HttpPost]
         public PerformanceItem GetSample()
         {
-            return new PerformanceItem();
-        }
-
-        [Route("Pull")]
-        [HttpPost]
-        public PerformanceItem Pull(DateRange dateRange)
-        {
             var result = new PerformanceItem();
 
             var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
 
             if (userGroup != null)
             {
-                foreach(var userId in userGroup.UserIds.Where(o => o != this.GetUserId()).ToList()){
-                    result.DateRange = dateRange;
-                    result.Values = new Dictionary<string, Score>();
-                    result.Values.Add(userId, new Score(this.GetService<TimeSheetService>().GetContribution(userId, dateRange.StartDate, dateRange.EndDate), 0));
+                var levels = this.GetService<UserService>().GetByIds(userGroup.UserIds.Where(o => o != this.GetUserId()).ToList())
+                 .ToDictionary(o => o.Id, o => o.Level);
+
+                foreach(var level in levels){
+                    result.Values.Add(level.Key, new Score(level.Value));
                 }
             }
 
             return result;
+        }
+
+        [Route("Pull")]
+        [HttpPost]
+        public PerformanceItem Pull([FromBody]PerformanceItem item)
+        {
+            var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
+
+            if(userGroup != null)
+            {
+                foreach (var userId in userGroup.UserIds.Where(o => o != this.GetUserId()).ToList())
+                {
+                    item.Values[userId].TimeSheetValue = this.GetService<TimeSheetService>().
+                        GetContribution(userId, item.DateRange.StartDate, item.DateRange.EndDate);
+                }   
+            }
+
+            return item;
+        }
+
+        [Route("Calculate")]
+        [HttpPost]
+        public PerformanceItem Calculate([FromBody]PerformanceItem item)
+        {
+            item.Calculate();
+            return item;
         }
     }
 }
