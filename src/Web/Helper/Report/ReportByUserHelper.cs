@@ -20,23 +20,23 @@
     public class ReportByUserHelper : IHelper
     {
         private BaseController controller;
-        private string userId;
-        private User user;
+        private readonly string _userId;
+        private readonly User _user;
         private string departmentId;
         private string groupId;
-        private DateTime startDate;
-        private DateTime endDate;
+        private DateTime _startDate;
+        private DateTime _endDate;
 
-        private UserService userService;
-        private DepartmentService departmentService;
-        private ProjectService projectService;
-        private TimeSheetService timeSheetService;
+        private readonly UserService userService;
+        private readonly DepartmentService departmentService;
+        private readonly ProjectService projectService;
+        private readonly TimeSheetService timeSheetService;
 
         public ReportByUserHelper(BaseController controller, string departmentId, string groupId, DateTime startDate, DateTime endDate)
         {
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(_userId))
             {
-                userId = controller.GetUserId();
+                _userId = controller.GetUserId();
             }
 
             userService = controller.GetService<UserService>();
@@ -44,8 +44,8 @@
             timeSheetService = controller.GetService<TimeSheetService>();
             projectService = controller.GetService<ProjectService>();
 
-            userId = controller.GetUserId();
-            user = userService.Get(userId);
+            _userId = controller.GetUserId();
+            _user = userService.Get(_userId);
 
             this.departmentId = departmentId;
             this.groupId = groupId;
@@ -53,20 +53,20 @@
             //如果没有指定日期，就查本周的数据
             if (startDate.IsEmpty())
             {
-                this.startDate = DateTimeUtil.GetCurrentMonday();
+                this._startDate = DateTimeUtil.GetCurrentMonday();
             }
             else
             {
-                this.startDate = startDate;
+                this._startDate = startDate;
             }
 
             if (endDate.IsEmpty())
             {
-                this.endDate = DateTimeUtil.GetCurrentMonday().AddDays(6);
+                this._endDate = DateTimeUtil.GetCurrentMonday().AddDays(6);
             }
             else
             {
-                this.endDate = endDate;
+                this._endDate = endDate;
             }
 
             this.controller = controller;
@@ -74,33 +74,28 @@
 
         public IActionResult Build()
         {
-            controller.ViewData["SearchDateRange"] = new DateRange(startDate, endDate);
+            controller.ViewData["SearchDateRange"] = new DateRange(_startDate, _endDate);
 
             if (!string.IsNullOrEmpty(groupId))
             {
                 return BuildGroup(departmentService.GetUserGroupById(groupId));
             }
 
-            if (!string.IsNullOrEmpty(departmentId) && user.UserType != UserType.Leader)
+            if (!string.IsNullOrEmpty(departmentId) && _user.UserType != UserType.Leader)
             {
                 return BuildDepartment(departmentService.Get(departmentId));
             }
 
-            if (user.UserType == UserType.Admin)
+            switch (_user.UserType)
             {
-                return BuildDepartments(departmentService.Get());
-            }
-            else if (user.UserType == UserType.Manager)
-            {
-                return BuildManager();
-            }
-            else if (user.UserType == UserType.Leader)
-            {
-                return BuildLeader();
-            }
-            else
-            {
-                return BuildUser();
+                case UserType.Admin:
+                    return BuildDepartments(departmentService.Get());
+                case UserType.Manager:
+                    return BuildManager();
+                case UserType.Leader:
+                    return BuildLeader();
+                default:
+                    return BuildUser();
             }
         }
 
@@ -126,7 +121,7 @@
 
         private IActionResult BuildManager()
         {
-            var departments = departmentService.GetDepartmentsByUserId(user.Id);
+            var departments = departmentService.GetDepartmentsByUserId(_user.Id);
 
             //ToDo:错误处理
             if (departments.IsEmpty())
@@ -148,7 +143,7 @@
 
         private IActionResult BuildLeader()
         {
-            var groups = departmentService.GetUserGroupsByOwnerId(userId);
+            var groups = departmentService.GetUserGroupsByOwnerId(_userId);
 
             //ToDo:错误处理
             if (groups.IsEmpty())
@@ -183,7 +178,7 @@
 
         private IActionResult BuildSuperGroup(List<UserGroup> userGroups)
         {
-            var department = departmentService.GetDepartmentsByUserId(user.Id).FirstOrDefault();
+            var department = departmentService.GetDepartmentsByUserId(_user.Id).FirstOrDefault();
 
             var userIds = userGroups.SelectMany(o => o.UserIds).ToList();
             userIds = userIds.Where(o => userService.Get(o).AccountType == AccountType.Public).ToList();
@@ -232,10 +227,10 @@
             var user = userService.Get(userId);
 
             //获取项目的时间，除掉公共项目
-            var hours = timeSheetService.GetUserHoursByProjectId(userId, startDate, endDate).Where(o => o.Value > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
+            var hours = timeSheetService.GetUserHoursByProjectId(userId, _startDate, _endDate).Where(o => o.Value > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
             hours = hours.Where(o => !projectService.Get(o.Key).IsPublic).ToDictionary(pair => pair.Key, pair => pair.Value);
 
-            var planProjectIds = projectService.GetProjectsByUserId(userId, startDate, endDate).Select(o => o.Id).ToList();
+            var planProjectIds = projectService.GetProjectsByUserId(userId, _startDate, _endDate).Select(o => o.Id).ToList();
 
             foreach (var projectId in planProjectIds.Except(hours.Keys).ToList())
             {
@@ -244,17 +239,18 @@
 
             var projects = projectService.GetByIds(hours.Keys);
 
-            var planHours = projects.Select(o => o.GetPlanHour(userId, startDate, endDate)).ToList();
+            var planHours = projects.Select(o => o.GetPlanHour(userId, _startDate, _endDate)).ToList();
 
-            projects.AddRange(projectService.GetProjectsByUserId(userId, startDate, endDate).Where(o => o.Name.StartsWith(Constant.REWARD_PROJECT_PREFIX) && o.GetTotalActualHour() == 0));
+            projects.AddRange(projectService.GetProjectsByUserId(userId, _startDate, _endDate).Where(o => o.Name.StartsWith(Constant.REWARD_PROJECT_PREFIX, StringComparison.CurrentCulture) && Math.Abs(o.GetTotalActualHour()) < float.Epsilon));
             projects = projects.Distinct().ToList();
-            var contributions = projects.Select(o => o.GetContribution(userId, startDate, endDate)).ToList();
+            var contributions = projects.Select(o => o.GetContribution(userId, _startDate, _endDate)).ToList();
 
-            var items = new List<KeyValuePair<string, double>>();
-            items.Add(new KeyValuePair<string, double>("Plan", Math.Round(planHours.Sum(), 2)));
-            items.Add(new KeyValuePair<string, double>("Actual", Math.Round(hours.Sum(o => o.Value), 2)));
-            items.Add(new KeyValuePair<string, double>("Contribution", Math.Round(contributions.Sum(), 2)));
-
+            var items = new List<KeyValuePair<string, double>>
+            {
+                new KeyValuePair<string, double>("Plan", Math.Round(planHours.Sum(), 2)),
+                new KeyValuePair<string, double>("Actual", Math.Round(hours.Sum(o => o.Value), 2)),
+                new KeyValuePair<string, double>("Contribution", Math.Round(contributions.Sum(), 2))
+            };
             return new ComboItem(userId, user.Name, user.UserType.ToString(), items);
         }
 
@@ -262,11 +258,11 @@
         {
             var result = new List<ReportByUserModel>();
 
-            var userIds = departmentService.GetSubordinatesByUserId(userId);
+            var userIds = departmentService.GetSubordinatesByUserId(_userId);
 
-            if (user.UserType == UserType.Admin)
+            if (_user.UserType == UserType.Admin)
             {
-                userIds.Remove(userId);
+                userIds.Remove(_userId);
             }
 
             foreach (var item in userIds)
@@ -285,8 +281,8 @@
                 var planHours = projects.ToDictionary(o => o.Id, o => Math.Round(o.GetPlanHour(item, startDate, endDate), 2));
 
                 result.Add(new ReportByUserModel(user.Id, user.Name, planHours.Sum(o => o.Value), actualHours.Sum(o => o.Value),
-                    projects.Where(o => o.PlanDateRange.EndDate < (o.ActualDateRange == null || o.ActualDateRange.EndDate.IsEmpty() ? DateTime.Today : o.ActualDateRange.EndDate)).Count(),
-                    projects.Where(o => o.GetPlanHour(item, startDate, endDate) < (actualHours.ContainsKey(o.Id) ? actualHours[o.Id] : 0)).Count(),
+                    projects.Count(o => o.PlanDateRange.EndDate < (o.ActualDateRange == null || o.ActualDateRange.EndDate.IsEmpty() ? DateTime.Today : o.ActualDateRange.EndDate)),
+                    projects.Count(o => o.GetPlanHour(item, startDate, endDate) < (actualHours.ContainsKey(o.Id) ? actualHours[o.Id] : 0)),
                     projects.Count()));
             }
 

@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using User;
+    using Platform.Constant;
 
     public class TimeSheetService : BaseService<TimeSheet>
     {
@@ -19,13 +20,13 @@
 
         public void DeleteTasks(string projectId, List<ProjectTask> tasks)
         {
-            foreach(var task in tasks)
+            foreach (var task in tasks)
             {
                 var timeSheet = Get(projectId + "_" + task.UserId);
-                
-                if(timeSheet != null && !timeSheet.WeekTimeSheets.IsEmpty())
+
+                if (timeSheet != null && !timeSheet.WeekTimeSheets.IsEmpty())
                 {
-                    foreach(var item in timeSheet.WeekTimeSheets)
+                    foreach (var item in timeSheet.WeekTimeSheets)
                     {
                         if (item.Value.ContainsKey(task.Id))
                         {
@@ -43,11 +44,11 @@
             var result = new Dictionary<string, Dictionary<int, double[]>>();
             var timeSheets = Get(o => o.UserId == userId);
 
-            foreach(var item in timeSheets)
+            foreach (var item in timeSheets)
             {
                 var project = ServiceFactory.Instance.GetService<ProjectService>().Get(item.ProjectId);
 
-                if(project == null)
+                if (project == null)
                 {
                     _logger.LogWarning(string.Format("timeSheetId:{0} have some problem, please check it", item.Id));
                     continue;
@@ -73,7 +74,7 @@
 
             var timeSheets = Get(o => o.UserId == userId);
 
-            foreach(var item in timeSheets)
+            foreach (var item in timeSheets)
             {
                 var hours = item.GetHours(startDate, endDate);
                 if (hours > 0)
@@ -134,7 +135,7 @@
         {
             List<string> result = new List<string>();
 
-            foreach(var item in userIds)
+            foreach (var item in userIds)
             {
                 result.AddRange(GetUserHoursByProjectId(item, startDate, endDate).Keys);
             }
@@ -152,7 +153,7 @@
 
             foreach (var item in timeSheets)
             {
-                if(item.GetTotalHours() > 0)
+                if (item.GetTotalHours() > 0)
                 {
                     result.Add(item.UserId, item.GetTotalHours());
                 }
@@ -171,7 +172,7 @@
 
             foreach (var item in timeSheets)
             {
-                if(item.GetHours(startDate, endDate) > 0)
+                if (item.GetHours(startDate, endDate) > 0)
                 {
                     result.Add(item.UserId, item.GetHours(startDate, endDate));
                 }
@@ -185,21 +186,21 @@
         {
             double ret = 0;
             var timeSheets = Get(o => o.ProjectId == projectId);
-            
+
             foreach (var item in timeSheets)
             {
                 var weeks = item.WeekTimeSheets.Where(o => o.Value.ContainsKey(taskId) && o.Value[taskId].Sum() > 0).OrderBy(o => o.Key).ToList();
-                if(weeks.Count > 0)
+                if (weeks.Count > 0)
                 {
-                    foreach(var week in weeks)
+                    foreach (var week in weeks)
                     {
                         var monday = DateTime.Parse(week.Key);
                         var sunday = monday.AddDays(6);
-                        if(week.Value.ContainsKey(taskId) && DateTimeUtil.Max(monday, startDate).CompareTo(DateTimeUtil.Min(sunday, endDate)) <= 0)
+                        if (week.Value.ContainsKey(taskId) && DateTimeUtil.Max(monday, startDate).CompareTo(DateTimeUtil.Min(sunday, endDate)) <= 0)
                         {
                             var start = (int)DateTimeUtil.Max(startDate, monday).Subtract(monday).TotalDays;
                             var end = (int)DateTimeUtil.Min(endDate, sunday).Subtract(monday).TotalDays;
-                            for(var i=start; i<end; i++)
+                            for (var i = start; i < end; i++)
                             {
                                 ret += week.Value[taskId][i];
                             }
@@ -287,6 +288,32 @@
             }
 
             return result;
+        }
+
+        public int GetContribution(string userId, DateTime startDate, DateTime endDate)
+        {
+            var userService = ServiceFactory.Instance.GetService<UserService>();
+            var projectService = ServiceFactory.Instance.GetService<ProjectService>();
+            var user = userService.Get(userId);
+
+            //获取项目的时间，除掉公共项目
+            var hours = GetUserHoursByProjectId(userId, startDate, endDate).Where(o => o.Value > 0).ToDictionary(pair => pair.Key, pair => pair.Value);
+            hours = hours.Where(o => !projectService.Get(o.Key).IsPublic).ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            var planProjectIds = projectService.GetProjectsByUserId(userId, startDate, endDate).Select(o => o.Id).ToList();
+
+            foreach (var projectId in planProjectIds.Except(hours.Keys).ToList())
+            {
+                hours.Add(projectId, 0);
+            }
+
+            var projects = projectService.GetByIds(hours.Keys);
+            projects.AddRange(projectService.GetProjectsByUserId(userId, startDate, endDate).Where(o => o.Name.StartsWith(Constant.REWARD_PROJECT_PREFIX, StringComparison.CurrentCulture) && Math.Abs(o.GetTotalActualHour()) < float.Epsilon));
+            projects = projects.Distinct().ToList();
+
+            var contributions = projects.Select(o => o.GetContribution(userId, startDate, endDate)).ToList();
+
+            return Convert.ToInt32(contributions.Sum());
         }
     }
 }

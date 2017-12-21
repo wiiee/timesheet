@@ -71,13 +71,13 @@
         public JsonResult Put([FromBody]User user)
         {
             try { 
-            return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!")});
-        }
+                return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!")});
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return Json(new { errorMsg = ex.Message
-    });
+
+                return Json(new { errorMsg = ex.Message});
             }
         }
 
@@ -113,6 +113,25 @@
         public PerformanceItem GetSample()
         {
             return new PerformanceItem();
+        }
+
+        [Route("Pull")]
+        [HttpPost]
+        public PerformanceItem Pull(DateRange dateRange)
+        {
+            var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
+
+            if (userGroup != null)
+            {
+                var item = this.GetService<UserPerformanceService>().Get(userGroup.Id);
+
+                if (item != null)
+                {
+                    return null;
+                }
+            }
+
+            return new List<PerformanceItem>();
         }
     }
 }

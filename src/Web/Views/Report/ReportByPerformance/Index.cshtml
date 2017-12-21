@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Report By Performance";
     ViewData["ng-app"] = "reportByPerformance";
-    var searchDateRange = ViewData["SearchDateRange"] as DateRange;
     var pairs = ViewData["Pairs"];
 }
 
@@ -14,7 +13,6 @@
 @section scripts{
     <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
     <script type="text/javascript">
-        var _searchDateRange = @Html.Raw(Json.Serialize(searchDateRange));
         var _pairs = @Html.Raw(Json.Serialize(pairs));
     </script>
     <script type="text/javascript" src="~/js/report/reportbyperformance/leader.js" asp-append-version="true"></script>
@@ -58,7 +56,7 @@
                         </div>
                         <div class="col-md-1">
                             <h4 class="panel-title">
-                                <span title="Delete Performance" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                <span title="Delete Performance" class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delete(item.I)"></span>
                             </h4>
                         </div>
                     </div>
