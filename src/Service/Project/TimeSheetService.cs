@@ -213,7 +213,7 @@
 
         //key为[DEV],[TEST]
         //获取用户在某个时间段在某个项目上的时间分配，只返回有数据的用户
-        public Dictionary<string, DateRange> GetActualWorkingRangesByUserType(string projectId, DateTime startDate, DateTime endDate)
+        public Dictionary<string, DateRange> GetActualWorkingRangesByUserType(string projectId)
         {
             var deparmentService = ServiceFactory.Instance.GetService<DepartmentService>();
             Dictionary<string, DateRange> result = new Dictionary<string, DateRange>();

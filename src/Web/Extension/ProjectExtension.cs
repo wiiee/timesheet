@@ -70,7 +70,7 @@
             if (project.Tasks.IsEmpty())
             {
                 var timeSheetService = ServiceFactory.Instance.GetService<TimeSheetService>();
-                return timeSheetService.GetActualWorkingRangesByUserType(project.Id, project.ActualDateRange.StartDate, endDate);
+                return timeSheetService.GetActualWorkingRangesByUserType(project.Id);
             }
             else
             {
