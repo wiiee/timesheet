@@ -119,19 +119,20 @@
         [HttpPost]
         public PerformanceItem Pull(DateRange dateRange)
         {
+            var result = new PerformanceItem();
+
             var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
 
             if (userGroup != null)
             {
-                var item = this.GetService<UserPerformanceService>().Get(userGroup.Id);
-
-                if (item != null)
-                {
-                    return null;
+                foreach(var userId in userGroup.UserIds.Where(o => o != this.GetUserId()).ToList()){
+                    result.DateRange = dateRange;
+                    result.Values = new Dictionary<string, Score>();
+                    result.Values.Add(userId, new Score(this.GetService<TimeSheetService>().GetContribution(userId, dateRange.StartDate, dateRange.EndDate), 0));
                 }
             }
 
-            return new List<PerformanceItem>();
+            return result;
         }
     }
 }
