@@ -19,7 +19,6 @@
                 var url = _basePath + "/api/userperformance/getSample";
                 $http.post(url).then(function (response) {
                     $scope.currentItem = response.data;
-                    $scope.currentItem.DateRange = _searchDateRange;
                 });
 
                 url = _basePath + "/api/userperformance/getItems";
@@ -30,23 +29,23 @@
 
             $scope.pull = function () {
                 var url = _basePath + "/api/userperformance/pull";
-                $http.post(url).then(function (response) {
+                $http.post(url, $scope.currentItem).then(function (response) {
                     $scope.currentItem = response.data;
                     $scope.isPull = !$scope.isPull;
                 });
             };
 
             $scope.calculate = function () {
-                var url = _basePath + "/api/userperformance/pull";
-                $http.post(url).then(function (response) {
+                var url = _basePath + "/api/userperformance/calculate";
+                $http.post(url, $scope.currentItem).then(function (response) {
                     $scope.currentItem = response.data;
                     $scope.currentItem.DateRange = _searchDateRange;
                 });
             };
 
             $scope.save = function () {
-                var url = _basePath + "/api/userperformance/pull";
-                $http.post(url).then(function (response) {
+                var url = _basePath + "/api/userperformance/save";
+                $http.post(url, $scope.currentItem).then(function (response) {
                     $scope.currentItem = response.data;
                     $scope.currentItem.DateRange = _searchDateRange;
                 });

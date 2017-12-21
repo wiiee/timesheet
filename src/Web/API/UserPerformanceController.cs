@@ -21,6 +21,7 @@
         private static ILogger _logger = LoggerUtil.CreateLogger<UserPerformanceController>();
 
         // PUT api/values
+        [Route("Save")]
         [HttpPost]
         public JsonResult Save([FromBody]PerformanceItem item)
         {
