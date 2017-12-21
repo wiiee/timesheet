@@ -31,7 +31,7 @@
             var referenceValue = Math.Max(averageValue / 0.75, Values.Max(o => o.Value.StandardValue));
 
             foreach(var item in Values){
-                item.Value.Outcome = Convert.ToInt32(100 * item.Value.Outcome / referenceValue);
+                item.Value.Outcome = Convert.ToInt32(100 * item.Value.StandardValue / referenceValue);
                 item.Value.Result = Convert.ToInt32((item.Value.Outcome * TimeSheetPercentage + item.Value.ManagerValue * ManagerPercentage) / 100);
             }
         }

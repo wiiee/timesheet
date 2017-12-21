@@ -26,7 +26,7 @@
         };
 
         $scope.isShowTable = function (projectId) {
-            return _.indexOf(_.values(_.pluck($scope.rowCollection, "IsSelected")), true) != -1;
+            return _.indexOf(_.values(_.pluck($scope.rowCollection, "IsSelected")), true) !== -1;
         };
 
         $scope.getColumn = function (column) {
@@ -47,10 +47,9 @@
             var total = 0;
 
             $.each($scope.rowCollection, function (index, value) {
-                if (value.IsSelected)
-                {
+                if (value.IsSelected) {
                     var result = _.reduce(value.Week, function (memo, num) {
-                        var number = $.isNumeric(num) ? parseFloat(num) : 0
+                        var number = $.isNumeric(num) ? parseFloat(num) : 0;
                         return memo + number;
                     }, 0);
                     total += result;
@@ -58,7 +57,7 @@
             });
 
             return total;
-        }
+        };
 
         $scope.selectAll = function () {
             $scope.isSelectAll = !$scope.isSelectAll;

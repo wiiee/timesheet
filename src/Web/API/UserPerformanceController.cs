@@ -20,14 +20,13 @@
     {
         private static ILogger _logger = LoggerUtil.CreateLogger<UserPerformanceController>();
 
-        // PUT api/values
-        [Route("Save")]
+        [Route("AddItem")]
         [HttpPost]
-        public JsonResult Save([FromBody]PerformanceItem item)
+        public JsonResult AddItem([FromBody]PerformanceItem item)
         {
             try {
                 var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
-                this.GetService<UserPerformanceService>().Update(userGroup.Id, item);
+                this.GetService<UserPerformanceService>().AddItem(userGroup.Id, item);
                 return Json(new { successMsg = string.Format("Save performance successfully!")});
             }
             catch (Exception ex)
@@ -37,12 +36,21 @@
             }
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(string id)
+        [Route("RemoveItem")]
+        [HttpPost]
+        public JsonResult RemoveItem(int itemId)
         {
-            //删除用户
-            this.GetService<UserService>().Delete(id);
+            try
+            {
+                var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
+                this.GetService<UserPerformanceService>().RemoveItem(userGroup.Id, itemId);
+                return Json(new { successMsg = string.Format("Delete performance successfully!") });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Json(new { errorMsg = ex.Message });
+            }
         }
 
         [Route("GetItems")]
@@ -89,16 +97,11 @@
         [HttpPost]
         public PerformanceItem Pull([FromBody]PerformanceItem item)
         {
-            var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
-
-            if(userGroup != null)
+            foreach (var user in item.Values)
             {
-                foreach (var userId in userGroup.UserIds.Where(o => o != this.GetUserId()).ToList())
-                {
-                    item.Values[userId].TimeSheetValue = this.GetService<TimeSheetService>().
-                        GetContribution(userId, item.DateRange.StartDate, item.DateRange.EndDate);
-                }   
-            }
+                user.Value.TimeSheetValue = this.GetService<TimeSheetService>().
+                    GetContribution(user.Key, item.DateRange.StartDate, item.DateRange.EndDate);
+            }   
 
             return item;
         }

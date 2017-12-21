@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Report By Performance";
     ViewData["ng-app"] = "reportByPerformance";
-    var pairs = ViewData["Pairs"];
 }
 
 @section css {
@@ -13,7 +12,7 @@
 @section scripts{
     <script type="text/javascript" src="~/lib/bootbox.js/bootbox.js"></script>
     <script type="text/javascript">
-        var _pairs = @Html.Raw(Json.Serialize(pairs));
+        var _pairs = @Html.Raw(Json.Serialize(ViewData["Pairs"]));
     </script>
     <script type="text/javascript" src="~/js/report/reportbyperformance/leader.js" asp-append-version="true"></script>
 }
@@ -49,20 +48,20 @@
                     <div class="row">
                         <div class="col-md-11">
                             <h4 class="panel-title">
-                                <a role="button" data-toggle="collapse" data-parent="#performanceItem" ng-href="'#' + item.Id" aria-expanded="true" aria-controls="item.Id">
-                                    {{item.DateRange.StartDate + "-" + item.DateRange.EndDate}}
+                                <a role="button" data-toggle="collapse" data-parent="#performanceItem" href="{{'#' + item.Id}}" aria-expanded="true" aria-controls="{{item.Id}}">
+                                    {{ item.DateRange.StartDate | timesheetid }} - {{ item.DateRange.EndDate | timesheetid}} 
                                 </a>
                             </h4>
                         </div>
                         <div class="col-md-1">
                             <h4 class="panel-title">
-                                <span title="Delete Performance" class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delete(item.I)"></span>
+                                <span title="Delete Performance" class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="removeItem(item.Id)"></span>
                             </h4>
                         </div>
                     </div>
 
                 </div>
-                <div class="collapse in" id="item.Id">
+                <div class="collapse in" id="{{item.Id}}">
                     <!-- Table -->
                     <table class="table table-striped">
                         <thead>
@@ -76,16 +75,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="row in item.Items">
-                                <td>{{row.Status}}</td>
-                                <td>{{row.Level}}</td>
+                            <tr ng-repeat="(key, value) in item.Values">
+                                <td>{{key}}({{pairs[key]}})</td>
+                                <td>{{value.Level}}</td>
                                 <td>{{item.TimeSheetPercentage}}/{{item.ManagerPercentage}}</td>
                                 <td>
-                                    Raw: {{row.TimeSheetValue}}/{{row.StandardValue}}/{{row.Outcome}}<br>
-                                    Manager: {{row.ManagerValue}}
+                                    Raw: {{value.TimeSheetValue}}/{{value.StandardValue}}/{{value.Outcome}}<br>
+                                    Manager: {{value.ManagerValue}}
                                 </td>
-                                <td>{{row.ManagerComment}}</td>
-                                <td>{{row.Result}}</td>
+                                <td>{{value.ManagerComment}}</td>
+                                <td>{{value.Result}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -104,7 +103,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <label for="startDate">Start Date</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="startDate" ng-model="currentItem.DateRange.StartDate" is-open="isStartDateOpen" close-text="Close" />
@@ -115,7 +114,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <label for="endDate">End Date</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" datepicker-popup="yyyy/MM/dd" name="endDate" ng-model="currentItem.DateRange.EndDate" is-open="isEndDateOpen" close-text="Close" />
@@ -126,16 +125,20 @@
                                 </span>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" ng-model="currentItem.TimeSheetPercentage" spellcheck="false" placeholder="百分比" />
+                        <div class="col-md-2">
+                            <label for="timeSheetPercentage">绩效百分比</label>
+                            <input type="text" class="form-control" id="TimeSheetPercentage" ng-model="currentItem.TimeSheetPercentage" spellcheck="false" />
                         </div>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" ng-model="currentItem.ManagerPercentage" spellcheck="false" placeholder="百分比" />
+                        <div class="col-md-2">
+                            <label for="ManagerPercentage">其他百分比</label>
+                            <input type="text" class="form-control" id="ManagerPercentage" ng-model="currentItem.ManagerPercentage" spellcheck="false" />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="Factor">系数</label>
+                            <input type="text" class="form-control" id="Factor" ng-model="currentItem.Factor" spellcheck="false" />
                         </div>
                     </div>
-                    <table class="table table-striped" ng-if="item.Items">
+                    <table class="table table-striped" ng-if="currentItem.Values">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -147,13 +150,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-repeat="row in item.Items">
-                                <td>{{row.Status}}</td>
-                                <td>{{row.Level}}</td>
-                                <td>{{row.TimeSheetValue}}/{{row.StandardValue}}/{{row.Outcome}}</td>
-                                <td><input type="text" class="form-control" ng-model="row.ManagerValue" spellcheck="false" placeholder="评分" /></td>
-                                <td><input type="text" class="form-control" ng-model="row.ManagerComment" spellcheck="false" placeholder="评语" /></td>
-                                <td>{{row.Result}}</td>
+                            <tr ng-repeat="(key, value) in currentItem.Values">
+                                <td>{{key}}({{pairs[key]}})</td>
+                                <td>{{value.Level}}</td>
+                                <td>{{value.TimeSheetValue}}/{{value.StandardValue}}/{{value.Outcome}}</td>
+                                <td><input type="text" class="form-control" ng-model="value.ManagerValue" spellcheck="false" placeholder="评分" /></td>
+                                <td><input type="text" class="form-control" ng-model="value.ManagerComment" spellcheck="false" placeholder="评语" /></td>
+                                <td>{{value.Result}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -162,7 +165,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" ng-if="isPull" ng-click="pull()">Pull</button>
                     <button type="button" class="btn btn-primary" ng-if="!isPull" ng-click="calculate()">Calculate</button>
-                    <button type="button" class="btn btn-primary" ng-click="save()">Save</button>
+                    <button type="button" class="btn btn-primary" ng-click="addItem()">Save</button>
                 </div>
             </div>
         </div>

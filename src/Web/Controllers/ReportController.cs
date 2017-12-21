@@ -62,12 +62,7 @@
 
             userIds = userIds.Where(o => userService.Get(o).AccountType == AccountType.Public).ToList();
 
-            ViewData["Pairs"] = userService.GetByIds(userIds).ToDictionary(o => o.Id, o => new {
-                Name = o.Name,
-                Level = o.Level
-            }).ToList();
-
-            ViewData["GroupId"] = group.Id;
+            ViewData["Pairs"] = userService.GetByIds(userIds).ToDictionary(o => o.Id, o => o.Name);
 
             return View("ReportByPerformance/Index");
         }
