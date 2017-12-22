@@ -35,7 +35,7 @@
                     ng-options="hour for hour in hours[task.Name]"></select>
         </div>
         <div class="col-md-3">
-            <input class="form-control" data-validation="number" value="{{ taskValues[task.Id] }}" disabled />
+            <input class="form-control" value="{{ taskValues[task.Id] }}" disabled />
         </div>
     </div>
     <div class="col-md-2">
@@ -66,17 +66,5 @@
     <div class="form-group col-md-12">
         <label for="codeReview">Code Review</label>
         <textarea type="text" class="form-control" id="codeReview" ng-model="task.CodeReview" spellcheck="false" placeholder="Code Review"></textarea>
-    </div>
-
-    <div class="form-group col-md-2" ng-repeat="(id, value) in task.Values">
-        <div ng-if="value === -1">
-            <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
-            <input class="form-control" id="{{'user-' + id}}" value="*" disabled />
-        </div>
-        <div ng-if="value !== -1">
-            <label for="{{'user-' + id}}">{{id}}({{users[id]}})</label>
-            <input class="form-control" id="{{'user-' + id}}" data-validation="number" ng-model="task.Values[id]" ng-disabled="userType === 'User' && (userId !== id || task.IsReviewed)" />
-            <button type="button" class="btn btn-success" ng-click="reviewTask(task.Id, id, task.Values[id])">Review</button>
-        </div>
     </div>
 </div>

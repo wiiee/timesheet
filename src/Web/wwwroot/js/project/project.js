@@ -27,6 +27,7 @@
         $scope.isOpen = {
             publishDate: false
         };
+        $scope.reviewTasks = [];
 
         $scope.isSubmitted = false;
 
@@ -70,6 +71,11 @@
                 });
 
                 $scope.initTaskValues($scope.projectId);
+
+                url = _basePath + "/api/project/getReviewTasks?projectId=" + $scope.projectId;
+                $http.post(url).then(function (response) {
+                    $scope.reviewTasks = response.data;
+                });
             }
             else
             {
@@ -292,15 +298,15 @@
             $scope.project = angular.copy($scope.oriProject);
         };
 
-        $scope.reviewTask = function (taskId, userId, value) {
-            if ($scope.projectId) {
-                var url = _basePath + "/api/Project/ReviewTask?projectId=" + $scope.projectId + "&userId=" + userId + "&taskId=" + taskId + "&value=" + value;
-                $http.post(url, $scope.project).then(function (response) {
-                    if (response.data.successMsg || response.data.errorMsg) {
-                        bootbox.alert(response.data.successMsg ? response.data.successMsg : response.data.errorMsg);
-                    }
-                });
-            }
+        $scope.reviewTasks = function () {
+            url = _basePath + "/api/project/reviewTasks";
+            $http.post(url, $scope.reviewTasks).then(function (response) {
+                if (response.data.successMsg || response.data.errorMsg) {
+                    var fieldName = response.data.successMsg ? "successMsg=" : "errorMsg=";
+                    var fieldValue = response.data.successMsg ? response.data.successMsg : response.data.errorMsg;
+                    location = _basePath + "/Project/Project?projectId=" + encodeURIComponent($scope.projectId) + "&" + fieldName + encodeURIComponent(fieldValue);
+                }
+            });
         };
 
         $scope.submit = function () {

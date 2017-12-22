@@ -59,19 +59,24 @@
                             </h4>
                         </div>
                     </div>
-
                 </div>
                 <div class="collapse in" id="{{item.Id}}">
                     <!-- Table -->
-                    <table class="table table-striped">
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Level</th>
-                                <th>Ratio</th>
-                                <th>Score</th>
-                                <th>Comment</th>
-                                <th>Result</th>
+                                <th rowspan="2">Name</th>
+                                <th rowspan="2">Level</th>
+                                <th rowspan="2">Ratio</th>
+                                <th colspan="4" class="text-center">Score</th>
+                                <th rowspan="2">Comment</th>
+                                <th rowspan="2">Result</th>
+                            </tr>
+                            <tr>
+                                <th>Raw</th>
+                                <th>Standard</th>
+                                <th>Outcome</th>
+                                <th>Manager</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,10 +84,10 @@
                                 <td>{{key}}({{pairs[key]}})</td>
                                 <td>{{value.Level}}</td>
                                 <td>{{item.TimeSheetPercentage}}/{{item.ManagerPercentage}}</td>
-                                <td>
-                                    Raw: {{value.TimeSheetValue}}/{{value.StandardValue}}/{{value.Outcome}}<br>
-                                    Manager: {{value.ManagerValue}}
-                                </td>
+                                <td>{{value.TimeSheetValue}}</td>
+                                <td>{{value.StandardValue}}</td>
+                                <td>{{value.Outcome}}</td>
+                                <td>{{value.ManagerValue}}</td>
                                 <td>{{value.ManagerComment}}</td>
                                 <td>{{value.Result}}</td>
                             </tr>
@@ -137,29 +142,39 @@
                             <label for="Factor">系数</label>
                             <input type="text" class="form-control" id="Factor" ng-model="currentItem.Factor" spellcheck="false" />
                         </div>
+
+                        <div class="col-md-12 top-margin">
+                            <table class="table table-bordered" ng-if="currentItem.Values">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Name</th>
+                                        <th rowspan="2">Level</th>
+                                        <th colspan="4" class="text-center">Score</th>
+                                        <th rowspan="2">Comment</th>
+                                        <th rowspan="2">Result</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Raw</th>
+                                        <th>Standard</th>
+                                        <th>Outcome</th>
+                                        <th>Manager</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="(key, value) in currentItem.Values">
+                                        <td>{{key}}({{pairs[key]}})</td>
+                                        <td>{{value.Level}}</td>
+                                        <td>{{value.TimeSheetValue}}</td>
+                                        <td>{{value.StandardValue}}</td>
+                                        <td>{{value.Outcome}}</td>
+                                        <td><input type="text" class="form-control" ng-model="value.ManagerValue" spellcheck="false" placeholder="评分" /></td>
+                                        <td><input type="text" class="form-control" ng-model="value.ManagerComment" spellcheck="false" placeholder="评语" /></td>
+                                        <td>{{value.Result}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <table class="table table-striped" ng-if="currentItem.Values">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Level</th>
-                                <th>Score</th>
-                                <th>Value</th>
-                                <th>Comment</th>
-                                <th>Result</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="(key, value) in currentItem.Values">
-                                <td>{{key}}({{pairs[key]}})</td>
-                                <td>{{value.Level}}</td>
-                                <td>{{value.TimeSheetValue}}/{{value.StandardValue}}/{{value.Outcome}}</td>
-                                <td><input type="text" class="form-control" ng-model="value.ManagerValue" spellcheck="false" placeholder="评分" /></td>
-                                <td><input type="text" class="form-control" ng-model="value.ManagerComment" spellcheck="false" placeholder="评语" /></td>
-                                <td>{{value.Result}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

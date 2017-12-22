@@ -1,10 +1,11 @@
-﻿@using Entity.User
-@using Web.Extension
+﻿@using Web.Extension
 @using Service.User
 @using Platform.Enum
 
 @{
     var department = this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault();
+    var userIds = this.GetService<DepartmentService>().GetUserGroupsByUserId(this.GetUserId()).First().UserIds;
+    var users = this.GetService<UserService>().GetByIds(userIds).Where(o => o.AccountType == AccountType.Public).ToList();
 
     bool isAdmin = this.IsAdmin();
 }
@@ -85,8 +86,76 @@
 </div>
 
 <div class="row" ng-if="!_isPublic">
+    <!-- Button trigger modal -->
     <div class="col-md-12">
-        <h2>Tasks <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" ng-click="addTask()"></span></h2>
+        <h2>
+            Tasks <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" ng-click="addTask()"></span>
+            <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#myModal" ng-if="projectId">
+                Review
+            </button>
+        </h2>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" ng-if="projectId">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Review</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered" ng-if="userType === 'User'">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>User</th>
+                                    <th>Summary</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="reviewTask in reviewTasks">
+                                    <td>{{reviewTask.Name}}</td>
+                                    <td>{{reviewTask.UserId}}</td>
+                                    <td>{{reviewTask.Description}}<br>{{reviewTask.CodeReview}}</td>
+                                    <td><input class="form-control" data-validation="number" ng-model="reviewTask.Value" ng-disabled="reviewTask.IsReviewed" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered" ng-if="userType !== 'User'">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>User</th>
+                                    <th>Summary</th>
+                                    <th colspan="2">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody ng-repeat="reviewTask in reviewTasks">
+                                <tr>
+                                    <td rowspan="@users.Count">{{reviewTask.Name}}</td>
+                                    <td rowspan="@users.Count">{{reviewTask.UserId}}</td>
+                                    <td rowspan="@users.Count">{{reviewTask.Description}}<br>{{reviewTask.CodeReview}}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr ng-repeat="(key, value) in reviewTask.Values" ng-if="$index != 0">
+                                    <td>{{key}}</td>
+                                    <td><input class="form-control" data-validation="number" ng-model="value" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" ng-click="reviewTasks()">submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
         <table class="table">
             <thead>
                 <tr>

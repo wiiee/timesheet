@@ -16,6 +16,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Web.Model;
 
     [Authorize]
     [Route("api/[controller]")]
@@ -527,6 +528,63 @@
             else
             {
                 return Json(new { errorMsg = "You don't have right to review it" });
+            }
+        }
+
+        [Route("ReviewTasks")]
+        [HttpPost]
+        public JsonResult ReviewTasks([FromBody]List<ReviewTaskModel> models)
+        {
+            try
+            {
+                var projectService = this.GetService<ProjectService>();
+                var project = projectService.Get(models.First().ProjectId);
+
+                if (project.Tasks.Count == models.Count && models.Select(o => o.TaskId).Except(project.Tasks.Select(o => o.Id)).Count() == 0)
+                {
+                    foreach (var model in models)
+                    {
+                        if (this.GetUserType() == UserType.User)
+                        {
+                            project.Tasks.Find(o => o.Id == model.TaskId).Values[model.UserId] = model.Value;
+                        }
+                        else
+                        {
+                            project.Tasks.Find(o => o.Id == model.TaskId).Values = model.Values;
+                        }
+                    }
+
+                    projectService.Update(project);
+
+                    return Json(new { successMsg = "Review project successfully" });
+                }
+                else
+                {
+                    return Json(new { errorMsg = "Proejct has been changed, please try again" });
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Json(new { errorMsg = ex.Message });
+            }
+        }
+
+        [Route("GetReviewTasks")]
+        [HttpPost]
+        public List<ReviewTaskModel> GetReviewTasks(string projectId)
+        {
+            var project = this.GetService<ProjectService>().Get(projectId);
+            var userId = this.GetUserId();
+            var userIds = this.GetService<DepartmentService>().GetUserGroupsByUserId(userId).First().UserIds;
+
+            if(this.GetUserType() == UserType.User)
+            {
+                return project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId).Select(o => new ReviewTaskModel(projectId, o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values[userId])).ToList();
+            }
+            else
+            {
+                return project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId).Select(o => new ReviewTaskModel(projectId, o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values)).ToList();
             }
         }
     }
