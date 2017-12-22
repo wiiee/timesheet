@@ -15,9 +15,11 @@
 
             while(i++ < monthNumbers)
             {
-                var item = new Item();
-                item.Key = today.Year + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(today.Month);
-                item.Value = today.ToString(format);
+                var item = new Item
+                {
+                    Key = today.Year + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(today.Month),
+                    Value = today.ToString(format)
+                };
 
                 items.Add(item);
 

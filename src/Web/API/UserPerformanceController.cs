@@ -76,7 +76,13 @@
         [HttpPost]
         public PerformanceItem GetSample()
         {
-            var result = new PerformanceItem();
+            var result = new PerformanceItem()
+            {
+                TimeSheetPercentage = 80,
+                ManagerPercentage = 20,
+                Factor = 0.75,
+                DateRange = new DateRange(DateTimeUtil.GetCurrentPeriodStartDay(), DateTimeUtil.GetCurrentPeriodStartDay().AddDays(6))
+            };
 
             var userGroup = this.GetService<DepartmentService>().GetUserGroupsByOwnerId(this.GetUserId()).FirstOrDefault();
 

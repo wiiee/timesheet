@@ -42,8 +42,10 @@
             }
             else
             {
-                Dictionary<int, double[]> weeks = new Dictionary<int, double[]>();
-                weeks.Add(taskId, week);
+                Dictionary<int, double[]> weeks = new Dictionary<int, double[]>
+                {
+                    { taskId, week }
+                };
                 WeekTimeSheets.Add(monday, weeks);
             }
         }

@@ -118,28 +118,28 @@
 
             if (this.GetUserType() == UserType.Admin)
             {
-                return getMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHENZHEN_HOTEL_EN);
+                return GetMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHENZHEN_HOTEL_EN);
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_HOTEL))
             {
-                return getMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHENZHEN_HOTEL_EN);
+                return GetMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHENZHEN_HOTEL_EN);
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_FLIGHT))
             {
-                return getMonthlyReportViewResult<FlightMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHENZHEN_FLIGHT_EN);
+                return GetMonthlyReportViewResult<FlightMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHENZHEN_FLIGHT_EN);
             }
             else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_CORP_TRAVEL))
             {
-                return getMonthlyReportViewResult<FlightMonthlyReportModel>(startDate, endDate, false, DepartmentName.SHENZHEN_CORP_TRAVEL_EN);//商旅显示全部项目
+                return GetMonthlyReportViewResult<FlightMonthlyReportModel>(startDate, endDate, false, DepartmentName.SHENZHEN_CORP_TRAVEL_EN);//商旅显示全部项目
             }
             else
             {
-                return getMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHANGHAI_CORP_TRAVEL_EN);
+                return GetMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHANGHAI_CORP_TRAVEL_EN);
             }
 
         }
 
-        private ViewResult getMonthlyReportViewResult<XModel>(DateTime startDate, DateTime endDate, bool isShowImportant, string department) where XModel : MonthlyReportModel
+        private ViewResult GetMonthlyReportViewResult<XModel>(DateTime startDate, DateTime endDate, bool isShowImportant, string department) where XModel : MonthlyReportModel
         {
             List<XModel> monthlyReportModels = GetMonthlyProjects<XModel>(startDate, endDate, isShowImportant, department);
             ViewData["ThisMonthDoneProject"] = monthlyReportModels.Where(p => p.IsDone && p.FinishedDate <= endDate).ToList();//完成日期必须落在该月
@@ -213,7 +213,7 @@
                                 var userGroupName = userGroup.Name;
                                 if (DepartmentName.SHENZHEN_FLIGHT_EN == department)
                                 {
-                                    userGroupName = getAllUserGroupNamesByProject(project);
+                                    userGroupName = GetAllUserGroupNamesByProject(project);
                                 }
                                 //hotelMonthlyReportModels.Add(new HotelMonthlyReportModel(project.Id, project.Name, userGroup.Name, (int)project.Level, isDone));
                                 monthlyReportModels.Add((T)Activator.CreateInstance(typeof(T), project.Id, project.Name, userGroupName, (int)project.Level, isDone, project.GetEndDate()));
@@ -539,7 +539,7 @@
             return new DateTime[] { maxDate, project.ActualDateRange.EndDate, project.PublishDate, project.PlanDateRange.EndDate }.Max();
         }
 
-        private string getAllUserGroupNamesByProject(Project project)
+        private string GetAllUserGroupNamesByProject(Project project)
         {
             var departmentService = GetService<DepartmentService>();
             //遍历参与项目的组别，去掉'深圳机票'前缀
@@ -638,7 +638,7 @@
                             string percentageCompletion = ReportHelper.GetPercentageCompletion(devNames, testNames, devPercentage, testPercentage);
                             string contributionInfo = project.GetContributionInfo(startDate, endDate);
 
-                            models.Add(new FlightWeeklyReportModel(project, getAllUserGroupNamesByProject(project), percentageCompletion,
+                            models.Add(new FlightWeeklyReportModel(project, GetAllUserGroupNamesByProject(project), percentageCompletion,
                                 progressText, ReportHelper.GetProjectStatus(project), devManagers, testManagers, devNames, testNames, contributionInfo, iCTRB));
                         }
                     }
@@ -718,7 +718,7 @@
                             string progressText = ReportHelper.GetFlightProgressText(isDone, devPercentage, testPercentage);
                             string percentageCompletion = ReportHelper.GetPercentageCompletion(devNames, testNames, devPercentage, testPercentage);
 
-                            models.Add(new CorporateTravelWeeklyReportModel(project, getAllUserGroupNamesByProject(project), percentageCompletion,
+                            models.Add(new CorporateTravelWeeklyReportModel(project, GetAllUserGroupNamesByProject(project), percentageCompletion,
                                 progressText, ReportHelper.GetProjectStatus(project), devManagers, testManagers, devNames, testNames));
                         }
                     }

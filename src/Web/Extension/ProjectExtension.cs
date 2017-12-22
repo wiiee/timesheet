@@ -74,9 +74,11 @@
             }
             else
             {
-                Dictionary <string, DateRange> result = new Dictionary<string, DateRange>();
-                result.Add("DEV", new DateRange(DateTime.MinValue, DateTime.MinValue));
-                result.Add("TEST", new DateRange(DateTime.MinValue, DateTime.MinValue));
+                Dictionary<string, DateRange> result = new Dictionary<string, DateRange>()
+                {
+                    { "DEV", new DateRange(DateTime.MinValue, DateTime.MinValue)},
+                    { "TEST", new DateRange(DateTime.MinValue, DateTime.MinValue)}
+                };
 
                 var devStartDates = project.Tasks.Where(o => o.Phase != Phase.Test && o.ActualDateRange != null && !o.ActualDateRange.StartDate.IsEmpty()).Select(o => o.ActualDateRange.StartDate).ToList();
                 var devEndDates = project.Tasks.Where(o => o.Phase != Phase.Test && o.ActualDateRange != null && !o.ActualDateRange.EndDate.IsEmpty()).Select(o => o.ActualDateRange.EndDate).ToList();
@@ -257,8 +259,10 @@
 
             var names = hours.Keys.Select(o => o.ToString("MM-dd")).ToList();
 
-            List<LineItem> items = new List<LineItem>();
-            items.Add(new LineItem(project.Name, hours.Values.ToList()));
+            List<LineItem> items = new List<LineItem>()
+            {
+                new LineItem(project.Name, hours.Values.ToList())
+            };
 
             return new LineModel(names, items);
         }
@@ -352,10 +356,9 @@
                 var tskHrs = TaskHourInPeriod(project.Id, task, startDate, endDate);
                 if (tskHrs <= 0) continue;
 
-                string val = null;
-                if (dic.TryGetValue(task.UserId, out val))
+                if (dic.TryGetValue(task.UserId, out string val))
                 {
-                    val += ";" + task.Name + "[" + tskHrs + "h]" +(task.Status == Status.Done? "(Done)": "");
+                    val += ";" + task.Name + "[" + tskHrs + "h]" + (task.Status == Status.Done ? "(Done)" : "");
                     dic.Remove(task.UserId);
                     dic.Add(task.UserId, val);
                 }

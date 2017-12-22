@@ -63,7 +63,7 @@
             }
         }
 
-        private List<string> getUserIds()
+        private List<string> GetUserIds()
         {
             List<string> userIds = null;
 
@@ -84,7 +84,7 @@
 
             this.BuildHeaderMsg(successMsg, errorMsg);
 
-            var projects = projectService.GetProjectsByUserIds(getUserIds());
+            var projects = projectService.GetProjectsByUserIds(GetUserIds());
 
             //更新项目状态，到期自动关闭项目
             foreach (var project in projects)
