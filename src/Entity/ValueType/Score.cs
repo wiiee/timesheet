@@ -20,8 +20,6 @@
 
         public int Level { get; set; }
 
-        public Score(int level){
-            this.Level = level; 
-        }
+        public Score(int level) => this.Level = level;
     }
 }
