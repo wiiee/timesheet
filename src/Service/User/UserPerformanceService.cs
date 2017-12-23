@@ -15,6 +15,7 @@
 
             if(entity == null){
                 entity = new UserPerformance(userGroupId);
+                Create(entity);
             }
 
             if (entity.Items.IsEmpty())

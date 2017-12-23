@@ -65,12 +65,12 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th rowspan="2">Name</th>
-                                <th rowspan="2">Level</th>
-                                <th rowspan="2">Ratio</th>
-                                <th colspan="4" class="text-center">Score</th>
-                                <th rowspan="2">Comment</th>
-                                <th rowspan="2">Result</th>
+                                <th rowspan="2" class="col-md-2">Name</th>
+                                <th rowspan="2" class="col-md-1">Level</th>
+                                <th rowspan="2" class="col-md-1">Ratio</th>
+                                <th colspan="4" class="text-center col-md-4">Score</th>
+                                <th rowspan="2" class="col-md-4">Comment</th>
+                                <th rowspan="2" class="col-md-1">Result</th>
                             </tr>
                             <tr>
                                 <th>Raw</th>
@@ -147,11 +147,11 @@
                             <table class="table table-bordered" ng-if="currentItem.Values">
                                 <thead>
                                     <tr>
-                                        <th rowspan="2">Name</th>
-                                        <th rowspan="2">Level</th>
-                                        <th colspan="4" class="text-center">Score</th>
-                                        <th rowspan="2">Comment</th>
-                                        <th rowspan="2">Result</th>
+                                        <th rowspan="2" class="col-md-2">Name</th>
+                                        <th rowspan="2" class="col-md-1">Level</th>
+                                        <th colspan="4" class="text-center col-md-3">Score</th>
+                                        <th rowspan="2" class="col-md-5">Comment</th>
+                                        <th rowspan="2" class="col-md-1">Result</th>
                                     </tr>
                                     <tr>
                                         <th>Raw</th>
@@ -168,7 +168,7 @@
                                         <td>{{value.StandardValue}}</td>
                                         <td>{{value.Outcome}}</td>
                                         <td><input type="text" class="form-control" ng-model="value.ManagerValue" spellcheck="false" placeholder="评分" /></td>
-                                        <td><input type="text" class="form-control" ng-model="value.ManagerComment" spellcheck="false" placeholder="评语" /></td>
+                                        <td><textarea type="text" class="form-control" rows="3" ng-model="value.ManagerComment" spellcheck="false" placeholder="评语"></textarea></td>
                                         <td>{{value.Result}}</td>
                                     </tr>
                                 </tbody>

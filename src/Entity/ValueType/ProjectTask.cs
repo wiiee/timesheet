@@ -65,27 +65,5 @@
                 }
             }
         }
-
-        public void EncryptValues(string userId, bool isLeader = false)
-        {
-            if (!isLeader)
-            {
-                var result = new Dictionary<string, int>();
-
-                foreach (var value in Values)
-                {
-                    if(value.Key != userId)
-                    {
-                        result.Add(value.Key, -1);
-                    }
-                    else
-                    {
-                        result.Add(value.Key, value.Value);
-                    }
-                }
-
-                Values = result;
-            }
-        }
     }
 }

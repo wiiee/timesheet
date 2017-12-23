@@ -37,14 +37,6 @@
         {
             var dbProject = this.GetService<ProjectService>().Get(id);
             var project = JsonUtil.FromJson<Project>(JsonUtil.ToJson(dbProject));
-            
-            if (project != null && !project.Tasks.IsEmpty())
-            {
-                foreach(var task in project.Tasks)
-                {
-                    task.EncryptValues(this.GetUserId(), this.GetUserType() != UserType.User);
-                }
-            }
 
             return project;
         }
@@ -107,9 +99,6 @@
                 }
 
                 project.UpdateProject();//update actual date range when mark task done
-
-                UpdateTaskValues(dbProject, project);
-
                 projectService.Update(project);
 
                 return Json(new { successMsg = string.Format("Edit project({0}:{1}) successfully!", project.Id, project.Name) });
@@ -118,52 +107,6 @@
             {
                 _logger.LogError(ex.Message);
                 return Json(new { errorMsg = ex.Message });
-            }
-        }
-
-        //更新task的value部分
-        private void UpdateTaskValues(Project dbProject, Project project)
-        {
-            if (!project.IsPublic && this.GetUserType() == UserType.User)
-            {
-                foreach (var task in project.Tasks)
-                {
-                    //现有的task更新
-                    if (dbProject != null && dbProject.Tasks.Exists(o => o.Id == task.Id))
-                    {
-                        var dbTask = dbProject.Tasks.Find(o => o.Id == task.Id);
-
-                        if (!task.Values.IsEmpty() && task.Values.ContainsKey(this.GetUserId()))
-                        {
-                            var value = task.Values[this.GetUserId()];
-
-                            task.Values = dbTask.Values;
-                            task.Values.Remove(this.GetUserId());
-                            task.Values.Add(this.GetUserId(), value == -1 ? 0 : value);
-                        }
-                        else
-                        {
-                            task.Values = dbTask.Values;
-                        }
-                    }
-                    //新的Task
-                    else
-                    {
-                        if (!task.Values.IsEmpty())
-                        {
-                            var values = new Dictionary<string, int>();
-
-                            foreach(var value in values)
-                            {
-                                values.Add(value.Key, value.Value == -1 ? 0 : value.Value);
-                            }
-                        }
-                        else
-                        {
-                            task.Values = new Dictionary<string, int>();
-                        }
-                    }
-                }
             }
         }
 
@@ -178,8 +121,6 @@
                 project.OwnerIds = new List<string>(new string[] { this.GetUserId() });
                 project.UserIds = new List<string>(new string[] { this.GetUserId() });
             }
-
-            UpdateTaskValues(null, project);
             
             try{
                 this.GetService<ProjectService>().Create(project);
@@ -511,56 +452,46 @@
             }
         }
 
-        [Route("ReviewTask")]
-        [HttpPost]
-        public JsonResult ReviewTask(string projectId, string userId, int taskId, int value)
-        {
-            if(this.GetService<DepartmentService>().IsBoss(this.GetUserId(), userId))
-            {
-                var project = this.GetService<ProjectService>().Get(projectId);
-                var index = project.Tasks.FindIndex(o => o.Id == taskId);
-                var userIndex = project.Tasks[index].Values.Keys.ToList().IndexOf(userId);
-
-                this.GetService<ProjectService>().Update(projectId, string.Format("Tasks.{0}.Values.{1}.1", index, userIndex), value);
-
-                return Json(new { successMsg = string.Format("Review project({0}:{1}) successfully!", projectId, taskId) });
-            }
-            else
-            {
-                return Json(new { errorMsg = "You don't have right to review it" });
-            }
-        }
-
         [Route("ReviewTasks")]
         [HttpPost]
-        public JsonResult ReviewTasks([FromBody]List<ReviewTaskModel> models)
+        public JsonResult ReviewTasks([FromBody]ReviewTaskModel model)
         {
             try
             {
                 var projectService = this.GetService<ProjectService>();
-                var project = projectService.Get(models.First().ProjectId);
+                var project = projectService.Get(model.ProjectId);
+                var userId = this.GetUserId();
 
-                if (project.Tasks.Count == models.Count && models.Select(o => o.TaskId).Except(project.Tasks.Select(o => o.Id)).Count() == 0)
+                if (model.Items.Select(o => o.TaskId).Except(project.Tasks.Select(o => o.Id)).Count() == 0)
                 {
-                    foreach (var model in models)
+                    foreach (var item in model.Items)
                     {
                         if (this.GetUserType() == UserType.User)
                         {
-                            project.Tasks.Find(o => o.Id == model.TaskId).Values[model.UserId] = model.Value;
+                            var task = project.Tasks.Find(o => o.Id == item.TaskId);
+                            if (!task.IsReviewed && task.Values.ContainsKey(userId))
+                            {
+                                task.Values[userId] = item.Value;
+                            }
                         }
                         else
                         {
-                            project.Tasks.Find(o => o.Id == model.TaskId).Values = model.Values;
+                            if(model.LastUpdate != project.LastUpdate)
+                            {
+                                return Json(new { errorMsg = "Proejct has been updated, please try again" });
+                            }
+
+                            project.Tasks.Find(o => o.Id == item.TaskId).Values = item.Values;
                         }
                     }
 
-                    projectService.Update(project);
+                    projectService.Update(model.ProjectId, "Tasks", project.Tasks);
 
                     return Json(new { successMsg = "Review project successfully" });
                 }
                 else
                 {
-                    return Json(new { errorMsg = "Proejct has been changed, please try again" });
+                    return Json(new { errorMsg = "Proejct has been updated, please try again" });
                 }
             }
             catch(Exception ex)
@@ -572,7 +503,7 @@
 
         [Route("GetReviewTasks")]
         [HttpPost]
-        public List<ReviewTaskModel> GetReviewTasks(string projectId)
+        public ReviewTaskModel GetReviewTasks(string projectId)
         {
             var project = this.GetService<ProjectService>().Get(projectId);
             var userId = this.GetUserId();
@@ -580,11 +511,19 @@
 
             if(this.GetUserType() == UserType.User)
             {
-                return project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId).Select(o => new ReviewTaskModel(projectId, o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values[userId])).ToList();
+                var items = project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId)
+                    .Select(o => new ReviewTaskItem(o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values[userId]))
+                    .ToList();
+
+                return new ReviewTaskModel(projectId, project.LastUpdate, items);
             }
             else
             {
-                return project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId).Select(o => new ReviewTaskModel(projectId, o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values)).ToList();
+                var items = project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId)
+                    .Select(o => new ReviewTaskItem(o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values))
+                    .ToList();
+
+                return new ReviewTaskModel(projectId, project.LastUpdate, items);
             }
         }
     }

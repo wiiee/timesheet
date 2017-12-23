@@ -4,8 +4,8 @@
 
 @{
     var department = this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault();
-    var userIds = this.GetService<DepartmentService>().GetUserGroupsByUserId(this.GetUserId()).First().UserIds;
-    var users = this.GetService<UserService>().GetByIds(userIds).Where(o => o.AccountType == AccountType.Public).ToList();
+    //var userIds = this.GetService<DepartmentService>().GetUserGroupsByUserId(this.GetUserId()).First().UserIds;
+    //var users = this.GetService<UserService>().GetByIds(userIds).Where(o => o.AccountType == AccountType.Public).ToList();
 
     bool isAdmin = this.IsAdmin();
 }
@@ -104,51 +104,34 @@
                         <h4 class="modal-title" id="myModalLabel">Review</h4>
                     </div>
                     <div class="modal-body">
-                        <table class="table table-bordered" ng-if="userType === 'User'">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>User</th>
-                                    <th>Summary</th>
-                                    <th>Value</th>
+                                    <th class="col-md-3">Name</th>
+                                    <th class="col-md-1">User</th>
+                                    <th class="col-md-6">Summary</th>
+                                    <th class="col-md-2">Value</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="reviewTask in reviewTasks">
+                                <tr ng-repeat="reviewTask in reviewTasks.Items">
                                     <td>{{reviewTask.Name}}</td>
-                                    <td>{{reviewTask.UserId}}</td>
+                                    <td>{{reviewTask.UserId}}<br />{{users[reviewTask.UserId]}}</td>
                                     <td>{{reviewTask.Description}}<br>{{reviewTask.CodeReview}}</td>
-                                    <td><input class="form-control" data-validation="number" ng-model="reviewTask.Value" ng-disabled="reviewTask.IsReviewed" /></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="table table-bordered" ng-if="userType !== 'User'">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>User</th>
-                                    <th>Summary</th>
-                                    <th colspan="2">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody ng-repeat="reviewTask in reviewTasks">
-                                <tr>
-                                    <td rowspan="@users.Count">{{reviewTask.Name}}</td>
-                                    <td rowspan="@users.Count">{{reviewTask.UserId}}</td>
-                                    <td rowspan="@users.Count">{{reviewTask.Description}}<br>{{reviewTask.CodeReview}}</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr ng-repeat="(key, value) in reviewTask.Values" ng-if="$index != 0">
-                                    <td>{{key}}</td>
-                                    <td><input class="form-control" data-validation="number" ng-model="value" /></td>
+                                    <td>
+                                        <input class="form-control" data-validation="number" ng-model="reviewTask.Value" ng-disabled="reviewTask.IsReviewed" ng-if="userType === 'User'" />
+                                        <div ng-repeat="(key, value) in reviewTask.Values" ng-if="userType !== 'User'">
+                                            <div class="col-md-6">{{users[key]}}</div>
+                                            <div class="col-md-6"><input class="form-control" data-validation="number" ng-model="reviewTask.Values[key]" /></div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" ng-click="reviewTasks()">submit</button>
+                        <button type="button" class="btn btn-primary" ng-click="review()">Review</button>
                     </div>
                 </div>
             </div>

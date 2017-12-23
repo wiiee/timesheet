@@ -298,7 +298,7 @@
             $scope.project = angular.copy($scope.oriProject);
         };
 
-        $scope.reviewTasks = function () {
+        $scope.review = function () {
             url = _basePath + "/api/project/reviewTasks";
             $http.post(url, $scope.reviewTasks).then(function (response) {
                 if (response.data.successMsg || response.data.errorMsg) {

@@ -84,3 +84,7 @@ table .col-md-3, table .col-md-4, table .col-md-5, table .col-md-6 {
 .taskReview {
     margin-left: 10px;
 }
+
+textarea {
+    resize: none;
+}
