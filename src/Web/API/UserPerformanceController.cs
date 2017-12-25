@@ -106,7 +106,7 @@
             foreach (var user in item.Values)
             {
                 user.Value.TimeSheetValue = this.GetService<TimeSheetService>().
-                    GetContribution(user.Key, item.DateRange.StartDate, item.DateRange.EndDate);
+                    GetContribution(user.Key, item.DateRange.StartDate.ToLocalTime(), item.DateRange.EndDate.ToLocalTime());
             }   
 
             return item;
