@@ -481,7 +481,9 @@
                                 return Json(new { errorMsg = "Proejct has been updated, please try again" });
                             }
 
-                            project.Tasks.Find(o => o.Id == item.TaskId).Values = item.Values;
+                            var task = project.Tasks.Find(o => o.Id == item.TaskId);
+                            task.Values = item.Values;
+                            task.IsReviewed = item.IsReviewed;
                         }
                     }
 

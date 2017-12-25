@@ -106,11 +106,18 @@
                     <div class="modal-body">
                         <table class="table table-bordered">
                             <thead>
-                                <tr>
+                                <tr ng-if="userType === 'User'">
                                     <th class="col-md-3">Name</th>
                                     <th class="col-md-1">User</th>
                                     <th class="col-md-6">Summary</th>
                                     <th class="col-md-2">Value</th>
+                                </tr>
+                                <tr ng-if="userType !== 'User'">
+                                    <th class="col-md-3">Name</th>
+                                    <th class="col-md-1">User</th>
+                                    <th class="col-md-5">Summary</th>
+                                    <th class="col-md-2">Value</th>
+                                    <th class="col-md-1">IsReview</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -124,6 +131,9 @@
                                             <div class="col-md-6">{{users[key]}}</div>
                                             <div class="col-md-6"><input class="form-control" data-validation="number" ng-model="reviewTask.Values[key]" /></div>
                                         </div>
+                                    </td>
+                                    <td ng-if="userType !== 'User'">
+                                        <input class="taskReview" type="checkbox" ng-model="reviewTask.IsReviewed" @if (isUser) { <text> disabled</text> } />
                                     </td>
                                 </tr>
                             </tbody>
