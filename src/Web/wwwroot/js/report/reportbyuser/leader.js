@@ -18,7 +18,7 @@
             var userId = _.findWhere(_pairs, { Value: name }).Key;
             var url = _basePath + "/Report/UserOverview?userId=" + encodeURIComponent(userId)
                 + "&startDate=" + new Date(_searchDateRange.StartDate).toLocaleDateString()
-                + "&endDate=" + new Date(_searchDateRange.EndDate).toLocaleDateString()
+                + "&endDate=" + new Date(_searchDateRange.EndDate).toLocaleDateString();
             // similar behavior as an HTTP redirect
             //window.location.replace(url);
 
@@ -41,7 +41,7 @@
             var userId = _.findWhere(_pairs, { Value: name }).Key;
             var url = _basePath + "/Report/UserOverview?userId=" + encodeURIComponent(userId)
                 + "&startDate=" + new Date(_searchDateRange.StartDate).toLocaleDateString()
-                + "&endDate=" + new Date(_searchDateRange.EndDate).toLocaleDateString()
+                + "&endDate=" + new Date(_searchDateRange.EndDate).toLocaleDateString();
             // similar behavior as an HTTP redirect
             //window.location.replace(url);
 
@@ -92,7 +92,7 @@
         deviationData.push(["User", "Deviation", "Standard"]);
 
         $.each(_model.Combos, function (index, element) {
-            var percentage = element.Items[1].Value == 0 ? 200 : element.Items[0].Value / element.Items[1].Value * 100;
+            var percentage = element.Items[1].Value === 0 ? 200 : element.Items[0].Value / element.Items[1].Value * 100;
             deviationData.push([element.Name, percentage, 100]);
         });
 
@@ -142,7 +142,7 @@
             function redirectToNewPeriod() {
                 var groupId = utility.getParameterByName("groupId", window.location.href);
                 var url = _basePath + "/Report/ReportByUser?";
-                if (groupId != null) {
+                if (groupId !== null) {
                     url += "&groupId=" + groupId;
                 }
                 url += "&startDate=" + new Date(_searchDateRange.StartDate).toLocaleDateString()
@@ -154,6 +154,6 @@
 
             $scope.exportData = function () {
                 utility.exportData($scope.models, $scope.searchDateRange, "ReportByUser");
-            }
+            };
         }]);
 }());
