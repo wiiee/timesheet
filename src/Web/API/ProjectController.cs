@@ -469,9 +469,17 @@
                         if (model.IsUserMode)
                         {
                             var task = project.Tasks.Find(o => o.Id == item.TaskId);
-                            if (!task.IsReviewed && task.Values.ContainsKey(userId))
+                            if (task.Values.ContainsKey(userId))
                             {
-                                task.Values[userId] = item.Value;
+                                if (this.GetUserType() != UserType.User)
+                                {
+                                    task.Values[userId] = item.Value;
+                                    task.IsReviewed = item.IsReviewed;
+                                }
+                                else if(!task.IsReviewed)
+                                {
+                                    task.Values[userId] = item.Value;
+                                }
                             }
                         }
                         else if(this.GetUserType() != UserType.User)
