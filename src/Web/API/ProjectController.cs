@@ -474,7 +474,7 @@
                                 task.Values[userId] = item.Value;
                             }
                         }
-                        else
+                        else if(this.GetUserType() != UserType.User)
                         {
                             if(model.LastUpdate != project.LastUpdate)
                             {

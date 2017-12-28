@@ -104,7 +104,7 @@
                         <h4 class="modal-title" id="myModalLabel">Review</h4>
                     </div>
                     <div class="modal-body">
-                        <div class="checkbox">
+                        <div class="checkbox" ng-if="">
                           <label>
                             <input type="checkbox" ng-model="reviewTasks.IsUserMode">
                             Is User Mode
@@ -133,7 +133,7 @@
                                     <td>{{reviewTask.Description}}<br>{{reviewTask.CodeReview}}</td>
                                     <td>
                                         <input class="form-control" data-validation="number" ng-model="reviewTask.Value" ng-disabled="reviewTask.IsReviewed" ng-if="reviewTasks.IsUserMode" />
-                                        <div ng-repeat="(key, value) in reviewTask.Values" ng-if="reviewTasks.IsUserMode">
+                                        <div ng-repeat="(key, value) in reviewTask.Values" ng-if="!reviewTasks.IsUserMode">
                                             <div class="col-md-6">{{users[key]}}</div>
                                             <div class="col-md-6"><input class="form-control" data-validation="number" ng-model="reviewTask.Values[key]" /></div>
                                         </div>

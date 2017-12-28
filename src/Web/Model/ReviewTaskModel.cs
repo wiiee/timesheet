@@ -7,7 +7,7 @@
     {
         public string ProjectId { get; set; }
         public DateTime LastUpdate { get; set; }
-        //0为用户，1为Manager
+        //是否为用户模式
         public bool IsUserMode { get; set; }
         public List<ReviewTaskItem> Items { get; set; }
 
