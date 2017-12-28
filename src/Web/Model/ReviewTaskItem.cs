@@ -18,8 +18,8 @@
 
         }
 
-        //User
-        public ReviewTaskItem(int taskId, string name, string userId, string description, string codeReview, bool isReviewed, int value)
+        //Leader
+        public ReviewTaskItem(int taskId, string name, string userId, string description, string codeReview, bool isReviewed, int value, Dictionary<string, int> values)
         {
             this.TaskId = taskId;
             this.Name = name;
@@ -28,17 +28,6 @@
             this.CodeReview = codeReview;
             this.IsReviewed = isReviewed;
             this.Value = value;
-        }
-
-        //Leader
-        public ReviewTaskItem(int taskId, string name, string userId, string description, string codeReview, bool isReviewed, Dictionary<string, int> values)
-        {
-            this.TaskId = taskId;
-            this.Name = name;
-            this.UserId = userId;
-            this.Description = description;
-            this.CodeReview = codeReview;
-            this.IsReviewed = isReviewed;
             this.Values = values;
         }
     }

@@ -104,6 +104,12 @@
                         <h4 class="modal-title" id="myModalLabel">Review</h4>
                     </div>
                     <div class="modal-body">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" ng-model="reviewTasks.IsUserMode">
+                            Is User Mode
+                          </label>
+                        </div>
                         <table class="table table-bordered">
                             <thead>
                                 <tr ng-if="userType === 'User'">
@@ -126,14 +132,14 @@
                                     <td>{{reviewTask.UserId}}<br />{{users[reviewTask.UserId]}}</td>
                                     <td>{{reviewTask.Description}}<br>{{reviewTask.CodeReview}}</td>
                                     <td>
-                                        <input class="form-control" data-validation="number" ng-model="reviewTask.Value" ng-disabled="reviewTask.IsReviewed" ng-if="userType === 'User'" />
-                                        <div ng-repeat="(key, value) in reviewTask.Values" ng-if="userType !== 'User'">
+                                        <input class="form-control" data-validation="number" ng-model="reviewTask.Value" ng-disabled="reviewTask.IsReviewed" ng-if="reviewTasks.IsUserMode" />
+                                        <div ng-repeat="(key, value) in reviewTask.Values" ng-if="reviewTasks.IsUserMode">
                                             <div class="col-md-6">{{users[key]}}</div>
                                             <div class="col-md-6"><input class="form-control" data-validation="number" ng-model="reviewTask.Values[key]" /></div>
                                         </div>
                                     </td>
                                     <td ng-if="userType !== 'User'">
-                                        <input class="taskReview" type="checkbox" ng-model="reviewTask.IsReviewed" />
+                                        <input type="checkbox" ng-model="reviewTask.IsReviewed" />
                                     </td>
                                 </tr>
                             </tbody>
