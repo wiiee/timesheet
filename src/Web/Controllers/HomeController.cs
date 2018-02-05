@@ -15,6 +15,7 @@
     using System.Collections.Generic;
     using Entity.ValueType;
     using Helper;
+    using Entity.Project;
 
     public class HomeController : BaseController
     {
@@ -406,6 +407,131 @@
             }
 
             return "Done";
+        }
+
+        [Authorize(Roles = "0")]
+        public string AddSilverProjects()
+        {
+            var devOwnerId = "G10432";
+            var group = this.GetService<DepartmentService>().GetUserGroupsByUserId(devOwnerId).First();
+            List<string> ownerIds = new List<string>(new string[] { devOwnerId, "G10477" });
+            List<string> userIds = new List<string>(new string[] { devOwnerId });
+            DateTime startDate = new DateTime(2018, 2, 27);
+            DateTime endDate = startDate.AddDays(7);
+            string projectIds = string.Empty;
+            string projExits = string.Empty;
+            for (int id=20; id<61; id++)
+            {
+                string sn = "Silver-Sprint" + id.ToString();
+                var proj = this.GetService<ProjectService>().Get().Where(o => string.Equals(o.SerialNumber,sn, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                if (proj != null)
+                {
+                    projExits += proj.Id + "\r\n";
+                    continue;
+                }
+
+                Project project = new Project();
+                project.Name = "Direct Booking Silver Sprint" + id.ToString();
+                project.Description = project.Name;
+                project.SerialNumber = sn;
+                project.OwnerIds = ownerIds;
+                project.UserIds = userIds;
+                project.Status = Status.Pending;
+                project.ProjectManagerName = "乐文焱";
+
+                //init task data
+                ProjectTask task = new ProjectTask();
+                task.Id = 0;
+                task.Name = "review";
+                task.Phase = Phase.Development;
+                task.PlanDateRange = new DateRange(startDate, endDate);
+                task.Status = Status.Pending;
+                task.UserId = "G10432";
+                task.PlanHour = 20;
+                task.Values = new Dictionary<string, int>() { };
+                foreach (var userId in group.UserIds)
+                {
+                    task.Values.Add(userId, userId == devOwnerId ? 20 : 0);
+                }
+
+                project.Tasks = new List<ProjectTask>();
+                project.Tasks.Add(task);
+
+                project.PlanDateRange = task.PlanDateRange;
+                project.PublishDate = endDate;
+
+                projectIds += this.GetService<ProjectService>().Create(project) + "\r\n";
+
+                startDate = startDate.AddDays(7);
+                endDate = endDate.AddDays(7);
+            }
+
+
+            return (projectIds.IsEmpty() ? "Create project failed." : "Create project(" + projectIds +")") + 
+                (projExits.IsEmpty()?"": "Projects already exists (" + projExits + ")");
+        }
+
+        [Authorize(Roles = "0")]
+        public string AddAquaProjects()
+        {
+            var devOwnerId = "G10488";
+            var group = this.GetService<DepartmentService>().GetUserGroupsByUserId(devOwnerId).First();
+            List<string> ownerIds = new List<string>(new string[] { devOwnerId, "G10601" });
+            List<string> userIds = new List<string>(new string[] { devOwnerId });
+            DateTime startDate = new DateTime(2018, 2, 26);
+            DateTime endDate = startDate.AddDays(4);
+            string projectIds = string.Empty;
+            string projExits = string.Empty;
+            for (int id = 23; id < 61; id++)
+            {
+                string sn = "Aqua-Sprint" + id.ToString();
+                var proj = this.GetService<ProjectService>().Get().Where(o => string.Equals(o.SerialNumber, sn, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                if (proj != null)
+                {
+                    projExits += proj.Id + "\r\n";
+                    continue;
+                }
+
+                Project project = new Project();
+                project.Name = "Direct Booking Aqua Sprint " + id.ToString();
+                project.Description = project.Name;
+                project.SerialNumber = sn;
+                project.OwnerIds = ownerIds;
+                project.UserIds = userIds;
+                project.Status = Status.Pending;
+                project.Level = ProjectLevel.Medium;
+                project.ProjectManagerName = "冯冰";
+
+                //init task data
+                ProjectTask task = new ProjectTask();
+                task.Id = 0;
+                task.Name = "Code Review";
+                task.Phase = Phase.Development;
+                task.PlanDateRange = new DateRange(startDate, endDate);
+                task.Status = Status.Pending;
+                task.UserId = devOwnerId;
+                task.PlanHour = 20;
+                task.Values = new Dictionary<string, int>() { };
+                foreach (var userId in group.UserIds)
+                {
+                    task.Values.Add(userId, userId == devOwnerId ? 20 : 0);
+                }
+
+                project.Tasks = new List<ProjectTask>();
+                project.Tasks.Add(task);
+
+                project.PlanDateRange = task.PlanDateRange;
+                project.PublishDate = endDate;
+
+                projectIds += this.GetService<ProjectService>().Create(project) + "\r\n";
+
+                startDate = startDate.AddDays(7);
+                endDate = endDate.AddDays(7);
+            }
+
+
+            return (projectIds.IsEmpty() ? "Create project failed." : "Create project(" + projectIds + ")") +
+                (projExits.IsEmpty() ? "" : "Projects already exists (" + projExits + ")");
         }
 
         [Authorize(Roles = "0")]
