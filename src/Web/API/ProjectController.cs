@@ -466,15 +466,23 @@
                 {
                     foreach (var item in model.Items)
                     {
-                        if (this.GetUserType() == UserType.User)
+                        if (model.IsUserMode)
                         {
                             var task = project.Tasks.Find(o => o.Id == item.TaskId);
-                            if (!task.IsReviewed && task.Values.ContainsKey(userId))
+                            if (task.Values.ContainsKey(userId))
                             {
-                                task.Values[userId] = item.Value;
+                                if (this.GetUserType() != UserType.User)
+                                {
+                                    task.Values[userId] = item.Value;
+                                    task.IsReviewed = item.IsReviewed;
+                                }
+                                else if(!task.IsReviewed)
+                                {
+                                    task.Values[userId] = item.Value;
+                                }
                             }
                         }
-                        else
+                        else if(this.GetUserType() != UserType.User)
                         {
                             if(model.LastUpdate != project.LastUpdate)
                             {
@@ -511,22 +519,14 @@
             var userId = this.GetUserId();
             var userIds = this.GetService<DepartmentService>().GetUserGroupsByUserId(userId).First().UserIds;
 
-            if(this.GetUserType() == UserType.User)
-            {
-                var items = project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId)
-                    .Select(o => new ReviewTaskItem(o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values[userId]))
-                    .ToList();
+            var items = project.Tasks.Where(o => userIds.Contains(o.UserId))
+                .OrderBy(o => o.UserId)
+                .Select(o => new ReviewTaskItem(o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, 
+                    o.Values.ContainsKey(userId) ? o.Values[userId] : 0, 
+                    this.GetUserType() == UserType.User ? null : o.Values))
+                .ToList();
 
-                return new ReviewTaskModel(projectId, project.LastUpdate, items);
-            }
-            else
-            {
-                var items = project.Tasks.Where(o => userIds.Contains(o.UserId)).OrderBy(o => o.UserId)
-                    .Select(o => new ReviewTaskItem(o.Id, o.Name, o.UserId, o.Description, o.CodeReview, o.IsReviewed, o.Values))
-                    .ToList();
-
-                return new ReviewTaskModel(projectId, project.LastUpdate, items);
-            }
+            return new ReviewTaskModel(projectId, project.LastUpdate, true, items);
         }
     }
 }
