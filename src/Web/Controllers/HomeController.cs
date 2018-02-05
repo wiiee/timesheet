@@ -416,11 +416,11 @@
             var group = this.GetService<DepartmentService>().GetUserGroupsByUserId(devOwnerId).First();
             List<string> ownerIds = new List<string>(new string[] { devOwnerId, "G10477" });
             List<string> userIds = new List<string>(new string[] { devOwnerId });
-            DateTime startDate = new DateTime(2018, 2, 27);
+            DateTime startDate = new DateTime(2018, 12, 11);
             DateTime endDate = startDate.AddDays(7);
             string projectIds = string.Empty;
             string projExits = string.Empty;
-            for (int id=20; id<61; id++)
+            for (int id=61; id<69; id++)
             {
                 string sn = "Silver-Sprint" + id.ToString();
                 var proj = this.GetService<ProjectService>().Get().Where(o => string.Equals(o.SerialNumber,sn, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
@@ -476,13 +476,13 @@
         {
             var devOwnerId = "G10488";
             var group = this.GetService<DepartmentService>().GetUserGroupsByUserId(devOwnerId).First();
-            List<string> ownerIds = new List<string>(new string[] { devOwnerId, "G10601" });
+            List<string> ownerIds = new List<string>(new string[] { devOwnerId, "G10402","G10601" });
             List<string> userIds = new List<string>(new string[] { devOwnerId });
-            DateTime startDate = new DateTime(2018, 2, 26);
+            DateTime startDate = new DateTime(2018, 11, 19);
             DateTime endDate = startDate.AddDays(4);
             string projectIds = string.Empty;
             string projExits = string.Empty;
-            for (int id = 23; id < 61; id++)
+            for (int id = 61; id < 71; id++)
             {
                 string sn = "Aqua-Sprint" + id.ToString();
                 var proj = this.GetService<ProjectService>().Get().Where(o => string.Equals(o.SerialNumber, sn, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
