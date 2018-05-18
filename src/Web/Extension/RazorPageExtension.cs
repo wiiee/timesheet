@@ -5,6 +5,7 @@
     using Platform.Enum;
     using Platform.Util;
     using Service;
+    using System.Collections.Generic;
 
     public static class RazorPageExtension
     {
@@ -49,6 +50,17 @@
             if (page.IsLogIn())
             {
                 return page.User.FindFirst(ClaimTypes.Role).Value == ((int)UserType.Leader).ToString();
+            }
+
+            return false;
+        }
+
+        public static bool IsImportLeader(this RazorPage page)
+        {
+            if (page.IsLogIn())
+            {
+                var ids = new List<string>(new string[] { "G10402", "G10432" });
+                return ids.Contains(page.User.FindFirst(ClaimTypes.NameIdentifier).Value.ToUpper());
             }
 
             return false;

@@ -3,6 +3,7 @@
 @{
     string id = this.GetUserId();
     bool isLogIn = this.IsLogIn();
+    bool isImportLeader = this.IsImportLeader();
 }
 
 <div class="container">
@@ -21,6 +22,7 @@
             @Html.Partial("~/Views/Shared/Menu/TimeSheet.cshtml")
             @Html.Partial("~/Views/Shared/Menu/Scrum.cshtml")
             @Html.Partial("~/Views/Shared/Menu/Report.cshtml")
+            @if (isImportLeader) { @Html.Partial("~/Views/Shared/Menu/Import.cshtml") }
             @Html.Partial("~/Views/Shared/Menu/Feedback.cshtml")
         </ul>
 

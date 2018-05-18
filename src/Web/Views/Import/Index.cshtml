@@ -1,0 +1,51 @@
+﻿@using Web.Extension
+
+@{
+    var myTitle = "Import Data";
+    ViewBag.Title = @myTitle;
+    var isImportLeader = this.IsImportLeader();
+    var userId = ViewData["UserId"] as string;
+}
+
+@section css {
+    <link rel="stylesheet" href="~/lib/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" />
+    <link rel="stylesheet" href="~/css/timesheet/timesheet.css" />
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/angular-smart-table/dist/smart-table.js"></script>
+    <script type="text/javascript">
+        var _userId = @userId;
+    </script>
+    <script type="text/javascript" src="~/lib/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="~/js/timesheet/timesheet.js" asp-append-version="true"></script>
+}
+
+@section breadcrumb{
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Import</a></li>
+            <li class="active">@myTitle</li>
+        </ol>
+    </div>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>@myTitle</h1>
+    </div>
+</div>
+
+@Html.Partial("~/Views/Shared/HeaderMessage.cshtml")
+
+<div class="row" id="messageContainer">
+</div>
+
+<div>
+    <div class="row">
+        <div class="pull-left bottom-margin">
+            <a class="btn btn-primary" role="button" asp-controller="Import" asp-action="ImportProject">Import Project</a>
+            <a class="btn btn-primary" role="button" asp-controller="Import" asp-action="ImportTimesheet">Import Timesheet</a>
+        </div>
+    </div>
+</div>
