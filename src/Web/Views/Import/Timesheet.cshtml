@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Import TimeSheet";
+    ViewData["ng-app"] = "importTimeSheet";
+}
+
+@section scripts {
+    <script type="text/javascript" src="~/js/import/timesheet.js"></script>
+}
+
+<div class="row">
+    <div class="page-header">
+        <h1>Import TimeSheet</h1>
+    </div>
+</div>
+
+<div ng-controller="importTimeSheetCtrl" ng-cloak>
+    <div class="row">
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="data">Import Data (json array format)</label>
+                <textarea name="data" id="data" rows="25" ng-model="request" class="form-control" data-validation="required"></textarea>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="result">Result</label>
+                <textarea name="result" id="result" rows="25" class="form-control" ng-model="response"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="pull-right">
+                    <button type="button" class="btn btn-default" ng-click="importTimeSheets()">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
