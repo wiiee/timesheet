@@ -16,6 +16,7 @@
     using Entity.ValueType;
     using Helper;
     using Entity.Project;
+    using Web.Util;
 
     public class HomeController : BaseController
     {
@@ -158,51 +159,9 @@
         [Authorize(Roles = "0")]
         public IActionResult ResetUserTimeSheet()
         {
-            var timeSheetService = this.GetService<TimeSheetService>();
-            var userTimeSheetStatusService = this.GetService<UserTimeSheetStatusService>();
-            var timeSheets = timeSheetService.Get();
-
-            var userTimeSheets = userTimeSheetStatusService.Get();
-
-            foreach(var userTimeSheet in userTimeSheets)
-            {
-                var timeSheet = timeSheets.Where(o => o.UserId == userTimeSheet.Id).ToList();
-
-                var startDate = TimeSheetHelper.MIN_DATE;
-                var currentMonday = DateTime.Today.GetMonday();
-
-                while (startDate <= currentMonday)
-                {
-                    var monday = startDate.GetTimeSheetId();
-                    var hour = timeSheet.Where(o => o.WeekTimeSheets.ContainsKey(monday)).Select(o => o.WeekTimeSheets[monday].Sum(p => p.Value.Sum())).Sum();
-
-                    var status = Status.Pending;
-
-                    if(hour >= 40)
-                    {
-                        status = Status.Done;
-                    }
-                    else if(hour > 0)
-                    {
-                        status = Status.Ongoing;
-                    }
-
-                    KeyValuePair<Status, double> value = new KeyValuePair<Status, double>(status, hour);
-
-                    if (userTimeSheet.Weeks.ContainsKey(monday))
-                    {
-                        userTimeSheet.Weeks[monday] = value;
-                    }
-                    else
-                    {
-                        userTimeSheet.Weeks.Add(monday, value);
-                    }
-
-                    startDate = startDate.AddDays(7);
-                }
-
-                userTimeSheetStatusService.Update(userTimeSheet);
-            }
+            TimeSheetUtil.ResetUserTimeSheet(
+                this.GetService<TimeSheetService>(),
+                this.GetService<UserTimeSheetStatusService>());
 
             return Redirect("~/Home");
         }
@@ -210,70 +169,9 @@
         [Authorize(Roles = "0")]
         public IActionResult UpdateProject()
         {
-            var timeSheetService = this.GetService<TimeSheetService>();
-            var projectService = this.GetService<ProjectService>();
-            var projects = projectService.Get();
-
-            foreach (var project in projects)
-            {
-                if (project.IsPublic)
-                {
-                    continue;
-                }
-
-                var timeSheets = timeSheetService.Get(o => o.ProjectId == project.Id);
-
-                project.ActualHours = new Dictionary<string, double>();
-
-                //更新总时间
-                foreach (var item in timeSheets)
-                {
-                    project.ActualHours.Add(item.UserId, item.GetTotalHours());
-                }
-
-                //更新Task
-                foreach (var task in project.Tasks)
-                {
-                    var timeSheet = timeSheets.Where(o => o.UserId == task.UserId).FirstOrDefault();
-
-                    //为空，则任务为初始状态
-                    if (timeSheet == null)
-                    {
-                        task.Status = Status.Pending;
-                        task.ActualHour = 0;
-                        task.ActualDateRange = new DateRange();
-                    }
-                    else
-                    {
-                        task.ActualHour = timeSheet.GetTaskHours(task.Id);
-
-                        if (task.Status == Status.Done)
-                        {
-                            task.ActualDateRange.StartDate = timeSheet.GetTaskStartDate(task.Id);
-                            task.ActualDateRange.EndDate = timeSheet.GetTaskEndDate(task.Id);
-                        }
-                        else
-                        {
-                            if (task.ActualHour > 0)
-                            {
-                                task.Status = Status.Ongoing;
-                                task.ActualDateRange.StartDate = timeSheet.GetTaskStartDate(task.Id);
-                                task.ActualDateRange.EndDate = DateTime.MinValue;
-                            }
-                            else
-                            {
-                                task.Status = Status.Pending;
-                                task.ActualDateRange.StartDate = DateTime.MinValue;
-                                task.ActualDateRange.EndDate = DateTime.MinValue;
-                            }
-                        }
-                    }
-                }
-
-                project.UpdateProjectStatus();
-                project.UpdateProjectActualTime();
-                projectService.Update(project);
-            }
+            TimeSheetUtil.UpdateProject(
+                this.GetService<TimeSheetService>(),
+                this.GetService<ProjectService>());
 
             return Redirect("~/Home");
         }
@@ -302,98 +200,18 @@
         [Authorize(Roles = "0")]
         public IActionResult ResetTimeSheet()
         {
-            var projectService = this.GetService<ProjectService>();
-            var timeSheetService = this.GetService<TimeSheetService>();
+            TimeSheetUtil.ResetTimeSheet(this.GetService<ProjectService>(), this.GetService<TimeSheetService>());
 
-            var projectIds = projectService.GetIds();
-
-            foreach (var item in timeSheetService.Get())
-            {
-                if (!projectIds.Contains(item.ProjectId))
-                {
-                    timeSheetService.Delete(item.Id);
-                }
-                else
-                {
-                    var project = projectService.Get(item.ProjectId);
-
-                    if (!project.IsPublic)
-                    {
-                        foreach (var week in item.WeekTimeSheets)
-                        {
-                            var taskIds = new List<int>(week.Value.Keys);
-                            foreach (var taskId in taskIds)
-                            {
-                                if (!project.Tasks.Select(o => o.Id).Contains(taskId))
-                                {
-                                    week.Value.Remove(taskId);
-                                }
-                            }
-                        }
-
-                        timeSheetService.Update(item);
-                    }
-                }
-            }
-
-            return Redirect("~/Home");
-        }
-
-        [Authorize(Roles = "0")]
-        public IActionResult RefreshTimeSheet()
-        {
-            var timeSheetService = this.GetService<TimeSheetService>();
-
-            foreach (var item in timeSheetService.Get())
-            {
-                timeSheetService.Update(item);
-            }
             return Redirect("~/Home");
         }
 
         [Authorize(Roles = "0")]
         public string RefreshProjectTask()
         {
-            var projects = this.GetService<ProjectService>().Get();
-
-            foreach (var project in projects)
-            {
-                if (!project.Tasks.IsEmpty())
-                {
-                    foreach(var task in project.Tasks)
-                    {
-                        if(task.Values == null)
-                        {
-                            task.Values = new Dictionary<string, int>();
-
-                            var ownerId = this.GetService<DepartmentService>().GetLeaderIdByUserId(task.UserId);
-
-                            if(ownerId == null)
-                            {
-                                continue;
-                            }
-
-                            if (this.GetService<UserService>().Get(task.UserId).UserType == UserType.User)
-                            {
-                                var group = this.GetService<DepartmentService>().GetUserGroupsByUserId(task.UserId).First();
-
-                                foreach (var userId in group.UserIds)
-                                {
-                                    task.Values.Add(userId, userId == ownerId ? (int)task.CalculateValue() : 0);
-                                }
-                            }
-                            else
-                            {
-                                task.Values.Add(ownerId, (int)task.CalculateValue());
-                            }
-                        }
-                    }
-
-                    this.GetService<ProjectService>().Update(project);
-                }
-            }
-
-            return "Done";
+            return TimeSheetUtil.RefreshProjectTask(
+                this.GetService<ProjectService>(),
+                this.GetService<DepartmentService>(),
+                this.GetService<UserService>());
         }
 
         [Authorize(Roles = "0")]

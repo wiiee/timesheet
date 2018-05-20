@@ -5,12 +5,15 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Platform.Enum;
     using Platform.Extension;
     using Platform.Util;
     using Service.Project;
+    using Service.User;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Web.Util;
 
     [Authorize]
     [Route("api/[controller]")]
@@ -32,15 +35,18 @@
                 {
                     foreach (var project in projects)
                     {
-                        if (project.Id != null)
+                        if (!project.Tasks.IsEmpty())
                         {
-                            projectService.Update(project);
-                            result.Add(project.Id);
-                        }
-                        else
-                        {
-                            var projectId = projectService.Create(project);
-                            result.Add(projectId);
+                            if (!string.IsNullOrEmpty(project.Id))
+                            {
+                                projectService.Update(project);
+                                result.Add(project.Id);
+                            }
+                            else
+                            {
+                                var projectId = projectService.Create(project);
+                                result.Add(projectId);
+                            }
                         }
                     }
                 }
@@ -62,18 +68,56 @@
             try
             {
                 var timeSheetService = this.GetService<TimeSheetService>();
+                var userTimeSheetStatusService = this.GetService<UserTimeSheetStatusService>();
+                var projectService = this.GetService<ProjectService>();
+                var userService = this.GetService<UserService>();
+                var departmentService = this.GetService<DepartmentService>();
 
                 foreach (var item in timesheets)
                 {
-                    if (item.Id != null)
+                    projectService.Delete(item.Id);
+
+                    var project = projectService.Get(item.ProjectId);
+                    var timeSheet = timeSheetService.Get(item.Id);
+
+                    if (timeSheet == null)
                     {
-                        timeSheetService.Update(item);
+                        timeSheet = new TimeSheet(item.ProjectId, item.UserId);
+                        timeSheetService.Create(timeSheet);
                     }
-                    else
+
+                    if(timeSheet.WeekTimeSheets == null)
                     {
-                        timeSheetService.Create(item);
+                        timeSheet.WeekTimeSheets = new Dictionary<string, Dictionary<int, double[]>>();
                     }
+
+                    foreach (var week in item.WeekTimeSheets)
+                    {
+                        if (timeSheet.WeekTimeSheets.ContainsKey(week.Key))
+                        {
+                            timeSheet.WeekTimeSheets[week.Key] = week.Value;
+                        }
+                        else
+                        {
+                            timeSheet.WeekTimeSheets.Add(week.Key, week.Value);
+                        }
+
+                        //userTimeSheetStatusService.UpdateUserTimeSheet(item.UserId, week.Key, Status.Ongoing, 40);
+                    }
+
+                    timeSheetService.Update(timeSheet);
+
+                    //更新动态数据
+                    projectService.UpdateActualParts(timeSheet);
                 }
+
+                var projects = projectService.GetByIds(timesheets.Select(o => o.ProjectId).ToList());
+                TimeSheetUtil.RefreshProjectTask(projectService, departmentService, userService, projects);
+                TimeSheetUtil.UpdateProject(timeSheetService, projectService, projects);
+                var items = timeSheetService.GetByIds(timesheets.Select(o => o.Id).ToList());
+                TimeSheetUtil.ResetTimeSheet(projectService, timeSheetService, items);
+                var userTimeSheetStatuses = userTimeSheetStatusService.GetByIds(timesheets.Select(o => o.UserId).Distinct().ToList());
+                TimeSheetUtil.ResetUserTimeSheet(timeSheetService, userTimeSheetStatusService, userTimeSheetStatuses);
             }
             catch (Exception ex)
             {

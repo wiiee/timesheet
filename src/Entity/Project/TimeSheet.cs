@@ -20,6 +20,8 @@
             this.Id = projectId + "_" + userId;
             this.ProjectId = projectId;
             this.UserId = userId;
+
+            WeekTimeSheets = new Dictionary<string, Dictionary<int, double[]>>();
         }
 
         public void AddWeek(string monday, string projectId, string userId, int taskId, double[] week)
