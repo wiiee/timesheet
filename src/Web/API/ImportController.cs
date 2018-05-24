@@ -39,6 +39,10 @@
                         {
                             if (!string.IsNullOrEmpty(project.Id))
                             {
+                                if (project.ActualHours.IsEmpty())
+                                {
+                                    project.ActualHours = new Dictionary<string, double>();
+                                }
                                 projectService.Update(project);
                                 result.Add(project.Id);
                             }
