@@ -95,40 +95,45 @@
 
                 foreach (var item in timesheets)
                 {
-                    projectService.Delete(item.Id);
-
-                    var project = projectService.Get(item.ProjectId);
-                    var timeSheet = timeSheetService.Get(item.Id);
-
-                    if (timeSheet == null)
+                    try
                     {
-                        timeSheet = new TimeSheet(item.ProjectId, item.UserId);
-                        timeSheetService.Create(timeSheet);
-                    }
+                        var project = projectService.Get(item.ProjectId);
+                        var timeSheet = timeSheetService.Get(item.Id);
 
-                    if(timeSheet.WeekTimeSheets == null)
-                    {
-                        timeSheet.WeekTimeSheets = new Dictionary<string, Dictionary<int, double[]>>();
-                    }
-
-                    foreach (var week in item.WeekTimeSheets)
-                    {
-                        if (timeSheet.WeekTimeSheets.ContainsKey(week.Key))
+                        if (timeSheet == null)
                         {
-                            timeSheet.WeekTimeSheets[week.Key] = week.Value;
-                        }
-                        else
-                        {
-                            timeSheet.WeekTimeSheets.Add(week.Key, week.Value);
+                            timeSheet = new TimeSheet(item.ProjectId, item.UserId);
+                            timeSheetService.Create(timeSheet);
                         }
 
-                        //userTimeSheetStatusService.UpdateUserTimeSheet(item.UserId, week.Key, Status.Ongoing, 40);
+                        if (timeSheet.WeekTimeSheets == null)
+                        {
+                            timeSheet.WeekTimeSheets = new Dictionary<string, Dictionary<int, double[]>>();
+                        }
+
+                        foreach (var week in item.WeekTimeSheets)
+                        {
+                            if (timeSheet.WeekTimeSheets.ContainsKey(week.Key))
+                            {
+                                timeSheet.WeekTimeSheets[week.Key] = week.Value;
+                            }
+                            else
+                            {
+                                timeSheet.WeekTimeSheets.Add(week.Key, week.Value);
+                            }
+
+                            //userTimeSheetStatusService.UpdateUserTimeSheet(item.UserId, week.Key, Status.Ongoing, 40);
+                        }
+
+                        timeSheetService.Update(timeSheet);
+
+                        //更新动态数据
+                        projectService.UpdateActualParts(timeSheet);
                     }
-
-                    timeSheetService.Update(timeSheet);
-
-                    //更新动态数据
-                    projectService.UpdateActualParts(timeSheet);
+                    catch(Exception ex)
+                    {
+                        _logger.LogError(ex.Message);
+                    }
                 }
 
                 var projects = projectService.GetByIds(timesheets.Select(o => o.ProjectId).ToList());
