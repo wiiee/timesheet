@@ -37,12 +37,28 @@
                     {
                         if (!project.Tasks.IsEmpty())
                         {
-                            if (!string.IsNullOrEmpty(project.Id))
+                            if (!string.IsNullOrEmpty(project.Id) && project.Description != "Create")
                             {
                                 if (project.ActualHours.IsEmpty())
                                 {
                                     project.ActualHours = new Dictionary<string, double>();
                                 }
+
+                                var dbProject = projectService.Get(project.Id);
+
+                                var sameIds = project.Tasks.Select(o => o.Id).Intersect(dbProject.Tasks.Select(p => p.Id)).ToList();
+
+                                sameIds.ForEach(o => {
+                                    if(dbProject.Tasks.Find(p => p.Id == o).Name != project.Tasks.Find(p => p.Id == o).Name)
+                                    {
+                                        throw new Exception("conflicted taskId");
+                                    }
+                                });
+
+                                var tasks = dbProject.Tasks.Select(o => o.Id).Except(project.Tasks.Select(o => o.Id)).ToList();
+
+                                tasks.ForEach(o => project.Tasks.Add(dbProject.Tasks.Find(p => p.Id == o)));
+
                                 projectService.Update(project);
                                 result.Add(project.Id);
                             }
