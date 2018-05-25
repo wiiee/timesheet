@@ -45,6 +45,8 @@
                                 }
 
                                 var dbProject = projectService.Get(project.Id);
+                                project.ActualHours = dbProject.ActualHours;
+                                project.ActualDateRange = dbProject.ActualDateRange;
 
                                 var sameIds = project.Tasks.Select(o => o.Id).Intersect(dbProject.Tasks.Select(p => p.Id)).ToList();
 
