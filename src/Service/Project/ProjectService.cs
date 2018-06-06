@@ -261,6 +261,12 @@
 
                 UpdatePlanParts(project);
 
+                // update task status
+                foreach(var task in project.Tasks)
+                {
+                    UpdateTaskStatus(project.Id, task.Id, task.Status);
+                }
+
                 //不存在的用户删除实际时间
                 var additionalIds = project.ActualHours.Keys.Except(project.UserIds).ToList();
 
