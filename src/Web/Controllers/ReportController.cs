@@ -35,7 +35,7 @@
             return new ReportByUserHelper(this, departmentId, groupId, startDate, endDate).Build();
         }
 
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "0,1,3")]
         public IActionResult ReportByProject(string departmentId, string groupId, DateTime startDate, DateTime endDate)
         {
             //if (!string.IsNullOrEmpty(userId) 
