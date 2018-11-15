@@ -132,6 +132,10 @@
             {
                 return GetMonthlyReportViewResult<FlightMonthlyReportModel>(startDate, endDate, false, DepartmentName.SHENZHEN_CORP_TRAVEL_EN);//商旅显示全部项目
             }
+            else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_DI))
+            {
+                return GetMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, false, DepartmentName.SHENZHEN_DI_EN);
+            }
             else
             {
                 return GetMonthlyReportViewResult<HotelMonthlyReportModel>(startDate, endDate, isShowImportant, DepartmentName.SHANGHAI_CORP_TRAVEL_EN);
@@ -321,6 +325,11 @@
             {
                 ViewData["CorporateTravelWeeklyReportModel"] = BuildCorporateTravelWeeklyReportModel(startDate, endDate);
                 return View("WeeklyReport/CorporateTravel");
+            }
+            else if (this.GetService<DepartmentService>().GetDepartmentsByUserId(this.GetUserId()).FirstOrDefault().Id.Equals(DepartmentName.SHENZHEN_DI))
+            {
+                ViewData["HotelWeeklyReportModels"] = BuildShCorporateWeeklyReportModel(startDate, endDate, isShowImportant);
+                return View("WeeklyReport/DataIntelligence");
             }
             else
             {

@@ -11,5 +11,7 @@ namespace Platform.Enum
         public const string SHENZHEN_CORP_TRAVEL_EN = "CorporateTravel";
         public const string SHANGHAI_CORP_TRAVEL = "上海商旅技术研发部门";
         public const string SHANGHAI_CORP_TRAVEL_EN = "ShCorporateTravel";
+        public const string SHENZHEN_DI = "数据智能部(深圳)";
+        public const string SHENZHEN_DI_EN = "DataIntelligence";
     }
 }
