@@ -78,7 +78,7 @@ else if (isManager)
                             @if (item.IsEditOrDelete)
                             {
                                 <a href="~/Department/EditDepartment?id=@Html.UrlEncoder.Encode(item.Id)">@Html.Raw(string.Format("{0}({1})", item.Name, item.Number))</a>
-                                <abbr title="删除部门"><a class="delete" data-id="@Html.UrlEncoder.Encode(item.Id)" href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></abbr>
+                                <abbr title="删除部门"><a class="delete" data-id="@Html.Raw(item.Id)" href="javascript:void(0)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></abbr>
                             }
                             else
                             {
